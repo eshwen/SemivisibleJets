@@ -29,26 +29,33 @@ are also provided.
 
 ## Example `MadGraph` production
 
-- Inclusive s-channel production:
+Make a directory to store `MadGraph` and the output files. Then download a recent release of `MadGraph` with
+
+```bash
+wget https://launchpad.net/mg5amcnlo/2.0/2.6.x/+download/MG5_aMC_v2.6.1.tar.gz
 ```
-import DMsimp_s_spin1
-define j = g u c t d b s g u~ c~ t~ d~ b~ s~
-generate p p > xd xd~
-add process p p > xd xd~ j
-add process p p > xd xd~ j j
-output sig_schannel
+
+Unzip the tar ball with
+
+```bash
+tar -xvzf MG5_aMC_v2.6.1.tar.gz
 ```
-- Inclusive t-channel production:
+
+In the folder created, the run command is `./bin/mg5_aMC`. Clone the semi-visible jets files required with
+
+```bash
+git clone git@github.com:eshwen/SemivisibleJets.git
 ```
-import DMsimp_tchannel
-define gv = gv11 gv12 gv21 gv22
-define gv~ = gv11~ gv12~ gv21~ gv22~
-define j = g u c t d b s g u~ c~ t~ d~ b~ s~
-generate p p > gv gv~
-add process p p > gv gv~ j
-add process p p > gv gv~ j j
-output sig_tchannel
+
+Copy the folders in `SemivisibleJets/MG_models/` to `./models/`. The input/config files for the s- and t-channel processes are specified in `SemivisibleJets/MG_input/`. In these files, the number of events, as well as other parameters, can be changed.
+
+Run one of the configs with
+
+```bash
+./bin/mg5_aMC SemivisibleJets/MG_input/<file>
 ```
+
+This will create lots of output files in the directory specified by the config. The LHE file will be in `<Output dir>/Events/run_01/`. Other information like the cross section and Feynman diagrams can also be viewed.
 
 ## Note on hadronization with `PYTHIA`
 
@@ -71,6 +78,8 @@ sed -i 's/49001012/4900101/g' <LHE filename>
 sed -i 's/49001013/4900101/g' <LHE filename>	
 sed -i 's/49001014/4900101/g' <LHE filename>	
 ```
+
+- FINISH ADDING STUFF FOR THIS
 
 ## Contact
 
