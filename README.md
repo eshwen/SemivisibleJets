@@ -41,13 +41,34 @@ Unzip the tar ball with
 tar -xvzf MG5_aMC_v2.6.1.tar.gz
 ```
 
-In the folder created, the run command is `./bin/mg5_aMC`. Clone the semi-visible jets files required with
+In the folder created, the run command is `./bin/mg5_aMC`. Source a recent CMSSW release (required for Delphes) _outside_ the MadGraph release with
+
+```bash
+cd ..
+export SCRAM_ARCH=slc6_amd64_gcc530
+scramv1 project CMSSW CMSSW_8_0_26
+cd CMSSW_8_0_26/src
+eval `scramv1 runtime -sh`
+cd ../../
+````
+
+Go back to the MadGraph release and install Pythia and Delphes with
+
+```bash
+./bin/mg5_aMC
+install pythia8
+install Delphes
+```
+
+which will likely install some other dependencies as well. Just follow the instructions to download and install all of them.
+
+Clone the semi-visible jets files required with
 
 ```bash
 git clone git@github.com:eshwen/SemivisibleJets.git
 ```
 
-Copy the model files to `./models/` with
+Copy the model files into `./models/` with
 
 ```bash
 cp -r SemivisibleJets/MG_models/DMsimp_* models/

@@ -30,4 +30,7 @@ add process p p > gv gv~ j j
 output DMSVJ_s_channel
 
 launch
-set nevents 1000
+set nevents 50000
+generate pythia8=ON
+#Need to find correct command to put Delphes with CMS on
+#Delphes=ON
