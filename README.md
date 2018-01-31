@@ -47,7 +47,13 @@ In the folder created, the run command is `./bin/mg5_aMC`. Clone the semi-visibl
 git clone git@github.com:eshwen/SemivisibleJets.git
 ```
 
-Copy the folders in `SemivisibleJets/MG_models/` to `./models/`. The input/config files for the s- and t-channel processes are specified in `SemivisibleJets/MG_input/`. In these files, the number of events, as well as other parameters, can be changed.
+Copy the model files to `./models/` with
+
+```bash
+cp -r SemivisibleJets/MG_models/DMsimp_* models/
+```
+
+The input/config files for the s- and t-channel processes are specified in `SemivisibleJets/MG_input/`. In these files, the number of events, as well as other parameters, can be changed.
 
 Run one of the configs with
 
