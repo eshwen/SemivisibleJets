@@ -89,8 +89,8 @@ Once the PIDs have been changed, it is possible to run `PYTHIA` and `Delphes` co
 
 For questions or issues please contact:
 
--  Tim Lou; hlou at berkeley dot edu
--  Siddharth Mishra-Sharma; smsharma at princeton dot edu
+-  Tim Lou; hlou@berkeley.edu
+-  Siddharth Mishra-Sharma; smsharma@princeton.edu
 -  Eshwen Bhal (for implementation, not theory); eshwen.bhal@cern.ch
 
 ## To do
