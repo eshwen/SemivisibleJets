@@ -9,12 +9,12 @@ and running of the dark coupling is required when implementing the subsequent da
 
 UFO files associated with two UV completions are provided:
 
-### s-channel production
+## s-channel production
 
 An s-channel production (`DMsimp_s_spin1`) mediated through a new heavy Z'. The model provided is a modified version of the spin-1 `DMsimp` model (http://feynrules.irmp.ucl.ac.be/wiki/DMsimp) 
 implemented through `FeynRules`.
 
-### t-channel production
+## t-channel production
 
 A t-channel production (`DMsimp_tchannel`) where the dark and visible sectors interact through a new scalar bi-fundamental.
 
@@ -47,11 +47,7 @@ Unzip the tar ball with
 tar -xvzf MG5_aMC_v2.6.1.tar.gz
 ```
 
-In the folder created, the run command is `./bin/mg5_aMC`.
-
-- UPDATE THIS STUFF WITH NEW PATHS, AND TAI'S DELPHES-PYTHIA8 STUFF
-
-Copy the model files from `SemivisibleJets/` into `models/` with
+In the folder created, the run command is `./bin/mg5_aMC`. Copy the model files from `SemivisibleJets/` into `models/` with
 
 ```bash
 cp -r ../SemivisibleJets/MG_models/DMsimp_* ./models/
@@ -65,7 +61,7 @@ Run one of the configs with
 ./bin/mg5_aMC ../SemivisibleJets/MG_input/<file>
 ```
 
-This will create lots of output files in the directory specified by the config. The LHE file will be zipped in `<Output dir>/Events/run_01/`. You can unzip with `gunzip <file>`. Other information like the cross section and Feynman diagrams can also be viewed.
+This will create lots of output files in the directory specified by the config. The LHE file will be zipped in `<Output dir>/Events/run_01/`, which you can unzip with `gunzip <file>`. Other information like the cross section and Feynman diagrams can also be viewed.
 
 ## Hadronization with `PYTHIA` and detector simulation with `Delphes`
 
@@ -87,9 +83,7 @@ sed -i 's/49001013/4900101/g' <LHE filename>
 sed -i 's/49001014/4900101/g' <LHE filename>	
 ```
 
-Once the PIDs have been changed, it is possible to run `PYTHIA` and `Delphes` concurrently on the LHE file. See the README in https://github.com/eshwen/mc-production/tree/master/run_delphes for the commands to install the programs and run everything. On subsequent sessions, you can just run `delphes_pythia8.sh` to set up the environment. 
-
-FINISH, USING TAI'S REPO AND INSTRUCTIONS (PLUS THE SCRIPT I MADE TO SOURCE IN THE FUTURE) AND CHECK EVERYTHING ABOVE IS CORRECT
+Once the PIDs have been changed, it is possible to run `PYTHIA` and `Delphes` concurrently on the LHE file. See the README in https://github.com/eshwen/mc-production/tree/master/run_delphes for the commands to install the programs and run everything. On subsequent sessions, you can just run `delphes_pythia8.sh` in that directory to set up the environment. 
 
 ## Contact
 
@@ -97,3 +91,9 @@ For questions or issues please contact:
 
 -  Tim Lou; hlou at berkeley dot edu
 -  Siddharth Mishra-Sharma; smsharma at princeton dot edu
+-  Eshwen Bhal (for implementation, not theory); eshwen.bhal@cern.ch
+
+## To do
+
+- Tidy up `sed` commands for t-channel (make into a single line)
+- Make sure commands and code are robust and validate output
