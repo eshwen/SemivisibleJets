@@ -52,15 +52,17 @@ eval `scramv1 runtime -sh`
 cd ../../
 ````
 
-Go back to the MadGraph release and install Pythia and Delphes with
-
-```bash
-./bin/mg5_aMC
-install pythia8
-install Delphes
-```
+#Go back to the MadGraph release and install Pythia and Delphes with
+#
+#```bash
+#./bin/mg5_aMC
+#install pythia8
+#install Delphes
+#```
 
 which will likely install some other dependencies as well. Just follow the instructions to download and install all of them.
+
+# UPDATE THIS STUFF WITH NEW PATHS, AND TAI'S DELPHES-PYTHIA8 STUFF
 
 Clone the semi-visible jets files required with
 
