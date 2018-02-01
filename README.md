@@ -29,7 +29,13 @@ are also provided.
 
 ## Example `MadGraph` production
 
-Make a directory to store `MadGraph` and the output files. Then download a recent release of `MadGraph` with
+Make a directory to store the programs and output. Then, clone the semi-visible jets files required with
+
+```bash
+git clone git@github.com:eshwen/SemivisibleJets.git
+```
+
+Download a recent release of `MadGraph` with
 
 ```bash
 wget https://launchpad.net/mg5amcnlo/2.0/2.6.x/+download/MG5_aMC_v2.6.1.tar.gz
@@ -41,59 +47,32 @@ Unzip the tar ball with
 tar -xvzf MG5_aMC_v2.6.1.tar.gz
 ```
 
-In the folder created, the run command is `./bin/mg5_aMC`. Source a recent CMSSW release (required for Delphes) _outside_ the MadGraph release with
+In the folder created, the run command is `./bin/mg5_aMC`.
+
+- UPDATE THIS STUFF WITH NEW PATHS, AND TAI'S DELPHES-PYTHIA8 STUFF
+
+Copy the model files from `SemivisibleJets/` into `models/` with
 
 ```bash
-cd ..
-export SCRAM_ARCH=slc6_amd64_gcc530
-scramv1 project CMSSW CMSSW_8_0_26
-cd CMSSW_8_0_26/src
-eval `scramv1 runtime -sh`
-cd ../../
-````
-
-#Go back to the MadGraph release and install Pythia and Delphes with
-#
-#```bash
-#./bin/mg5_aMC
-#install pythia8
-#install Delphes
-#```
-
-which will likely install some other dependencies as well. Just follow the instructions to download and install all of them.
-
-# UPDATE THIS STUFF WITH NEW PATHS, AND TAI'S DELPHES-PYTHIA8 STUFF
-
-Clone the semi-visible jets files required with
-
-```bash
-git clone git@github.com:eshwen/SemivisibleJets.git
+cp -r ../SemivisibleJets/MG_models/DMsimp_* ./models/
 ```
 
-Copy the model files into `./models/` with
-
-```bash
-cp -r SemivisibleJets/MG_models/DMsimp_* models/
-```
-
-The input/config files for the s- and t-channel processes are specified in `SemivisibleJets/MG_input/`. In these files, the number of events, as well as other parameters, can be changed.
+The input/config files for the s- and t-channel processes are specified in `SemivisibleJets/MG_input/`. In these files, the number of events, output directory, as well as other parameters, can be changed.
 
 Run one of the configs with
 
 ```bash
-./bin/mg5_aMC SemivisibleJets/MG_input/<file>
+./bin/mg5_aMC ../SemivisibleJets/MG_input/<file>
 ```
 
-This will create lots of output files in the directory specified by the config. The LHE file will be in `<Output dir>/Events/run_01/`. Other information like the cross section and Feynman diagrams can also be viewed.
+This will create lots of output files in the directory specified by the config. The LHE file will be zipped in `<Output dir>/Events/run_01/`. You can unzip with `gunzip <file>`. Other information like the cross section and Feynman diagrams can also be viewed.
 
-## Note on hadronization with `PYTHIA`
+## Hadronization with `PYTHIA` and detector simulation with `Delphes`
 
-As noted above, a recent version of `PYTHIA` (> 8.226) including the Hidden Valley (HV) module 
-and running of the dark coupling is required when implementing the subsequent dark hadronization.
+As noted above, a recent version of `PYTHIA` (> 8.226) including the Hidden Valley (HV) module and running of the dark coupling is required when implementing the subsequent dark hadronization.
 
 In order to be able to use the HV module, the PDG IDs of the dark particles must be changed in the LHE files
-for `PYTHIA` to be 
-able to recognize and shower these properly. This can be done as follows:
+for `PYTHIA` to be able to recognize and shower these properly. This can be done as follows:
 
 - For the s-channel model
 ```
@@ -108,7 +87,9 @@ sed -i 's/49001013/4900101/g' <LHE filename>
 sed -i 's/49001014/4900101/g' <LHE filename>	
 ```
 
-- FINISH ADDING STUFF FOR THIS
+Once the PIDs have been changed, it is possible to run `PYTHIA` and `Delphes` concurrently on the LHE file. See the README in https://github.com/eshwen/mc-production/tree/master/run_delphes for the commands to install the programs and run everything. On subsequent sessions, you can just run `delphes_pythia8.sh` to set up the environment. 
+
+FINISH, USING TAI'S REPO AND INSTRUCTIONS (PLUS THE SCRIPT I MADE TO SOURCE IN THE FUTURE) AND CHECK EVERYTHING ABOVE IS CORRECT
 
 ## Contact
 
