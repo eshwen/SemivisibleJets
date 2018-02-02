@@ -83,7 +83,7 @@ sed -i 's/49001013/4900101/g' <LHE filename>
 sed -i 's/49001014/4900101/g' <LHE filename>	
 ```
 
-Once the PIDs have been changed, it is possible to run `PYTHIA` and `Delphes` concurrently on the LHE file. See the README in https://github.com/eshwen/mc-production/tree/master/run_delphes for the commands to install the programs and run everything. On subsequent sessions, you can just run `delphes_pythia8.sh` in that directory to set up the environment. 
+Once the PIDs have been changed, it is possible to run `PYTHIA` and `Delphes` concurrently on the LHE file. See the README in https://github.com/eshwen/mc-production/tree/master/run_delphes for the installation commands and how to run everything. On subsequent sessions, you can just run `delphes_pythia8.sh` in that directory to set up the environment.
 
 ## Contact
 
