@@ -28,4 +28,4 @@ add process p p > xd xd~ j j
 output DMSVJ_s_channel
 
 launch
-set nevents 50000
+set nevents 250000

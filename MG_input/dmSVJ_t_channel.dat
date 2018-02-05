@@ -30,4 +30,4 @@ add process p p > gv gv~ j j
 output DMSVJ_t_channel
 
 launch
-set nevents 50000
+set nevents 250000

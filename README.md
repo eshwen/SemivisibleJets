@@ -63,12 +63,13 @@ Run one of the configs with
 
 This will create lots of output files in the directory specified by the config. The LHE file will be zipped in `<Output dir>/Events/run_01/`, which you can unzip with `gunzip <file>`. Other information like the cross section and Feynman diagrams can also be viewed.
 
+_N.B._: MadGraph can be a bit erratic and sometimes fail at the "Working on SubProcesses" stage. Just delete the output directory and try again.
+
 ## Hadronization with `PYTHIA` and detector simulation with `Delphes`
 
 As noted above, a recent version of `PYTHIA` (> 8.226) including the Hidden Valley (HV) module and running of the dark coupling is required when implementing the subsequent dark hadronization.
 
-In order to be able to use the HV module, the PDG IDs of the dark particles must be changed in the LHE files
-for `PYTHIA` to be able to recognize and shower these properly. This can be done as follows:
+In order to be able to use the HV module, the PDG IDs of the dark particles must be changed in the LHE files for `PYTHIA` to be able to recognize and shower these properly. This can be done as follows:
 
 - For the s-channel model
 ```
