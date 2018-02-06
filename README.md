@@ -61,7 +61,13 @@ Run one of the configs with
 ./bin/mg5_aMC ../SemivisibleJets/MG_input/<file>
 ```
 
-This will create lots of output files in the directory specified by the config. The LHE file will be zipped in `<Output dir>/Events/run_01/`, which you can unzip with `gunzip <file>`. Other information like the cross section and Feynman diagrams can also be viewed.
+This will create lots of output files in the directory specified by the config. The LHE file will be zipped in `<Output dir>/Events/run_01/`, which you can unzip with
+
+```bash
+gunzip <file>
+```
+
+Other information like the cross section and Feynman diagrams can also be viewed.
 
 _N.B._: MadGraph can be a bit erratic and sometimes fail at the "Working on SubProcesses" stage. Just delete the output directory and try again.
 
@@ -72,19 +78,23 @@ As noted above, a recent version of `PYTHIA` (> 8.226) including the Hidden Vall
 In order to be able to use the HV module, the PDG IDs of the dark particles must be changed in the LHE files for `PYTHIA` to be able to recognize and shower these properly. This can be done as follows:
 
 - For the s-channel model
-```
+```bash
 sed -i 's/5000521/4900101/g' <LHE filename>
 ```
 - For the t-channel model
-```
+```bash
 sed -i 's/49001010/4900101/g' <LHE filename>	
 sed -i 's/49001011/4900101/g' <LHE filename>	
 sed -i 's/49001012/4900101/g' <LHE filename>	
 sed -i 's/49001013/4900101/g' <LHE filename>	
 sed -i 's/49001014/4900101/g' <LHE filename>	
 ```
+or
+```bash
+./tChannelPIDChange.sh <LHE file>
+```
 
-Once the PIDs have been changed, it is possible to run `PYTHIA` and `Delphes` concurrently on the LHE file. See the README in https://github.com/eshwen/mc-production/tree/master/run_delphes for the installation commands and how to run everything. On subsequent sessions, you can just run `delphes_pythia8.sh` in that directory to set up the environment.
+from this directory. Once the PIDs have been changed, it is possible to run `PYTHIA` and `Delphes` concurrently on the LHE file. See the README in https://github.com/eshwen/mc-production/tree/master/run_delphes for the installation commands and how to run everything. On subsequent sessions, you can just run `delphes_pythia8.sh` in that directory to set up the environment.
 
 ## Contact
 
