@@ -19,13 +19,15 @@
 #*                                                          *
 #************************************************************
 
-import DMsimp_s_spin1
+import DMsimp_tchannel
+define gv = gv11 gv12 gv21 gv22
+define gv~ = gv11~ gv12~ gv21~ gv22~
 define j = g u c t d b s g u~ c~ t~ d~ b~ s~
-generate p p > xd xd~
-add process p p > xd xd~ j
-add process p p > xd xd~ j j
+generate p p > gv gv~
+add process p p > gv gv~ j
+add process p p > gv gv~ j j
 # Output directory
-output DMsimp_s_channel
+output /afs/cern.ch/work/e/ebhal/DMSVJ_t_channel
 
 launch
-set nevents 1000
+set nevents 250000

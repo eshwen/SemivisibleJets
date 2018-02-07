@@ -1,0 +1,18 @@
+Universe   = vanilla
+Executable = SAMPLE.sh
+getenv = True
+Arguments  = 
+Log        = SAMPLE.log
+Output     = SAMPLE.out
+Error      = SAMPLE.err
+Request_Memory = 2000
+request_disk = 3000000
+
+should_transfer_files = YES
+#when_to_transfer_output = ON_EXIT
+transfer_input_files = SAMPLE.input, ../../mg_image.tar.gz
+transfer_output_files = SAMPLE_mDM10_lambda100, SAMPLE_mDM100_lambda100, SAMPLE_mDM1000_lambda100
+#output_destination = /users/bp15067/mg/results
+
+
+Queue
