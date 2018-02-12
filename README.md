@@ -27,7 +27,7 @@ is required to ensure a stable cross section for event generation using this mod
 A `FeynRules` model file (`DMsimp_tchannel.fr`) as well as the `Mathematica` notebook (`DMsimp_tchannel.nb`) used to generated the UFO output 
 are also provided.
 
-## Interactive `MadGraph` production
+## LHE production with `MadGraph` (interactive)
 
 Make a directory to store the programs and output. Then, clone the semi-visible jets files required with
 
@@ -71,27 +71,31 @@ Other information like the cross section and Feynman diagrams can also be viewed
 
 _N.B._: MadGraph can be a bit erratic and sometimes fail at the "Working on SubProcesses" stage. Just delete the output directory and try again.
 
-## `MadGraph` production using gridpacks
+## Generating `MadGraph` gridpacks
 
-Using the grid is a much more efficient way of generating samples than running interactively. All the necessary files for spin1-s- and t-channel production are in `MG_gridpack_files/`, and a tutorial can be found at https://twiki.cern.ch/twiki/bin/view/CMS/QuickGuideMadGraph5aMCatNLO. More models can be added if needed, but it is cumbersome. The file and folder names need to be specific, with the same prefix of `<model name>` and have the suffixes as shown in the existing models (e.g., `<model name>_proc_card.dat`). If adding models, use the existing files as templates. The model files also need to be zipped with
+For central production, gridpacks will be needed as external LHE generators don't cooperate with CMSSW. These gridpacks are made on the grid, with monitoring output such that it looks like you're running locally.
 
-```bash
-tar -cf <output file name>.zip <input file(s)>
-```
-
-and be copied to the generator web repository on `/afs/cern.ch/cms/generators/www/`. Note that you will need to contact Cms.Computing@cern.ch and cms.generators@cern.ch to request write access to the directory. Once the models are in place and the input cards have been written, clone this repo with
+First, clone this repo with
 
 ```bash
 git clone git@github.com:eshwen/SemivisibleJets.git
 ```
 
-You should also clone the `genproductions` repo with
+All the necessary files for spin1-s- and t-channel production are in `MG_gridpack_files/`, and a tutorial can be found at https://twiki.cern.ch/twiki/bin/view/CMS/QuickGuideMadGraph5aMCatNLO. More models can be added if needed, but it is cumbersome. The file  names need to be specific, with the same prefix of `<model name>` and have the suffixes as shown in the existing models (e.g., `<model name>_proc_card.dat`). If adding models, use the existing files as templates. The model files also need to be zipped with
 
 ```bash
-git clone git@github.com:cms-sw/genproductions.git genproductions -b mg26x
+tar -cf <output file name>.tar <input file(s)>
 ```
 
-The branch specified above is necessary to run MadGraph versions 2.6.x.
+and be copied to the generator web repository on `/afs/cern.ch/cms/generators/www/`. Note that you will need to contact Cms.Computing@cern.ch and cms.generators@cern.ch to request write access to the directory.
+
+Once the models are in place and the input cards have been written, clone the `genproductions` repo somewhere with a lot of storage. The gridpacks end up in directories within the repository, and so its size can grow considerably. Clone my fork of the repo (which includes some minor fixes for bugs I was receiving) with
+
+```bash
+git clone git@github.com:eshwen/genproductions.git genproductions -b mg26x
+```
+
+The branch specified above is necessary to run MadGraph versions 2.6.x, with some slight bug fixes present in the fork.
 
 Validate the input cards you have with
 
@@ -114,14 +118,17 @@ cd genproductions/bin/MadGraph5_aMCatNLO/
 ./submit_condor_gridpack_generation.sh <name of process card without _proc_card.dat> <relative path to cards directory> 
 ```
 
-Note that the architecture, and CMSSW and MadGraph versions are all hardcoded into `gridpack_generation.sh`. They be changed either from within, or with command-line arguments (which only work for arch and CMSSW versions). Your grid certificate may also be required. To initialise a proxy that lasts a week, type
+Note that the architecture, and CMSSW and MadGraph versions are all hardcoded into `gridpack_generation.sh`. They be changed either from within, or with command-line arguments (which only work for arch and CMSSW versions). As with interactive running, MadGraph can be unruly on the "Working on Subprocesses" bit. Just resubmit if that's the case.
 
+Your grid certificate may also be required to run. To initialise a proxy that lasts a week, type
 
 ```bash
 voms-proxy-init --voms cms --valid 168:00
 ```
 
-## Hadronization with `PYTHIA` and detector simulation with `Delphes`
+Once completed, the gridpack (in a .tar.xz file) will be located in the current directory. An untarred version is also available for viewing and validation. Just repeat the procedure for other parameters and models.
+
+## Hadronization with `PYTHIA` and detector simulation with `Delphes` (UNNEEDED???)
 
 As noted above, a recent version of `PYTHIA` (> 8.226) including the Hidden Valley (HV) module and running of the dark coupling is required when implementing the subsequent dark hadronization.
 
@@ -156,5 +163,5 @@ For questions or issues please contact:
 
 ## To do
 
-- Tidy up `sed` commands for t-channel (make into a single line)
+- See if `sed` commands are still needed in gridpacks before they're tarred and processed. If so, find a way to incorporate them.
 - Make sure commands and code are robust and validate output
