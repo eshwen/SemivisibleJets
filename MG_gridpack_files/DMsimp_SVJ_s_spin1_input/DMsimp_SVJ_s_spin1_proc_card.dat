@@ -26,6 +26,3 @@ add process p p > xd xd~ j
 add process p p > xd xd~ j j
 # Output directory
 output DMsimp_SVJ_s_spin1
-
-launch
-set nevents 50000

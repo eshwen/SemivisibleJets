@@ -25,7 +25,7 @@ generate p p > xd xd~
 add process p p > xd xd~ j
 add process p p > xd xd~ j j
 # Output directory
-output DMSVJ_s_channel
+output /afs/cern.ch/work/e/ebhal/MG_output/DMSVJ_s_channel
 
 launch
-set nevents 250000
+set nevents 50000

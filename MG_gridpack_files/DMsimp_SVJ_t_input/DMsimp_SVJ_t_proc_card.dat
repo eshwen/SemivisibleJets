@@ -29,5 +29,3 @@ add process p p > gv gv~ j j
 # Output directory
 output DMsimp_SVJ_t
 
-launch
-set nevents 50000
