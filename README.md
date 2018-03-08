@@ -7,7 +7,7 @@ Please see [1707.05326](https://arxiv.org/abs/1707.05326) and [1503.00009](https
 for further details. Please note that a recent version of `PYTHIA` (> 8.226) including the Hidden Valley module 
 and running of the dark coupling is required when implementing the subsequent dark hadronization.
 
-UFO files associated with two UV completions are provided (under MG_models/):
+UFO files associated with two UV completions are provided (under `MG_models/`):
 
 ## s-channel production
 
@@ -155,9 +155,9 @@ Once the PIDs have been changed, it is possible to run `PYTHIA` and `Delphes` co
 
 ## Running the FullSim CMSSW chain for hadronisation with `PYTHIA` and detector simulation with `GEANT4`
 
-The PID change as noted above is only necessary when running on interactively-generated LHE files from MadGraph. When generating the gridpacks, I have already included a fix so that once the LHEs are created from the gridpack in CMSSW, the PIDs are changed before hadronisation with Pythia.
+The PID change, as noted above, is only necessary when running on interactively-generated LHE files from MadGraph. When generating the gridpacks, I have already included a fix so that once the LHEs are created from the gridpack in CMSSW, the PIDs are changed before hadronisation with Pythia.
 
-Now, to run the full chain, one has to first specify a "GEN fragment", telling CMSSW about the external generator we have used and how to hadronise the particles. The GEN fragment I used can be found in FullSim_files/SVJ_MadGraph_LHAPDF_13TeV_s_channel_spin1_GEN_frag.py. All the code in the fragment and commands below are specific to emulating 2016 data taking, and `cmsDriver` commands can be changed depending on the context in which you would like to generate samples. Note that you may also have to regenerate the gridpacks with different Parton Distribution Functions to simulate different years. It should be detailed in the quick start guide linked above.
+Now, to run the full chain, one has to first specify a "GEN fragment", telling CMSSW about the external generator we have used and how to hadronise the particles. The GEN fragment I used can be found in [SVJ_MadGraph_LHAPDF_13TeV_s_channel_spin1_GEN_frag.py](FullSim_files/SVJ_MadGraph_LHAPDF_13TeV_s_channel_spin1_GEN_frag.py). All the code in the fragment and commands below are specific to emulating 2016 data taking, and `cmsDriver` commands can be changed depending on the context in which you would like to generate samples. Note that you may also have to regenerate the gridpacks with different Parton Distribution Functions to simulate different years. It should be detailed in the quick start guide linked above.
 
 ### Gridpack to LHE-GEN-SIM
 
