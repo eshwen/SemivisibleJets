@@ -2,12 +2,11 @@
 
 [![arXiv](https://img.shields.io/badge/arXiv-1707.05326%20-green.svg)](https://arxiv.org/abs/1707.05326)
 
-This repository contains model files necessary for generation of semi-visible jet Monte Carlo signal events in `MadGraph`. 
-Please see [1707.05326](https://arxiv.org/abs/1707.05326) and [1503.00009](https://arxiv.org/abs/1503.00009) for
+This repository contains model files necessary for generation of semi-visible jet Monte Carlo signal events in `MadGraph`. It also includes instructions of how to generate gridpacks for production with these models, and how to run them through the FullSim CMSSW chain to create nanoAOD files for analysis. Please see [1707.05326](https://arxiv.org/abs/1707.05326) and [1503.00009](https://arxiv.org/abs/1503.00009) for
 for further details. Please note that a recent version of `PYTHIA` (> 8.226) including the Hidden Valley module 
 and running of the dark coupling is required when implementing the subsequent dark hadronization.
 
-UFO files associated with two UV completions are provided (under `MG_models/`):
+UFO files associated with two UV completions are provided (under [MG_models/](MG_models/)):
 
 ## s-channel production
 
@@ -16,7 +15,7 @@ implemented through `FeynRules`.
 
 ## t-channel production
 
-A t-channel production (`DMsimp_SVJ_t`) where the dark and visible sectors interact through a new scalar bi-fundamental.
+A t-channel production ([DMsimp_SVJ_t](MG_models/DMsimp_SVJ_t)) where the dark and visible sectors interact through a new scalar bi-fundamental.
 
 The bi-fundamentals are denoted with `su11, su12, su21, su22...`, where `u` etc explicitly specifies the QCD flavour index 
 and the numbers are the explicit dark non-Abelian group indices. Similarly, the dark quarks are labeled as `qv11, qv12, qv21, qv22`.
@@ -24,7 +23,7 @@ and the numbers are the explicit dark non-Abelian group indices. Similarly, the 
 Please note that a modified version of `MadGraph` using the patch included [here](https://bugs.launchpad.net/mg5amcnlo/+bug/1702712) 
 is required to ensure a stable cross section for event generation using this model.
 
-A `FeynRules` model file (`DMsimp_tchannel.fr`) as well as the `Mathematica` notebook (`DMsimp_tchannel.nb`) used to generated the UFO output 
+A `FeynRules` model file ([DMsimp_tchannel.fr](MG_models/DMsimp_SVJ_t/DMsimp_tchannel.fr)) as well as the `Mathematica` notebook ([DMsimp_tchannel.nb](MG_models/DMsimp_SVJ_t/DMsimp_tchannel.nb)) used to generated the UFO output 
 are also provided.
 
 ## LHE production with `MadGraph` (interactive)
@@ -47,13 +46,13 @@ Unzip the tar ball with
 tar -xvzf MG5_aMC_v2.6.1.tar.gz
 ```
 
-In the folder created, the run command is `./bin/mg5_aMC`. Copy the model files from `SemivisibleJets/` into `models/` with
+In the folder created, the run command is `./bin/mg5_aMC`. Copy the model files from [here](MG_models/SemivisibleJets) into `models/` with
 
 ```bash
 cp -r ../SemivisibleJets/MG_models/DMsimp_* ./models/
 ```
 
-The input/config files for the s- and t-channel processes are specified in `SemivisibleJets/MG_input/`. In these files, the number of events, output directory, as well as other parameters, can be changed.
+The input cards for the s- and t-channel processes are specified in [MG_input/](MG_input/). In these files, the number of events, output directory, as well as other parameters, can be changed.
 
 Run one of the configs with
 
@@ -81,7 +80,7 @@ First, clone this repo with
 git clone git@github.com:eshwen/SemivisibleJets.git
 ```
 
-All the necessary files for spin1-s- and t-channel production are in `MG_gridpack_files/`, and a tutorial can be found at https://twiki.cern.ch/twiki/bin/view/CMS/QuickGuideMadGraph5aMCatNLO. More models can be added if needed, but it is cumbersome. The file names need to be specific, with the same prefix of `<model name>` and have the suffixes as shown in the existing models (e.g., `<model name>_proc_card.dat`). If adding models, use the existing files as templates. The model files also need to be zipped with
+All the necessary files for spin1-s- and t-channel production are in [MG_gridpack_files/](MG_gridpack_files/), and a tutorial can be found at https://twiki.cern.ch/twiki/bin/view/CMS/QuickGuideMadGraph5aMCatNLO. More models can be added if needed, but it is cumbersome. The file names need to be specific, with the same prefix of `<model name>` and have the suffixes as shown in the existing models (e.g., `<model name>_proc_card.dat`). If adding models, use the existing files as templates. The model files also need to be zipped with
 
 ```bash
 tar -cf <output file name>.tar <input file(s)>
@@ -161,7 +160,7 @@ Now, to run the full chain, one has to first specify a "GEN fragment", telling C
 
 ### Gridpack to LHE-GEN-SIM
 
-This requires CMSSW\_7\_1\_30 as it contains Pythia 8.226, which contains the Hidden Valley module. It can be initialised with
+This requires CMSSW\_7\_1\_30 as it contains `PYTHIA` 8.226, which contains the Hidden Valley module. It can be initialised with
 
 ```bash
 ource /cvmfs/cms.cern.ch/cmsset_default.sh
