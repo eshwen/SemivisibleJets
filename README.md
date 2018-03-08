@@ -11,7 +11,7 @@ UFO files associated with two UV completions are provided (under `MG_models/`):
 
 ## s-channel production
 
-An s-channel production (`DMsimp_SVJ_s_spin1`) mediated through a new heavy Z'. The model provided is a modified version of the spin-1 `DMsimp` model (http://feynrules.irmp.ucl.ac.be/wiki/DMsimp) 
+An s-channel production ([DMsimp_SVJ_s_spin1](MG_models/DMsimp_SVJ_s_spin1)) mediated through a new heavy Z'. The model provided is a modified version of the spin-1 `DMsimp` model (http://feynrules.irmp.ucl.ac.be/wiki/DMsimp) 
 implemented through `FeynRules`.
 
 ## t-channel production
