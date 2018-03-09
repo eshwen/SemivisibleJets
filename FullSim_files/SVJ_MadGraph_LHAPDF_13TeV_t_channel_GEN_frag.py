@@ -5,7 +5,7 @@ from Configuration.Generator.Pythia8aMCatNLOSettings_cfi import *
 
 # Needed as I'm generating the gridpacks with an old version of CMSSW
 externalLHEProducer = cms.EDProducer("ExternalLHEProducer",
-    args = cms.vstring('/afs/cern.ch/work/e/ebhal/genproductions/bin/MadGraph5_aMCatNLO/DMsimp_SVJ_t_slc6_amd64_gcc481_CMSSW_7_1_30_tarball.tar.xz'),
+    args = cms.vstring('/afs/cern.ch/work/e/ebhal/Semi_visible_jets_gridpack_prod/gridpacks/DMsimp_SVJ_t_slc6_amd64_gcc481_CMSSW_7_1_30_tarball.tar.xz'),
     nEvents = cms.untracked.uint32(50000),
     numberOfParameters = cms.uint32(1),
     outputFile = cms.string('cmsgrid_final.lhe'),

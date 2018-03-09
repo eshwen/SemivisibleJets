@@ -281,6 +281,13 @@ I've also included a script that runs the entire chain if the user doesn't want 
 ./FullSim_files/runFullSim.sh WORKING_DIRECTORY PATH_TO_GEN_FRAGMENT MODEL_NAME NUM_EVENTS
 ```
 
+where
+`WORKING_DIRECTORY` is the output directory where the CMSSW releases are sourced and the output files are generated
+`MODEL_NAME` is just a string that will be used as the prefix for the output scripts and root files
+`NUM_EVENTS` is the number of events to be processed
+
+The GEN fragment should be written and tested before calling this script, making sure the absolute paths to the gridpacks, etc. are valid.
+
 ## Contact
 
 For questions or issues please contact:

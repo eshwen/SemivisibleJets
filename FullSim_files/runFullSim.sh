@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 # Script to run FullSim CMSSW chain
 
 if [ -z $1 ]; then
@@ -11,15 +12,18 @@ fi
 work_space=$(readlink -m $1)
 if [ ! -d work_space ]; then
     echo "Work space doesn't exist. Creating it now..."
-    mkdir $work_space
+    mkdir -p $work_space
 fi
-
-cd $work_space
 
 # GEN fragment should include hadroniser as LHE-GEN-SIM are done in one step
 gen_frag_path=$(readlink -m $2)
+gen_frag_file=$(basename $gen_frag_path)
 model_name=$3
 n_events=$4
+
+cd $work_space
+# Allow use of aliases (specifically cvmfs ones)
+shopt -s expand_aliases
 
 
 # Set up CMSSW environments
@@ -70,7 +74,7 @@ cmsenv
 
 # Run the cmsDriver and cmsRun commands for each step in the chain
 
-cmsDriver.py Configuration/GenProduction/python/${gen_frag_path} --fileout file:${model_name}_LHE_GEN_SIM.root --mc --eventcontent RAWSIM,LHE --customise SLHCUpgradeSimulations/Configuration/postLS1Customs.customisePostLS1,Configuration/DataProcessing/Utils.addMonitoring --datatier GEN-SIM,LHE --conditions MCRUN2_71_V1::All --beamspot Realistic50ns13TeVCollision --step LHE,GEN,SIM --magField 38T_PostLS1 --python_filename ${model_name}_LHE_GEN_SIM.py --no_exec -n $n_events
+cmsDriver.py Configuration/GenProduction/python/${gen_frag_file} --fileout file:${model_name}_LHE_GEN_SIM.root --mc --eventcontent RAWSIM,LHE --customise SLHCUpgradeSimulations/Configuration/postLS1Customs.customisePostLS1,Configuration/DataProcessing/Utils.addMonitoring --datatier GEN-SIM,LHE --conditions MCRUN2_71_V1::All --beamspot Realistic50ns13TeVCollision --step LHE,GEN,SIM --magField 38T_PostLS1 --python_filename ${model_name}_LHE_GEN_SIM.py --no_exec -n $n_events
 cmsRun ${model_name}_LHE_GEN_SIM.py
 echo "**** CREATED GEN-SIM FILE ****"
 
