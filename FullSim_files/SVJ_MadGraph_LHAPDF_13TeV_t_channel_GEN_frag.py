@@ -17,7 +17,7 @@ generator = cms.EDFilter("Pythia8HadronizerFilter",
     pythiaPylistVerbosity = cms.untracked.int32(1),
     filterEfficiency = cms.untracked.double(1.0),
     pythiaHepMCVerbosity = cms.untracked.bool(False),
-    crossSection = cms.untracked.double(110.5),
+    crossSection = cms.untracked.double(120.4),
     comEnergy = cms.double(13000.),
 
     PythiaParameters = cms.PSet(

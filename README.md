@@ -273,6 +273,14 @@ cmsRun SVJ_s_NANOAOD.py -n 8
 
 A nanoAOD file should be produced, and inspection should reveal several trees. The only interesting one is called "Events", which should contain easy-to-read branches. This, in turn, makes it an easier object to analyse.
 
+### FullSim chain in one step
+
+I've also included a script that runs the entire chain if the user doesn't want to to run each command explicity: [runFullSim.sh](FullSim_files/runFullSim.sh), which require the following options:
+
+```bash
+./FullSim_files/runFullSim.sh WORKING_DIRECTORY PATH_TO_GEN_FRAGMENT MODEL_NAME NUM_EVENTS
+```
+
 ## Contact
 
 For questions or issues please contact:
