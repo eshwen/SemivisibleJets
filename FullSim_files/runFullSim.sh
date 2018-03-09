@@ -105,4 +105,9 @@ cmsDriver.py --filein file:${model_name}_MINIAOD.root --fileout file:${model_nam
 cmsRun ${model_name}_NANOAOD.py
 echo "**** CREATED NANOAOD FILE ****"
 
+mv ${model_name}_NANOAOD.root ../../
+
+echo "**** CLEANING UP OBSELETE DIRECTORIES AND FILES ****"
+rm -rf CMSSW_*
+
 exit
