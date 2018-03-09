@@ -156,7 +156,7 @@ Once the PIDs have been changed, it is possible to run `PYTHIA` and `Delphes` co
 
 The PID change, as noted above, is only necessary when running on interactively-generated LHE files from MadGraph. When generating the gridpacks, I have already included a fix so that once the LHEs are created from the gridpack in CMSSW, the PIDs are changed before hadronisation with Pythia.
 
-Now, to run the full chain, one has to first specify a "GEN fragment", telling CMSSW about the external generator we have used and how to hadronise the particles. The GEN fragment I used can be found in [SVJ_MadGraph_LHAPDF_13TeV_s_channel_spin1_GEN_frag.py](FullSim_files/SVJ_MadGraph_LHAPDF_13TeV_s_channel_spin1_GEN_frag.py). As `MadGraph` was used as the external generator, the `externalLHEProducer` information needs to be included, telling CMSSW where the gridpack is located as well as how many events are in there and the output LHE file (which _should not_ be changed). All the code in the fragment and commands below are specific to emulating 2016 data taking, and `cmsDriver` commands can be changed depending on the context in which you would like to generate samples. Note that you may also have to regenerate the gridpacks with different Parton Distribution Functions to simulate different years. It should be detailed in the quick start guide linked above.
+Now, to run the full chain, one has to first specify a "GEN fragment", telling CMSSW about the external generator we have used and how to hadronise the particles. The GEN fragment I used can be found in [SVJ_MadGraph_NNPDF30_13TeV_s_spin1_LHE_GS_frag.py](FullSim_files/SVJ_MadGraph_NNPDF30_13TeV_s_spin1_LHE_GS_frag.py). As `MadGraph` was used as the external generator, the `externalLHEProducer` information needs to be included, telling CMSSW where the gridpack is located as well as how many events are in there and the output LHE file (which _should not_ be changed). All the code in the fragment and commands below are specific to emulating 2016 data taking, and `cmsDriver` commands can be changed depending on the context in which you would like to generate samples. Note that you may also have to regenerate the gridpacks with different Parton Distribution Functions to simulate different years. It should be detailed in the quick start guide linked above.
 
 ### Gridpack to LHE-GEN-SIM
 
@@ -169,7 +169,7 @@ cmsrel CMSSW_7_1_30
 cd CMSSW_7_1_30/src
 cmsenv
 mkdir -p Configuration/GenProduction/python
-cp <GEN fragment> Configuration/GenProduction/python/
+cp <path>/SemivisibleJets/FullSim_files/SVJ_MadGraph_NNPDF30_13TeV_s_spin1_LHE_GS_frag.py Configuration/GenProduction/python/
 scram b
 cmsenv
 ```
@@ -177,7 +177,7 @@ cmsenv
 and then the `cmsDriver` command is
 
 ```bash
-cmsDriver.py Configuration/GenProduction/python/SVJ_MadGraph_LHAPDF_13TeV_s_channel_spin1_GEN_frag.py --fileout file:SVJ_s_LHE_GEN_SIM.root --mc --eventcontent RAWSIM,LHE --customise SLHCUpgradeSimulations/Configuration/postLS1Customs.customisePostLS1,Configuration/DataProcessing/Utils.addMonitoring --datatier GEN-SIM,LHE --conditions MCRUN2_71_V1::All --beamspot Realistic50ns13TeVCollision --step LHE,GEN,SIM --magField 38T_PostLS1 --python_filename SVJ_s_LHE_GEN_SIM.py --no_exec -n 250
+cmsDriver.py Configuration/GenProduction/python/SVJ_MadGraph_NNPDF30_13TeV_s_spin1_LHE_GS_frag.py --fileout file:SVJ_s_LHE_GEN_SIM.root --mc --eventcontent RAWSIM,LHE --customise SLHCUpgradeSimulations/Configuration/postLS1Customs.customisePostLS1,Configuration/DataProcessing/Utils.addMonitoring --datatier GEN-SIM,LHE --conditions MCRUN2_71_V1::All --beamspot Realistic50ns13TeVCollision --step LHE,GEN,SIM --magField 38T_PostLS1 --python_filename SVJ_s_LHE_GEN_SIM.py --no_exec -n 250
 ```
 
 Once a config has been created, it can be run with `cmsRun`:
