@@ -8,10 +8,12 @@ and running of the dark coupling is required when implementing the subsequent da
 
 UFO files associated with two UV completions are provided (under [MG_models/](MG_models/)):
 
+
 ## s-channel production
 
 An s-channel production ([DMsimp_SVJ_s_spin1](MG_models/DMsimp_SVJ_s_spin1)) mediated through a new heavy Z'. The model provided is a modified version of the spin-1 `DMsimp` model (http://feynrules.irmp.ucl.ac.be/wiki/DMsimp) 
 implemented through `FeynRules`.
+
 
 ## t-channel production
 
@@ -25,6 +27,7 @@ is required to ensure a stable cross section for event generation using this mod
 
 A `FeynRules` model file ([DMsimp_tchannel.fr](MG_models/DMsimp_SVJ_t/DMsimp_tchannel.fr)) as well as the `Mathematica` notebook ([DMsimp_tchannel.nb](MG_models/DMsimp_SVJ_t/DMsimp_tchannel.nb)) used to generated the UFO output 
 are also provided.
+
 
 ## LHE production with `MadGraph` (interactive)
 
@@ -69,6 +72,7 @@ gunzip <file>
 Other information like the cross section and Feynman diagrams can also be viewed.
 
 _N.B._: MadGraph can be a bit erratic and sometimes fail at the "Working on SubProcesses" stage. Just delete the output directory and try again.
+
 
 ## Generating `MadGraph` gridpacks
 
@@ -127,6 +131,7 @@ voms-proxy-init --voms cms --valid 168:00
 
 Once completed, the gridpack (in a .tar.xz file) will be located in the current directory. An untarred version is also available for viewing and validation. Just repeat the procedure for other parameters and models.
 
+
 ## Hadronisation with `PYTHIA` and detector simulation with `Delphes` (interactive)
 
 As noted above, a recent version of `PYTHIA` (> 8.226) including the Hidden Valley (HV) module and running of the dark coupling is required when implementing the subsequent dark hadronisation.
@@ -152,7 +157,8 @@ or
 
 Once the PIDs have been changed, it is possible to run `PYTHIA` and `Delphes` concurrently on the LHE file. See the README in https://github.com/eshwen/mc-production/tree/master/run_delphes for the installation commands and how to run everything. On subsequent sessions, you can just `source delphes_pythia8_setup.sh` in that directory to set up the environment.
 
-## Running the FullSim CMSSW chain for hadronisation with `PYTHIA` and detector simulation with `GEANT4`
+
+## Running the FullSim CMSSW chain for hadronisation with `PYTHIA` and detector simulation with `GEANT4` (local)
 
 The PID change, as noted above, is only necessary when running on interactively-generated LHE files from MadGraph. When generating the gridpacks, I have already included a fix so that once the LHEs are created from the gridpack in CMSSW, the PIDs are changed before hadronisation with Pythia.
 
@@ -273,6 +279,7 @@ cmsRun SVJ_s_NANOAOD.py -n 8
 
 A nanoAOD file should be produced, and inspection should reveal several trees. The only interesting one is called "Events", which should contain easy-to-read branches. This, in turn, makes it an easier object to analyse.
 
+
 ### FullSim chain in one step
 
 I've also included a script that runs the entire chain if the user doesn't want to to run each command explicity: [runFullSim.sh](FullSim_files/runFullSim.sh), which require the following options:
@@ -288,6 +295,7 @@ where
 
 The GEN fragment should be written and tested before calling this script, making sure the absolute paths to the gridpacks, etc. are valid.
 
+
 ## Contact
 
 For questions or issues please contact:
@@ -295,6 +303,7 @@ For questions or issues please contact:
 -  Tim Lou; hlou@berkeley.edu
 -  Siddharth Mishra-Sharma; smsharma@princeton.edu
 -  Eshwen Bhal (for implementation, not theory); eshwen.bhal@cern.ch
+
 
 ## To do
 
