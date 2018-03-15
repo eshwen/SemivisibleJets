@@ -9,13 +9,13 @@ and running of the dark coupling is required when implementing the subsequent da
 UFO files associated with two UV completions are provided (under [MG_models/](MG_models/)):
 
 
-## s-channel production
+## s-channel model
 
 An s-channel production ([DMsimp_SVJ_s_spin1](MG_models/DMsimp_SVJ_s_spin1)) mediated through a new heavy Z'. The model provided is a modified version of the spin-1 `DMsimp` model (http://feynrules.irmp.ucl.ac.be/wiki/DMsimp) 
 implemented through `FeynRules`.
 
 
-## t-channel production
+## t-channel model
 
 A t-channel production ([DMsimp_SVJ_t](MG_models/DMsimp_SVJ_t)) where the dark and visible sectors interact through a new scalar bi-fundamental.
 
@@ -74,6 +74,32 @@ Other information like the cross section and Feynman diagrams can also be viewed
 _N.B._: MadGraph can be a bit erratic and sometimes fail at the "Working on SubProcesses" stage. Just delete the output directory and try again.
 
 
+## Hadronisation with `PYTHIA` and detector simulation with `Delphes` (interactive)
+
+As noted above, a recent version of `PYTHIA` (> 8.226) including the Hidden Valley (HV) module and running of the dark coupling is required when implementing the subsequent dark hadronisation.
+
+In order to be able to use the HV module, the PDG IDs of the dark particles must be changed in the LHE files for `PYTHIA` to be able to recognize and shower these properly (see http://home.thep.lu.se/Pythia/pythia82html/HiddenValleyProcesses.html). This can be done as follows:
+
+- For the s-channel model
+```bash
+sed -i 's/5000521/4900101/g' <LHE filename>
+```
+- For the t-channel model
+```bash
+sed -i 's/49001010/4900101/g' <LHE filename>	
+sed -i 's/49001011/4900101/g' <LHE filename>	
+sed -i 's/49001012/4900101/g' <LHE filename>	
+sed -i 's/49001013/4900101/g' <LHE filename>	
+sed -i 's/49001014/4900101/g' <LHE filename>	
+```
+or
+```bash
+./tChannelPIDChange.sh <LHE filename>
+```
+
+Once the PIDs have been changed, it is possible to run `PYTHIA` and `Delphes` concurrently on the LHE file. See the README in https://github.com/eshwen/mc-production/tree/master/run_delphes for the installation commands and how to run everything. On subsequent sessions, you can just `source delphes_pythia8_setup.sh` in that directory to set up the environment.
+
+
 ## Generating `MadGraph` gridpacks
 
 For central production, gridpacks will be needed as external LHE generators don't cooperate with CMSSW. These gridpacks are made on the grid, with monitoring output such that it looks like you're running locally.
@@ -114,7 +140,7 @@ cd genproductions/bin/MadGraph5_aMCatNLO/
 ./gridpack_generation.sh <name of process card without _proc_card.dat> <relative path to cards directory> <queue selection>
 ```
 
-where `<queue selection>` options can be found by typing `bqueues`. If instead, you would like to run on Condor (either at lxplus or at a T2/T3 site), run
+where `<queue selection>` options can be found by typing `bqueues` ("1nd" is usually fine). If instead, you would like to run on Condor (either at lxplus or at a T2/T3 site), run
 
 ```bash
 cd genproductions/bin/MadGraph5_aMCatNLO/
@@ -130,32 +156,6 @@ voms-proxy-init --voms cms --valid 168:00
 ```
 
 Once completed, the gridpack (in a .tar.xz file) will be located in the current directory. An untarred version is also available for viewing and validation. Just repeat the procedure for other parameters and models.
-
-
-## Hadronisation with `PYTHIA` and detector simulation with `Delphes` (interactive)
-
-As noted above, a recent version of `PYTHIA` (> 8.226) including the Hidden Valley (HV) module and running of the dark coupling is required when implementing the subsequent dark hadronisation.
-
-In order to be able to use the HV module, the PDG IDs of the dark particles must be changed in the LHE files for `PYTHIA` to be able to recognize and shower these properly (see http://home.thep.lu.se/Pythia/pythia82html/HiddenValleyProcesses.html). This can be done as follows:
-
-- For the s-channel model
-```bash
-sed -i 's/5000521/4900101/g' <LHE filename>
-```
-- For the t-channel model
-```bash
-sed -i 's/49001010/4900101/g' <LHE filename>	
-sed -i 's/49001011/4900101/g' <LHE filename>	
-sed -i 's/49001012/4900101/g' <LHE filename>	
-sed -i 's/49001013/4900101/g' <LHE filename>	
-sed -i 's/49001014/4900101/g' <LHE filename>	
-```
-or
-```bash
-./tChannelPIDChange.sh <LHE filename>
-```
-
-Once the PIDs have been changed, it is possible to run `PYTHIA` and `Delphes` concurrently on the LHE file. See the README in https://github.com/eshwen/mc-production/tree/master/run_delphes for the installation commands and how to run everything. On subsequent sessions, you can just `source delphes_pythia8_setup.sh` in that directory to set up the environment.
 
 
 ## Running the FullSim CMSSW chain for hadronisation with `PYTHIA` and detector simulation with `GEANT4` (local)
@@ -295,6 +295,12 @@ where
 
 The GEN fragment should be written and tested before calling this script, making sure the absolute paths to the gridpacks, etc. are valid.
 
+
+### FullSim chain using CRAB
+
+If running over a significant number of events, the GEN-SIM step in the FullSim chain takes awhile. So using CRAB (CMS Remote Analysis Builder) becomes a necessity. The steps are similar to running the chain locally, but now the CMSSW config generated by `cmsDriver.py` is given to a CRAB config file, which is uploaded to the CERN grid and executed. 
+
+_FINISH_
 
 ## Contact
 

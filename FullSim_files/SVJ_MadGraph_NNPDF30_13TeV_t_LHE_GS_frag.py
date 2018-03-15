@@ -3,7 +3,7 @@ from Configuration.Generator.Pythia8CommonSettings_cfi import *
 from Configuration.Generator.Pythia8CUEP8M1Settings_cfi import *
 from Configuration.Generator.Pythia8aMCatNLOSettings_cfi import *
 
-# Needed as I'm generating the gridpacks with an old version of CMSSW
+# Needed as I'm using an external generator
 externalLHEProducer = cms.EDProducer("ExternalLHEProducer",
     args = cms.vstring('/afs/cern.ch/work/e/ebhal/MadGraph_gridpacks/DMsimp_SVJ_t_slc6_amd64_gcc481_CMSSW_7_1_30_tarball.tar.xz'),
     nEvents = cms.untracked.uint32(50000),
