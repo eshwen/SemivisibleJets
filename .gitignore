@@ -1,0 +1,5 @@
+# Specify which files to ignore in commits
+
+*py~
+*pyc
+*~
