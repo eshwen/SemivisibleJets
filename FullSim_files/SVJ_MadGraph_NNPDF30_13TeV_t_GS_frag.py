@@ -8,7 +8,7 @@ generator = cms.EDFilter("Pythia8HadronizerFilter",
     pythiaPylistVerbosity = cms.untracked.int32(1),
     filterEfficiency = cms.untracked.double(1.0),
     pythiaHepMCVerbosity = cms.untracked.bool(False),
-    crossSection = cms.untracked.double(120.4),
+    crossSection = cms.untracked.double(97.0),
     comEnergy = cms.double(13000.),
 
     PythiaParameters = cms.PSet(
@@ -31,14 +31,14 @@ generator = cms.EDFilter("Pythia8HadronizerFilter",
         processParameters = cms.vstring(
             #'TimeShower:nPartonsInBorn = 2', #number of coloured particles (before resonance decays) in born matrix element
             'HiddenValley:ffbar2Zv = on', #it works only in the case of narrow width approx
-            'HiddenValley:Run = on', # turn on coupling running
+            #'HiddenValley:Run = on', # turn on coupling running
             'HiddenValley:fragment = on', # enable hidden valley fragmentation
             #'HiddenValley:NBFlavRun = 0', # number of bosonic flavor for running
             #'HiddenValley:NFFlavRun = 2', # number of fermionic flavor for running
             'HiddenValley:alphaOrder = 1', # order at which running coupling runs
             'HiddenValley:Lambda = 0.1', # parameter used for running coupling  
-            'HiddenValley:nFlav = 1', # this dictates what kind of hadrons come out of the shower, if nFlav = 2, for example, there will be many different flavor of hadrons                                                                                               
-            'HiddenValley:probVector = 0.75', # ratio of number of vector mesons over scalar meson, 3:1 is from naive degrees of freedom counting                                                                                                                          
+            'HiddenValley:nFlav = 1', # this dictates what kind of hadrons come out of the shower, if nFlav = 2, for example, there will be many different flavor of hadrons
+            'HiddenValley:probVector = 0.75', # ratio of number of vector mesons over scalar meson, 3:1 is from naive degrees of freedom counting
             'HiddenValley:pTminFSR = 10', # cutoff for the showering, should be roughly confinement scale
             #'5000521:idAbs = 4900101', # change particle ID for DM particle so Pythia can shower it properly
             ),

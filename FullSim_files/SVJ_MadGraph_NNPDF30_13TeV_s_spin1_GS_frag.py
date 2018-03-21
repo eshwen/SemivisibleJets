@@ -8,7 +8,7 @@ generator = cms.EDFilter("Pythia8HadronizerFilter",
     pythiaPylistVerbosity = cms.untracked.int32(1),
     filterEfficiency = cms.untracked.double(1.0),
     pythiaHepMCVerbosity = cms.untracked.bool(False),
-    crossSection = cms.untracked.double(116.7),
+    crossSection = cms.untracked.double(81.3),
     comEnergy = cms.double(13000.),
 
     PythiaParameters = cms.PSet(
@@ -31,7 +31,7 @@ generator = cms.EDFilter("Pythia8HadronizerFilter",
         processParameters = cms.vstring(
             #'TimeShower:nPartonsInBorn = 2', #number of coloured particles (before resonance decays) in born matrix element
             'HiddenValley:ffbar2Zv = on', #it works only in the case of narrow width approx
-            'HiddenValley:Run = on', # turn on coupling running
+            #'HiddenValley:Run = on', # turn on coupling running
             'HiddenValley:fragment = on', # enable hidden valley fragmentation
             #'HiddenValley:NBFlavRun = 0', # number of bosonic flavor for running
             #'HiddenValley:NFFlavRun = 2', # number of fermionic flavor for running

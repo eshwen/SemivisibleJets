@@ -120,7 +120,7 @@ All the necessary files for spin1-s- and t-channel production are in [MG_gridpac
 tar -cf <output file name>.tar <input file(s)>
 ```
 
-and be copied to the generator web repository on `/afs/cern.ch/cms/generators/www/`. Note that you will need to contact Cms.Computing@cern.ch and cms.generators@cern.ch to request write access to the directory. Though, you will have read access by default.
+and be copied to the generator web repository on `/afs/cern.ch/cms/generators/www/`. Note that you will need to contact Cms.Computing@cern.ch and cms.generators@cern.ch to request write access to the directory. Though, you will have read access by default. If, instead, you want do perform a quick test with the models you have, you can hack the `gridpack_generation.sh` script and change L193 (below the "Loading extra model" line)  to a local path and specify the model files there.
 
 Once the models are in place and the input cards have been written, clone the `genproductions` repo somewhere with a lot of storage. The gridpacks end up in directories within the repository, and so its size can grow considerably. Clone my fork of the repo (which includes some minor fixes for bugs I was receiving) with
 
