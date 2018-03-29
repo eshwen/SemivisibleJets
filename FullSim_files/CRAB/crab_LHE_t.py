@@ -2,7 +2,7 @@ from CRABClient.UserUtilities import config, getUsernameFromSiteDB
 config = config()
 
 # Not mandatory, just for simplicity in constructing directory/dataset names
-modelName = 'DMsimp_SVJ_s_spin1_MadGraph'
+modelName = 'DMsimp_SVJ_t_MadGraph'
 datasetStr = 'mZp_1000_md_10_alphaD_0p1_NNPDF30_13TeV-LHE'
 
 # CRAB project directory
@@ -14,9 +14,9 @@ config.General.transferLogs = True
 
 config.JobType.pluginName = 'PrivateMC'
 # Name of the CMSSW configutation file
-config.JobType.psetName = 'DMsimp_SVJ_s_MadGraph_NNPDF_13TeV_LHE.py'
+config.JobType.psetName = 'DMsimp_SVJ_t_MadGraph_NNPDF_13TeV_LHE.py'
 # Path to the gridpack (directory must have public read permissions)
-config.JobType.inputFiles = ['/afs/cern.ch/work/e/ebhal/public/DMsimp_SVJ_s_spin1_slc6_amd64_gcc481_CMSSW_7_1_30_tarball.tar.xz']
+config.JobType.inputFiles = ['/afs/cern.ch/work/e/ebhal/public/DMsimp_SVJ_t_slc6_amd64_gcc481_CMSSW_7_1_30_tarball.tar.xz']
 
 # This string determines the primary dataset of the newly-produced output
 config.Data.outputPrimaryDataset = datasetStr

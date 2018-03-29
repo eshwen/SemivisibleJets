@@ -26,6 +26,6 @@ config.Data.publication = True # If true, output files are published on DBS. Use
 # Directory below outputPrimaryDataset in output, also directory below workArea in project dir
 config.Data.outputDatasetTag = modelName + '_' + datasetStr
 
-# Site the output files will be transmitted to
 config.Site.whitelist = ['T2_UK_SGrid_Bristol', 'T2_CH_CERN'] # CERN site needed so CRAB worker nodes with /afs mounted can be used
-config.Site.storageSite = 'T2_UK_SGrid_Bristol'
+config.Site.storageSite = 'T2_UK_SGrid_Bristol' # Site the output files will be transmitted to
+

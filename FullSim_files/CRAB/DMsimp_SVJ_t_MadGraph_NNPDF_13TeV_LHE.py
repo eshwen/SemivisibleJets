@@ -2,7 +2,7 @@
 # using: 
 # Revision: 1.19 
 # Source: /local/reps/CMSSW/CMSSW/Configuration/Applications/python/ConfigBuilder.py,v 
-# with command line options: Configuration/GenProduction/python/SVJ_MadGraph_NNPDF30_13TeV_s_spin1_LHE_frag.py --fileout file:DMsimp_SVJ_s_MadGraph_NNPDF30_13TeV_LHE.root --mc --eventcontent LHE --datatier LHE --conditions MCRUN2_71_V1::All -s LHE --python_filename DMsimp_SVJ_s_MadGraph_NNPDF_13TeV_LHE.py --no_exec --customise Configuration/DataProcessing/Utils.addMonitoring -n 50000
+# with command line options: Configuration/GenProduction/python/SVJ_MadGraph_NNPDF30_13TeV_t_LHE_frag.py --fileout file:DMsimp_SVJ_t_MadGraph_NNPDF30_13TeV_LHE.root --mc --eventcontent LHE --datatier LHE --conditions MCRUN2_71_V1::All -s LHE --python_filename DMsimp_SVJ_s_MadGraph_NNPDF_13TeV_LHE.py --no_exec --customise Configuration/DataProcessing/Utils.addMonitoring -n 20000
 import FWCore.ParameterSet.Config as cms
 
 process = cms.Process('LHE')
@@ -19,7 +19,7 @@ process.load('Configuration.StandardSequences.EndOfProcess_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(50000)
+    input = cms.untracked.int32(20000)
 )
 
 # Input source
@@ -32,7 +32,7 @@ process.options = cms.untracked.PSet(
 # Production Info
 process.configurationMetadata = cms.untracked.PSet(
     version = cms.untracked.string('$Revision: 1.19 $'),
-    annotation = cms.untracked.string('Configuration/GenProduction/python/SVJ_MadGraph_NNPDF30_13TeV_s_spin1_LHE_frag.py nevts:50000'),
+    annotation = cms.untracked.string('Configuration/GenProduction/python/SVJ_MadGraph_NNPDF30_13TeV_t_LHE_frag.py nevts:50000'),
     name = cms.untracked.string('Applications')
 )
 
@@ -42,7 +42,7 @@ process.LHEoutput = cms.OutputModule("PoolOutputModule",
     splitLevel = cms.untracked.int32(0),
     eventAutoFlushCompressedSize = cms.untracked.int32(5242880),
     outputCommands = process.LHEEventContent.outputCommands,
-    fileName = cms.untracked.string('file:DMsimp_SVJ_s_MadGraph_NNPDF30_13TeV_LHE.root'),
+    fileName = cms.untracked.string('file:DMsimp_SVJ_t_MadGraph_NNPDF30_13TeV_LHE.root'),
     dataset = cms.untracked.PSet(
         filterName = cms.untracked.string(''),
         dataTier = cms.untracked.string('LHE')
@@ -60,7 +60,7 @@ process.externalLHEProducer = cms.EDProducer("ExternalLHEProducer",
     outputFile = cms.string('cmsgrid_final.lhe'),
     scriptName = cms.FileInPath('GeneratorInterface/LHEInterface/data/run_generic_tarball_cvmfs.sh'),
     numberOfParameters = cms.uint32(1),
-    args = cms.vstring('../DMsimp_SVJ_s_spin1_slc6_amd64_gcc481_CMSSW_7_1_30_tarball.tar.xz')
+    args = cms.vstring('../DMsimp_SVJ_t_slc6_amd64_gcc481_CMSSW_7_1_30_tarball.tar.xz')
 )
 
 

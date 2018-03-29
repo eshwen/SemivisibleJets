@@ -2,8 +2,8 @@ from CRABClient.UserUtilities import config, getUsernameFromSiteDB
 config = config()
 
 # Not mandatory, just for simplicity in constructing directory/dataset names
-modelName = 'DMsimp_SVJ_s_spin1_MadGraph'
-datasetStr = 'mZp_1000_md_10_alphaD_0p1_NNPDF30_13TeV-LHE'
+modelName = 'DMsimp_SVJ_t_MadGraph'
+datasetStr = 'mZp_1000_md_10_alphaD_0p1_NNPDF30_13TeV-AOD_step1'
 
 # CRAB project directory
 config.General.workArea = modelName
@@ -12,18 +12,15 @@ config.General.requestName = datasetStr
 config.General.transferOutputs = True
 config.General.transferLogs = True
 
-config.JobType.pluginName = 'PrivateMC'
-# Name of the CMSSW configutation file
-config.JobType.psetName = 'DMsimp_SVJ_s_MadGraph_NNPDF_13TeV_LHE.py'
-# Path to the gridpack (directory must have public read permissions)
-config.JobType.inputFiles = ['/afs/cern.ch/work/e/ebhal/public/DMsimp_SVJ_s_spin1_slc6_amd64_gcc481_CMSSW_7_1_30_tarball.tar.xz']
+config.JobType.pluginName = 'Analysis'
+# Name of the CMSSW configuration file
+config.JobType.psetName = 'DMsimp_SVJ_t_MadGraph_NNPDF_13TeV_AOD_step1.py'
 
-# This string determines the primary dataset of the newly-produced output
-config.Data.outputPrimaryDataset = datasetStr
-#config.Data.inputDBS = 'global'
-config.Data.splitting = 'EventBased'
-config.Data.unitsPerJob = 50000 # Number of events per job (LHE must have 1 job due to RNG)
-config.Data.totalUnits = 50000
+config.Data.inputDataset = '/mZp_1000_md_10_alphaD_0p1_NNPDF30_13TeV-LHE/ebhal-DMsimp_SVJ_t_MadGraph_mZp_1000_md_10_alphaD_0p1_NNPDF30_13TeV-GEN-SIM-f4059926711eb848427141f7ea2c1996/USER'
+config.Data.inputDBS = 'phys03'
+config.Data.splitting = 'EventAwareLumiBased'
+config.Data.unitsPerJob = 100
+config.Data.totalUnits = -1
 config.Data.outLFNDirBase = '/store/user/%s/' % (getUsernameFromSiteDB())
 config.Data.publication = True # If true, output files are published on DBS. Useful for future steps
 # Directory below outputPrimaryDataset in output, also directory below workArea in project dir

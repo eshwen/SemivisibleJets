@@ -326,7 +326,7 @@ crab submit -c <CRAB config>
 
 It is possible to monitor the status of the jobs with `crab status`. Failed jobs can also be resubmitted with `crab resubmit <CRAB project directory>`, where `<CRAB project directory>` is created (usually) in the directory you submitted from. When submitting jobs, you will be prompted for your grid certificate authentication.
 
-For the other steps in the FullSim chain, the procedure is the same as described above. Create a CMSSW config that is passed to the CRAB config, and submit the job(s) to the CRAB server. The main differences are that, instead of when running locally, the LHE-GEN-SIM step should be split into gridpack to LHE, and LHE to GEN-SIM steps. When running the LHE step, it must be submitted as a single job per gridpack. But when running LHE to GEN-SIM, you can split it into several jobs by specifying in `config.Data.unitsPerJob` and `config.Data.totalUnits` in the CRAB config.
+For the other steps in the FullSim chain, the procedure is the same as described above. Create a CMSSW config that is passed to the CRAB config (see examples in FullSim_files/CRAB/ for templates), and submit the job(s) to the CRAB server. The main differences are that, instead of when running locally, the LHE-GEN-SIM step should be split into gridpack to LHE, and LHE to GEN-SIM steps. When running the LHE step, it must be submitted as a single job per gridpack. But when running LHE to GEN-SIM, you can split it into several jobs by specifying in `config.Data.unitsPerJob` and `config.Data.totalUnits` in the CRAB config.
 
 _FINISH_
 

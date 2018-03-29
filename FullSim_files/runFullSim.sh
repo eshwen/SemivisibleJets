@@ -85,7 +85,7 @@ cmsenv
 # Grid certificate required for querying PU dataset
 voms-proxy-init --voms cms --valid 168:00
 
-cmsDriver.py step1 --filein file:${model_name}_LHE_GEN_SIM.root --fileout file:${model_name}_AOD_step1.root --pileup_input /store/mc/RunIISpring15PrePremix/Neutrino_E-10_gun/GEN-SIM-DIGI-RAW/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v2-v2/100000/001EB167-3781-E611-BE3C-0CC47A4D75F4.root --mc --eventcontent PREMIXRAW --datatier GEN-SIM-RAW --conditions 80X_mcRun2_asymptotic_2016_TrancheIV_v6 --step DIGIPREMIX_S2,DATAMIX,L1,DIGI2RAW,HLT:@frozen2016 --datamix PreMix --era Run2_2016 --python_filename ${model_name}_AOD_step1.py --no_exec --customise Configuration/DataProcessing/Utils.addMonitoring -n $n_events
+cmsDriver.py step1 --filein file:${model_name}_LHE_GEN_SIM.root --fileout file:${model_name}_AOD_step1.root --pileup_input /afs/cern.ch/user/e/ebhal/Semi-visible_jets/SemivisibleJets/pileup_filelist.txt --mc --eventcontent PREMIXRAW --datatier GEN-SIM-RAW --conditions 80X_mcRun2_asymptotic_2016_TrancheIV_v6 --step DIGIPREMIX_S2,DATAMIX,L1,DIGI2RAW,HLT:@frozen2016 --datamix PreMix --era Run2_2016 --python_filename ${model_name}_AOD_step1.py --no_exec --customise Configuration/DataProcessing/Utils.addMonitoring -n $n_events
 cmsRun ${model_name}_AOD_step1.py
 echo "**** CREATED AOD (STEP 1) FILE ****"
 
