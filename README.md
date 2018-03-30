@@ -1,4 +1,24 @@
-# Semi-visible Jets
+# Table of contents
+1. [Introduction](#introduction)
+    - [s-channel model](#schannelmodel)
+    - [t-channel model](#tchannelmodel)
+2. [Interactive running](#interactiverunning)
+    - [LHE production with `MadGraph` (interactive)](#lhemadgraphinteractive)
+    - [Hadronisation with `PYTHIA` and detector simulation with `Delphes` (interactive)](#pythiadelphesinteractive)
+3. [Running the CMSSW FullSim chain with gridpacks](#fullsimchaingridpacks)
+    - [Generating `MadGraph` gridpacks](#generatinggridpacks)
+    - [Running the FullSim CMSSW chain for hadronisation with `PYTHIA` and detector simulation with `GEANT4` (local)](#fullsimchainlocal)
+        1. [Gridpack to LHE-GEN-SIM](#gridpacktolhegensim)
+        2. [GEN-SIM to AOD (step 1)](#gensimtoaodstep1)
+        3. [AOD (step 1) to AOD (step 2)](#aodstep1toaodstep2)
+        4. [AOD (step 2) to miniAOD](#aodstep2tominiaod)
+        5. [MiniAOD to nanoAOD](#miniaodtonanoaod)
+    - [FullSim chain in one step (local)](#fullsimchainlocalonestep)
+    - [FullSim chain using CRAB (Work-In-Progress)](#fullsimchaincrab)
+4. [Contact](#contact)
+5. [To do](#todo)
+
+# Introduction <a name="introduction"></a>
 
 [![arXiv](https://img.shields.io/badge/arXiv-1707.05326%20-green.svg)](https://arxiv.org/abs/1707.05326)
 
@@ -9,13 +29,13 @@ and running of the dark coupling is required when implementing the subsequent da
 UFO files associated with two UV completions are provided (under [MG_models/](MG_models/)):
 
 
-### s-channel model
+### s-channel model <a name="schannelmodel"></a>
 
 An s-channel production ([DMsimp_SVJ_s_spin1](MG_models/DMsimp_SVJ_s_spin1)) mediated through a new heavy Z'. The model provided is a modified version of the spin-1 `DMsimp` model (http://feynrules.irmp.ucl.ac.be/wiki/DMsimp) 
 implemented through `FeynRules`.
 
 
-### t-channel model
+### t-channel model <a name="tchannelmodel"></a>
 
 A t-channel production ([DMsimp_SVJ_t](MG_models/DMsimp_SVJ_t)) where the dark and visible sectors interact through a new scalar bi-fundamental.
 
@@ -29,9 +49,9 @@ A `FeynRules` model file ([DMsimp_tchannel.fr](MG_models/DMsimp_SVJ_t/DMsimp_tch
 are also provided.
 
 
-## Interactive running
+## Interactive running <a name="interactiverunning"></a>
 
-### LHE production with `MadGraph` (interactive)
+### LHE production with `MadGraph` (interactive) <a name="lhemadgraphinteractive"></a>
 
 Make a directory to store the programs and output. Then, clone the semi-visible jets files required with
 
@@ -76,7 +96,7 @@ Other information like the cross section and Feynman diagrams can also be viewed
 _N.B._: MadGraph can be a bit erratic and sometimes fail at the "Working on SubProcesses" stage. Just delete the output directory and try again.
 
 
-### Hadronisation with `PYTHIA` and detector simulation with `Delphes` (interactive)
+### Hadronisation with `PYTHIA` and detector simulation with `Delphes` (interactive) <a name="pythiadelphesinteractive"></a>
 
 As noted above, a recent version of `PYTHIA` (> 8.226) including the Hidden Valley (HV) module and running of the dark coupling is required when implementing the subsequent dark hadronisation.
 
@@ -102,9 +122,9 @@ or
 Once the PIDs have been changed, it is possible to run `PYTHIA` and `Delphes` concurrently on the LHE file. See the README in https://github.com/eshwen/mc-production/tree/master/run_delphes for the installation commands and how to run everything. On subsequent sessions, you can just `source delphes_pythia8_setup.sh` in that directory to set up the environment.
 
 
-## Running the CMSSW FullSim chain with gridpacks
+## Running the CMSSW FullSim chain with gridpacks <a name="fullsimchaingridpacks"></a>
 
-### Generating `MadGraph` gridpacks
+### Generating `MadGraph` gridpacks <a name="generatinggridpacks"></a>
 
 For central production, gridpacks will be needed as external LHE generators don't cooperate with CMSSW. These gridpacks are made on the grid, with monitoring output such that it looks like you're running locally.
 
@@ -162,13 +182,13 @@ voms-proxy-init --voms cms --valid 168:00
 Once completed, the gridpack (in a .tar.xz file) will be located in the current directory. An untarred version is also available for viewing and validation. Just repeat the procedure for other parameters and models.
 
 
-### Running the FullSim CMSSW chain for hadronisation with `PYTHIA` and detector simulation with `GEANT4` (local)
+### Running the FullSim CMSSW chain for hadronisation with `PYTHIA` and detector simulation with `GEANT4` (local) <a name="fullsimchainlocal"></a>
 
 The PID change, as noted above, is only necessary when running on interactively-generated LHE files from MadGraph. When generating the gridpacks, I have already included a fix so that once the LHEs are created from the gridpack in CMSSW, the PIDs are changed before hadronisation with Pythia.
 
 Now, to run the full chain, one has to first specify a "GEN fragment", telling CMSSW about the external generator we have used and how to hadronise the particles. The GEN fragment I used can be found in [SVJ_MadGraph_NNPDF30_13TeV_s_spin1_LHE_GS_frag.py](FullSim_files/SVJ_MadGraph_NNPDF30_13TeV_s_spin1_LHE_GS_frag.py). As `MadGraph` was used as the external generator, the `externalLHEProducer` information needs to be included, telling CMSSW where the gridpack is located as well as how many events are in there and the output LHE file (which _should not_ be changed). All the code in the fragment and commands below are specific to emulating 2016 data taking, and `cmsDriver` commands can be changed depending on the context in which you would like to generate samples. Note that you may also have to regenerate the gridpacks with different Parton Distribution Functions to simulate different years. It should be detailed in the quick start guide linked above.
 
-#### Gridpack to LHE-GEN-SIM
+#### Gridpack to LHE-GEN-SIM <a name="gridpacktolhegensim"></a>
 
 This requires CMSSW\_7\_1\_30 as it contains `PYTHIA` 8.226, which contains the Hidden Valley module. It can be initialised with
 
@@ -198,7 +218,7 @@ cmsRun SVJ_s_LHE_GEN_SIM.py -n <no. threads>
 
 This should give an output root file, which is needed for the next step.
 
-#### GEN-SIM to AOD (step 1)
+#### GEN-SIM to AOD (step 1) <a name="gensimtoaodstep1"></a>
 
 This requires a different CMSSW version as the GEN-SIM files are being emulated for the 2016 year of data taking.
 
@@ -226,7 +246,7 @@ and run with
 cmsRun SVJ_s_AOD_step1.py -n 8
 ```
 
-#### AOD (step 1) to AOD (step 2)
+#### AOD (step 1) to AOD (step 2) <a name="aodstep1toaodstep2"></a>
 
 This is done with the same CMSSW and in the same environment as the previous step. The config is created with
 
@@ -240,7 +260,7 @@ and run with
 cmsRun SVJ_s_AOD_step2.py -n 8
 ```
 
-#### AOD (step 2) to miniAOD
+#### AOD (step 2) to miniAOD <a name="aodstep2tominiaod"></a>
 
 This is done with the same CMSSW and in the same environment as the previous step. The config is created with
 
@@ -254,7 +274,7 @@ and run with
 cmsRun SVJ_s_MINIAOD.py
 ```
 
-#### miniAOD to nanoAOD
+#### miniAOD to nanoAOD <a name="miniaodtonanoaod"></a>
 
 This is a relatively new step in the CMSSW chain. NanoAODs are supposed to resemble Heppy flat trees, which makes them easy to read, and only require an extra command from `cmsDriver.py` and `cmsRun`. But as backward and forward compatibility between CMSSW releases can be an issue, a newer version that supports nanoAOD creation is needed:
 
@@ -284,7 +304,7 @@ cmsRun SVJ_s_NANOAOD.py -n 8
 A nanoAOD file should be produced, and inspection should reveal several trees. The only interesting one is called "Events", which should contain easy-to-read branches. This, in turn, makes it an easier object to analyse.
 
 
-### FullSim chain in one step (local)
+### FullSim chain in one step (local) <a name="fullsimchainlocalonestep"></a>
 
 I've also included a script that runs the entire chain if the user doesn't want to to run each command explicity: [runFullSim.sh](FullSim_files/runFullSim.sh), which require the following options:
 
@@ -300,7 +320,7 @@ where
 The GEN fragment should be written and tested before calling this script, making sure the absolute paths to the gridpacks, etc. are valid.
 
 
-### FullSim chain using CRAB (Work-In-Progress)
+### FullSim chain using CRAB (Work-In-Progress) <a name="fullsimchaincrab"></a>
 
 If running over a significant number of events, the GEN-SIM step in the FullSim chain takes awhile. So using CRAB (CMS Remote Analysis Builder) becomes a necessity, and is required for central production. The steps are similar to running the chain locally, but now the CMSSW config generated by `cmsDriver.py` is given to a CRAB config file, which is uploaded to the CERN grid and executed.
 
@@ -330,7 +350,7 @@ For the other steps in the FullSim chain, the procedure is the same as described
 
 _FINISH_
 
-## Contact
+## Contact <a name="contact"></a>
 
 For questions or issues please contact:
 
@@ -339,7 +359,7 @@ For questions or issues please contact:
 -  Eshwen Bhal (for implementation, not theory); eshwen.bhal@cern.ch
 
 
-## To do
+## To do <a name="todo"></a>
 
 - Finish the CRAB submission chain
 - Make a pileup filelist like in SVJ_production, specifying a few files from the Neutrino Gun dataset.
