@@ -59,12 +59,12 @@ def main():
 
     for i in range(numFiles):
         splitFileName = outFileNameBase
-        if(i < 100):
-            splitFileName += "0"
-        if(i < 10):
-            splitFileName += "0"
+#        if(i < 100):
+#            splitFileName += "0"
+#        if(i < 10):
+#            splitFileName += "0"
 
-        tmp = open(splitFileName + str(i) + ".lhe", 'w')
+        tmp = open(splitFileName + "_" + str(i) + ".lhe", 'w')
         files.append(tmp)
         maxEventsFile.append(eventsTotal / numFiles)
         pbar.update(i + 1)
