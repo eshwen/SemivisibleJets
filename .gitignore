@@ -1,7 +1,8 @@
-# Specify which files to ignore in commits
+# Specify which files/folders to ignore in commits
 
 *py~
 *pyc
 *~
 *\#
 ._*
+CMSSW*
