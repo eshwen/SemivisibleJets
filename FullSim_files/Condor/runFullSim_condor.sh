@@ -69,9 +69,13 @@ cmsDriver.py --filein file:${model_name}_MINIAOD_${seed}.root --fileout file:${m
 cmsRun ${model_name}_NANOAOD_${seed}.py
 echo "**** CREATED NANOAOD FILE ****"
 
-mv ${model_name}_NANOAOD.root ../../
+if [ ! -d $work_space/output ]; then
+    mkdir $work_space/output
+    fi
 
-echo "**** CLEANING UP OBSELETE DIRECTORIES AND FILES ****"
-rm -rf CMSSW_*
+mv ${model_name}_NANOAOD_${seed}.root $work_space/output/
+
+echo "**** CLEANING UNNECESSARY FILES ****"
+rm $work_space/CMSSW_*/src/*_${seed}.{py,root}
 
 exit

@@ -1,3 +1,5 @@
+#!/bin/bash
+
 if [ -z $1 ]; then
 echo "----------------------------------------------------------------------------------------------
 Usage ./runFullSim_condor.sh WORKING_DIRECTORY PATH_TO_GEN_FRAGMENT PATH_TO_LHE_FILE_WITH_COMMON_BASENAME MODEL_NAME N_EVENTS N_JOBS

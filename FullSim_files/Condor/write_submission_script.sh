@@ -29,7 +29,7 @@ echo "# Resource requests (disk storage in kB, memory in MB)
 request_cpus = 1
 request_disk = 1000000
 request_memory = 2500
-+MaxRuntime = 14400
++MaxRuntime = 28800
 # Number of instances of job to run
 queue 1
 " >> $work_space/submission_scripts/condor_submission_${seed}.job
