@@ -362,7 +362,7 @@ The only difference between this and the other workflows are that LHE file(s) ar
 ./runcmsgrid.sh <n_events> <random_seed>
 ```
 
-where `<n_events>` should be less than or equal to the number generated for the gridpack. Then, an LHE file should be produced, which can be split with [splitLHE.py](splitLHE.py). Each of these split LHE files can be associated to one Condor job.
+where `<n_events>` should be less than or equal to the number generated for the gridpack. Then, an LHE file should be produced, which can be split with [splitLHE.py](Utils/splitLHE.py). Each of these split LHE files can be associated to one Condor job.
 
 You can either run [submitFullSim_condor.sh](FullSim_files/Condor/)submitFullSim_condor.sh, or [submitFullSim_condor.py](FullSim_files/Condor/submitFullSim_condor.py) if remembering the arguments is too much. The arguments are specified in the scripts, e.g.,
 
@@ -371,6 +371,8 @@ python submitFullSim_condor.py -w . -g ../SVJ_MadGraph_NNPDF30_13TeV_s_spin1_GS_
 ```
 
 They should all be self-explanatory except for `--lheFilePath`. This should be the path to the split LHE files with the common basename, i.e., if the files were at `./outputFile_X.lhe`, the argument should be `./outputFile`.
+
+The output nanoAOD files will be located in `$work_space/output/` and can be combined using [haddnano.py](Utils/haddnano.py).
 
 ## Contact <a name="contact"></a>
 
