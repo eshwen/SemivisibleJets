@@ -372,7 +372,8 @@ python submitFullSim_condor.py -w . -g ../SVJ_MadGraph_NNPDF30_13TeV_s_spin1_GS_
 
 They should all be self-explanatory except for `--lheFilePath`. This should be the path to the split LHE files with the common basename, i.e., if the files were at `./outputFile_X.lhe`, the argument should be `./outputFile`.
 
-The output nanoAOD files will be located in `$work_space/output/` and can be combined using [haddnano.py](Utils/haddnano.py).
+The output nanoAOD files will be located in `$work_space/output/` and can be combined using [haddnano.py](Utils/haddnano.py). A script which does that step will be in `$work_space`, which can be run without any arguments.
+
 
 ## Contact <a name="contact"></a>
 
@@ -385,5 +386,5 @@ For questions or issues please contact:
 
 ## To do <a name="todo"></a>
 
+- For FullSim Condor chain, have the main script read in a config of parameter values and file names, etc., and to generate the LHE and GS fragments using those values. Maybe it can run the full chain (from the gridpack generation) off that config. I could copy the MG model files to a new directory, use `sed` to change the values in the relevant files in the new directory, copy the model to the generator area, then run the gridpack generation. Maybe split the LHE splitting and FullSim chain into a second step.
 - Finish the CRAB submission chain
-- Make a pileup filelist like in SVJ_production, specifying a few files from the Neutrino Gun dataset.
