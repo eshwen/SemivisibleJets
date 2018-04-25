@@ -72,7 +72,7 @@ Unzip the tar ball with
 tar -xvzf MG5_aMC_v2.6.1.tar.gz
 ```
 
-In the folder created, the run command is `./bin/mg5_aMC`. Copy the model files from [here](MG_models/SemivisibleJets) into `models/` with
+In the folder created, the run command is `./bin/mg5_aMC`. Copy the model files from [here](SemivisibleJets/MG_models/) into `models/` with
 
 ```bash
 cp -r ../SemivisibleJets/MG_models/DMsimp_* ./models/
@@ -129,7 +129,7 @@ Once the PIDs have been changed, it is possible to run `PYTHIA` and `Delphes` co
 
 For central production, gridpacks will be needed as external LHE generators don't cooperate with CMSSW. These gridpacks are made on the grid, with monitoring output such that it looks like you're running locally.
 
-First, clone this repo with
+First, clone this repo somewhere with a lot of storage (he gridpacks end up in directories within the repository, and so its size can grow considerably) with
 
 ```bash
 git clone git@github.com:eshwen/SemivisibleJets.git
@@ -141,12 +141,14 @@ All the necessary files for spin1-s- and t-channel production are in [MG_gridpac
 tar -cf <output file name>.tar <input file(s)>
 ```
 
-and be copied to the generator web repository on `/afs/cern.ch/cms/generators/www/`. Note that you will need to contact Cms.Computing@cern.ch and cms.generators@cern.ch to request write access to the directory. Though, you will have read access by default. If, instead, you want do perform a quick test with the models you have, you can hack the `gridpack_generation.sh` script and change L193 (below the "Loading extra model" line)  to a local path and specify the model files there.
+and be copied to the generator web repository on `/afs/cern.ch/cms/generators/www/`. Note that you will need to contact Cms.Computing@cern.ch and cms.generators@cern.ch to request write access to the directory. Though, you will have read access by default. If, instead, you want do perform a quick test with the models you have, you can hack the `gridpack_generation.sh` script and change L193 (below the "Loading extra model" line) to a local path and specify the model files there.
 
-Once the models are in place and the input cards have been written, clone the `genproductions` repo somewhere with a lot of storage. The gridpacks end up in directories within the repository, and so its size can grow considerably. Clone my fork of the repo (which includes some minor fixes for bugs I was receiving) with
+Once the models are in place and the input cards have been written, clone my fork of the `genproductions` repo (which includes some minor fixes for bugs I was receiving) as a submodule with
 
 ```bash
-git clone git@github.com:eshwen/genproductions.git genproductions -b mg26x
+git submodule add -b mg26x git@github.com:eshwen/genproductions.git
+git submodule init
+git submodule update
 ```
 
 The branch specified above is necessary to run MadGraph version 2.6.x, with some slight bug fixes present in the fork.
@@ -387,4 +389,7 @@ For questions or issues please contact:
 ## To do <a name="todo"></a>
 
 - For FullSim Condor chain, have the main script read in a config of parameter values and file names, etc., and to generate the LHE and GS fragments using those values. Maybe it can run the full chain (from the gridpack generation) off that config. I could copy the MG model files to a new directory, use `sed` to change the values in the relevant files in the new directory, copy the model to the generator area, then run the gridpack generation. Maybe split the LHE splitting and FullSim chain into a second step.
+- Add genproductions repo (my fork, my branch) as submodule for easy gridpack generation.
+- Tidy up LHE file IO in FullSim Condor chain
+- Add a setup.sh script and add directories for easy path management
 - Finish the CRAB submission chain
