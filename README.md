@@ -133,6 +133,8 @@ First, clone this repo somewhere with a lot of storage (he gridpacks end up in d
 
 ```bash
 git clone git@github.com:eshwen/SemivisibleJets.git
+cd SemivisibleJets
+source setup.sh
 ```
 
 All the necessary files for spin1-s- and t-channel production are in [MG_gridpack_files/](MG_gridpack_files/), and a tutorial can be found at https://twiki.cern.ch/twiki/bin/view/CMS/QuickGuideMadGraph5aMCatNLO. More models can be added if needed, but it is cumbersome. The file names need to be specific, with the same prefix of `<model name>` and have the suffixes as shown in the existing models (e.g., `<model name>_proc_card.dat`). If adding models, use the existing files as templates. The model files also need to be zipped with
