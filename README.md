@@ -368,9 +368,11 @@ The only difference between this and the other workflows are that LHE file(s) ar
 
 where `<n_events>` should be less than or equal to the number generated for the gridpack. Then, an LHE file should be produced, which can be split with [splitLHE.py](Utils/splitLHE.py). Each of these split LHE files can be associated to one Condor job.
 
-In [FullSim_files/Condor/](FullSim_files/Condor), you specify the input arguments in a YAML file (see [model_params.yaml](FullSim_files/Condor/model_params.yaml) for an example) and run [submitFullSim_condor.py](FullSim_files/Condor/submitFullSim_condor.py) which should take care of everything.
+In [FullSim_files/Condor/](FullSim_files/Condor), you specify the input arguments in a YAML file (see [model_params.yaml](FullSim_files/Condor/model_params.yaml) for an example) and run
 
-The output nanoAOD files will be located in `$work_space/output/` and can be combined using [haddnano.py](Utils/haddnano.py). A script which does that step will be in `$work_space`, which can be run without any arguments.
+FullSim_files/Condor/submitFullSim_condor.py -c <YAML config>
+
+which should take care of everything. The output nanoAOD files will be located in `$work_space/output/` and can be combined using [haddnano.py](Utils/haddnano.py). A script which does that step will be in `$work_space`, which can be run without any arguments.
 
 
 ## Contact <a name="contact"></a>

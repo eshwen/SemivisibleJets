@@ -8,7 +8,7 @@ import sys
 import yaml
 
 parser = argparse.ArgumentParser()
-parser.add_argument("-c", "--config", default = os.path.join(os.getcwd(), "model_params.yaml"), help = "YAML config to parse")
+parser.add_argument("-c", "--config", default = os.path.join(os.getcwd(), "model_params_s_spin1.yaml"), help = "YAML config to parse")
 args = parser.parse_args()
 
 def main():

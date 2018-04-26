@@ -29,6 +29,10 @@ generator = cms.EDFilter("Pythia8HadronizerFilter",
             ),
 
         processParameters = cms.vstring(
+            '4900111:m0 = 20', # Dark meson mass                                                                                                                                                                                                                          
+            '4900211:m0 = 9.9', # Stable dark particle mass                                                                                                                                                                                                               
+            '4900111: oneChannel = 1 0.3 4900211 -4900211', # Dark meson decay into stable dark particles with branching fraction r_inv                                                                                                                                   
+            '4900111: addChannel = 1 0.7 91 1 -1', # Dark meson decay into down quarks with branching fraction 1 - r_inv
             #'TimeShower:nPartonsInBorn = 2', #number of coloured particles (before resonance decays) in born matrix element
             'HiddenValley:ffbar2Zv = on', #it works only in the case of narrow width approx
             'HiddenValley:fragment = on', # enable hidden valley fragmentation

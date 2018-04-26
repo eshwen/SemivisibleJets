@@ -59,7 +59,7 @@ generator = cms.EDFilter(\"Pythia8HadronizerFilter\",
             'HiddenValley:Lambda = $Lambda_d', # parameter used for running coupling
             'HiddenValley:nFlav = $n_f', # this dictates what kind of hadrons come out of the shower, if nFlav = 2, for example, there will be many different flavor of hadrons
             'HiddenValley:probVector = 0.75', # ratio of number of vector mesons over scalar meson, 3:1 is from naive degrees of freedom counting
-            'HiddenValley:pTminFSR = 10', # cutoff for the showering, should be roughly confinement scale
+            'HiddenValley:pTminFSR = $(echo "1.1 * $Lambda_d" | bc -l)', # cutoff for the showering, should be roughly confinement scale
             ),
 
         parameterSets = cms.vstring('pythia8CommonSettings',
