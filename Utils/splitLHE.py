@@ -2,7 +2,7 @@
 import argparse
 import re
 import sys
-from progressbar import ProgressBar, Percentage, Bar, ETA # requires progressbar package from pip
+from progressbar import ProgressBar, Percentage, Bar, ETA
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-i", "--inputFile", default = "unweighted_events.lhe", type = str, help = "Input LHE file")

@@ -6,3 +6,6 @@ SVJ_top_dir(){
 
 export SVJ_TOP_DIR="$(SVJ_top_dir)"
 export MG_GENPROD_DIR="$(SVJ_TOP_DIR)/genproductions/bin/MadGraph5_aMCatNLO"
+
+# Install required Python packages
+pip install -r requirements.txt --user --ignore-installed

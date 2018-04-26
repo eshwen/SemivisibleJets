@@ -1,0 +1,15 @@
+# This config contains the parameters required for running the FullSim CMSSW chain on Condor
+# The key names cannot be changed
+# Paths can be given as local or absolute and strings are not required to be enclosed in quotes
+
+work_space: /afs/cern.ch/work/e/ebhal/Semi_visible_jets_Condor_s_spin1_FACK
+
+gen_frag_path: ../SVJ_MadGraph_NNPDF30_13TeV_s_spin1_LHE_GS_frag.py
+
+lhe_file_path: /afs/cern.ch/work/e/ebhal/public/DMsimp_SVJ_s_spin1_splitLHE
+
+model_name: testModel
+
+n_events: 100
+
+n_jobs: 10

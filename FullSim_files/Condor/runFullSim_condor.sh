@@ -2,9 +2,9 @@
 # Script to run FullSim CMSSW chain
 
 if [ -z $1 ]; then
-echo "----------------------------------------------------------------------------------------------
-Usage ./runFullSim_condor.sh WORKING_DIRECTORY PATH_TO_GEN_FRAGMENT PATH_TO_LHE_FILE MODEL_NAME N_EVENTS SEED
-----------------------------------------------------------------------------------------------"
+echo "--------------------------------------------------------------------------------------------------------------
+Usage ./runFullSim_condor.sh WORKING_DIRECTORY PATH_TO_GEN_FRAGMENT PATH_TO_LHE_FILES MODEL_NAME N_EVENTS SEED
+--------------------------------------------------------------------------------------------------------------"
     exit
 fi
 

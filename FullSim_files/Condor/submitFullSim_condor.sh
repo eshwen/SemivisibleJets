@@ -1,9 +1,9 @@
 #!/bin/bash
 
 if [ -z $1 ]; then
-echo "----------------------------------------------------------------------------------------------
-Usage ./runFullSim_condor.sh WORKING_DIRECTORY PATH_TO_GEN_FRAGMENT PATH_TO_LHE_FILE_WITH_COMMON_BASENAME MODEL_NAME N_EVENTS N_JOBS
-----------------------------------------------------------------------------------------------"
+echo "----------------------------------------------------------------------------------------------------------------
+Usage ./runFullSim_condor.sh WORKING_DIRECTORY PATH_TO_GEN_FRAGMENT PATH_TO_LHE_FILES MODEL_NAME N_EVENTS N_JOBS
+----------------------------------------------------------------------------------------------------------------"
     exit
 fi
 
@@ -17,12 +17,20 @@ fi
 
 # GEN fragment should include hadroniser as GEN-SIM is first step
 gen_frag_path=$(readlink -m $2)
-# This should be the path to the LHE files with the common basename associated, e.g., for ./lheFile_XXX.lhe, the argument should be ./lheFile
+
 # For simplicity, use the splitLHE.py script on the large LHE file to generate the smaller ones to be given to the jobs
 lhe_file_path=$(readlink -m $3)
+declare -a lhe_file_list=( $(echo ${lhe_file_path}/*.lhe | tr ' ' '\n' | sort -h) ) # Need to fix sorting
+n_lhe_files=`echo ${#lhe_file_list[@]}`
+
 model_name=$4
 n_events=$5 # number of events per job
 n_jobs=$6
+
+if (( $n_jobs > $n_lhe_files )); then
+    echo "Number of jobs exceeds number of LHE files in directory. Try again."
+    exit
+fi
 
 cd $work_space
 # Allow use of aliases (specifically cvmfs ones)
@@ -63,21 +71,21 @@ fi
 
 # Create directories for logs and submissions scripts
 if [ ! -d $work_space/logs ]; then
-		    mkdir $work_space/logs
-	fi
+    mkdir $work_space/logs
+fi
 
 if [ ! -d $work_space/submission_scripts ]; then
-		    mkdir $work_space/submission_scripts
-	fi
+	mkdir $work_space/submission_scripts
+fi
 
 # Write Condor submission files for each job and execute
 for seed in $(seq 1 1 $n_jobs); do
     seed=$(echo $seed | bc)
-    lhe_file_for_job=${lhe_file_path}_${seed}.lhe
+    lhe_file_for_job=${lhe_file_list[$seed]}
     
     $submission_dir/write_submission_script.sh $work_space $gen_frag_path $lhe_file_for_job $model_name $n_events $seed $submission_dir
-	condor_submit $work_space/submission_scripts/condor_submission_${seed}.job
-    done
+    condor_submit $work_space/submission_scripts/condor_submission_${seed}.job
+done
 
 echo "#!/bin/bash 
 $submission_dir/../../Utils/haddnano.py $work_space/output/${model_name}_nanoAOD_final.root $work_space/output/*NANOAOD*.root

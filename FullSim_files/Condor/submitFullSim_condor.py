@@ -1,25 +1,24 @@
-#!/usr/bin/env python2                                                                                                                                                              
-import argparse
+#!/usr/bin/env python2
 from subprocess import call
-import os
 import sys
-
-parser = argparse.ArgumentParser()
-parser.add_argument("-w", "--workSpace", default = os.getcwd(), type = str, help = "Working directory to store scripts and output files")
-parser.add_argument("-g", "--genFragPath", default = "./GS.py", type = str, help = "Path to gen fragment")
-parser.add_argument("-l", "--lheFilePath", default = "./unweighted_events", type = str, help = "The path to the lhe files with a common basename, e.g., for ./unweighted_events_XXX.lhe, give the argument as ./unweighted_events")
-parser.add_argument("-m", "--modelName", default = "myModel", type = str, help = "Identifier for model being run")
-parser.add_argument("-n", "--nEvents", default = 100, type = int, help = "Number of events per job")
-parser.add_argument("-j", "--nJobs", default = 100, type = int, help = "Number of jobs to run. Note, you must have one LHE file available per job")
-
-args = parser.parse_args()
+import yaml
 
 def main():
     """
-    Handle the input and parsing for submitFullSim_condor.sh
+    Handle the input and parsing from a YAML config file for submitFullSim_condor.sh
     """
 
-    call( "./submitFullSim_condor.sh {0} {1} {2} {3} {4} {5}".format(args.workSpace, args.genFragPath, args.lheFilePath, args.modelName, args.nEvents, args.nJobs), shell = True )
+    # Load YAML config into a dictionary and assign values to variables for cleanliness
+    input_params = yaml.load( open("model_params.yaml", 'r') )
+
+    work_space = input_params['work_space']
+    gen_frag_path = input_params['gen_frag_path']
+    lhe_file_path = input_params['lhe_file_path']
+    model_name = input_params['model_name']
+    n_events = input_params['n_events']
+    n_jobs = input_params['n_jobs']
+
+    call( "./submitFullSim_condor.sh {0} {1} {2} {3} {4} {5}".format( work_space, gen_frag_path, lhe_file_path, model_name, n_events, n_jobs ), shell = True )
 
 if __name__ == '__main__':
     main()

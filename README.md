@@ -129,7 +129,7 @@ Once the PIDs have been changed, it is possible to run `PYTHIA` and `Delphes` co
 
 For central production, gridpacks will be needed as external LHE generators don't cooperate with CMSSW. These gridpacks are made on the grid, with monitoring output such that it looks like you're running locally.
 
-First, clone this repo somewhere with a lot of storage (he gridpacks end up in directories within the repository, and so its size can grow considerably) with
+First, clone this repo somewhere with a lot of storage (the gridpacks end up in directories within the repository, and so its size can grow considerably) with
 
 ```bash
 git clone git@github.com:eshwen/SemivisibleJets.git
@@ -137,13 +137,13 @@ cd SemivisibleJets
 source setup.sh
 ```
 
-All the necessary files for spin1-s- and t-channel production are in [MG_gridpack_files/](MG_gridpack_files/), and a tutorial can be found at https://twiki.cern.ch/twiki/bin/view/CMS/QuickGuideMadGraph5aMCatNLO. More models can be added if needed, but it is cumbersome. The file names need to be specific, with the same prefix of `<model name>` and have the suffixes as shown in the existing models (e.g., `<model name>_proc_card.dat`). If adding models, use the existing files as templates. The model files also need to be zipped with
+All the necessary files for spin1-s- and t-channel production are in [MG_gridpack_files/](MG_gridpack_files/), and a tutorial can be found at https://twiki.cern.ch/twiki/bin/view/CMS/QuickGuideMadGraph5aMCatNLO. More models can be added if needed, but it is cumbersome. The file names need to be specific, with the same prefix of `<model name>` and have the suffixes as shown in the existing models (e.g., `<model name>_proc_card.dat`). If adding models, use the existing files as templates. Usually, the model files also need to be zipped with
 
 ```bash
 tar -cf <output file name>.tar <input file(s)>
 ```
 
-and be copied to the generator web repository on `/afs/cern.ch/cms/generators/www/`. Note that you will need to contact Cms.Computing@cern.ch and cms.generators@cern.ch to request write access to the directory. Though, you will have read access by default. If, instead, you want do perform a quick test with the models you have, you can hack the `gridpack_generation.sh` script and change L193 (below the "Loading extra model" line) to a local path and specify the model files there.
+and be copied to the generator web repository on `/afs/cern.ch/cms/generators/www/`. Note that you will need to contact Cms.Computing@cern.ch and cms.generators@cern.ch to request write access to the directory. Though, you will have read access by default. In my branch, I hacked the [gridpack_generation.sh](genproductions/bin/MadGraph5_aMCatNLO/gridpack_generation.sh) script and changed L193 (below the "Loading extra model" line) to the same path as the input card directory and specify the model files there.
 
 Once the models are in place and the input cards have been written, clone my fork of the `genproductions` repo (which includes some minor fixes for bugs I was receiving) as a submodule with
 
@@ -368,13 +368,7 @@ The only difference between this and the other workflows are that LHE file(s) ar
 
 where `<n_events>` should be less than or equal to the number generated for the gridpack. Then, an LHE file should be produced, which can be split with [splitLHE.py](Utils/splitLHE.py). Each of these split LHE files can be associated to one Condor job.
 
-You can either run [submitFullSim_condor.sh](FullSim_files/Condor/)submitFullSim_condor.sh, or [submitFullSim_condor.py](FullSim_files/Condor/submitFullSim_condor.py) if remembering the arguments is too much. The arguments are specified in the scripts, e.g.,
-
-```bash
-python submitFullSim_condor.py -w . -g ../SVJ_MadGraph_NNPDF30_13TeV_s_spin1_GS_frag.py -l /afs/cern.ch/work/e/ebhal/public/DMsimp_SVJ_s_spin1_splitLHE/outputFile -m testModel -n 5 -j 5
-```
-
-They should all be self-explanatory except for `--lheFilePath`. This should be the path to the split LHE files with the common basename, i.e., if the files were at `./outputFile_X.lhe`, the argument should be `./outputFile`.
+You specify the input arguments in a YAML file (see [model_params.yaml](FullSim_files/Condor/model_params.yaml) for an example) and run [submitFullSim_condor.py](FullSim_files/Condor/submitFullSim_condor.py).
 
 The output nanoAOD files will be located in `$work_space/output/` and can be combined using [haddnano.py](Utils/haddnano.py). A script which does that step will be in `$work_space`, which can be run without any arguments.
 
@@ -391,7 +385,5 @@ For questions or issues please contact:
 ## To do <a name="todo"></a>
 
 - For FullSim Condor chain, have the main script read in a config of parameter values and file names, etc., and to generate the LHE and GS fragments using those values. Maybe it can run the full chain (from the gridpack generation) off that config. I could copy the MG model files to a new directory, use `sed` to change the values in the relevant files in the new directory, copy the model to the generator area, then run the gridpack generation. Maybe split the LHE splitting and FullSim chain into a second step.
-- Add genproductions repo (my fork, my branch) as submodule for easy gridpack generation.
-- Tidy up LHE file IO in FullSim Condor chain
-- Add a setup.sh script and add directories for easy path management
+- Streamline different versions of FullSim chain (mainly, make running locally less cumbersome/remove altogether and just use Condor)
 - Finish the CRAB submission chain
