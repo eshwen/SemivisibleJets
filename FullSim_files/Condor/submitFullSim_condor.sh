@@ -1,36 +1,42 @@
 #!/bin/bash
 
 if [ -z $1 ]; then
-echo "----------------------------------------------------------------------------------------------------------------
-Usage ./runFullSim_condor.sh WORKING_DIRECTORY PATH_TO_GEN_FRAGMENT PATH_TO_LHE_FILES MODEL_NAME N_EVENTS N_JOBS
-----------------------------------------------------------------------------------------------------------------"
+    echo "-------------------------------------------------------------------------------------------------------------
+Usage ./runFullSim_condor.sh work_space lhe_file_path model_name n_events n_jobs Lambda_d m_d n_f r_inv x_sec
+-------------------------------------------------------------------------------------------------------------"
     exit
 fi
 
-submission_dir=$PWD
+
+: "${SVJ_TOP_DIR:?Certain environment variables do not exist. Please source the setup script first.}; exit"
+
+submission_dir=$SVJ_TOP_DIR/FullSim_files/Condor
 
 work_space=$(readlink -m $1)
-if [ ! -d work_space ]; then
+if [ ! -d $work_space ]; then
     echo "Work space doesn't exist. Creating it now..."
     mkdir -p $work_space
 fi
 
-# GEN fragment should include hadroniser as GEN-SIM is first step
-gen_frag_path=$(readlink -m $2)
-
 # For simplicity, use the splitLHE.py script on the large LHE file to generate the smaller ones to be given to the jobs
-lhe_file_path=$(readlink -m $3)
+lhe_file_path=$(readlink -m $2)
 declare -a lhe_file_list=( $(echo ${lhe_file_path}/*.lhe | tr ' ' '\n' | sort -h) ) # Need to fix sorting
 n_lhe_files=`echo ${#lhe_file_list[@]}`
 
-model_name=$4
-n_events=$5 # number of events per job
-n_jobs=$6
+model_name=$3
+n_events=$4
+n_jobs=$5
 
 if (( $n_jobs > $n_lhe_files )); then
     echo "Number of jobs exceeds number of LHE files in directory. Try again."
     exit
 fi
+
+Lambda_d=$6
+m_d=$7
+n_f=$8
+r_inv=$9
+x_sec=${10}
 
 cd $work_space
 # Allow use of aliases (specifically cvmfs ones)
@@ -69,19 +75,18 @@ else
     cmsrel CMSSW_7_1_30
 fi
 
-# Create directories for logs and submissions scripts
-if [ ! -d $work_space/logs ]; then
-    mkdir $work_space/logs
-fi
-
-if [ ! -d $work_space/submission_scripts ]; then
-	mkdir $work_space/submission_scripts
+# Create directories for logs, submissions scripts and GS fragments
+if [[ ! -d $work_space/{logs,submission_scripts,GS_fragments} ]]; then
+    mkdir $work_space/{logs,submission_scripts,GS_fragments}
 fi
 
 # Write Condor submission files for each job and execute
 for seed in $(seq 1 1 $n_jobs); do
     seed=$(echo $seed | bc)
     lhe_file_for_job=${lhe_file_list[$seed]}
+
+    # Create the GS fragment
+    gen_frag_path=$($submission_dir/write_GS_fragment.sh $model_name $seed $n_f $Lambda_d $r_inv $x_sec $m_d $work_space)
     
     $submission_dir/write_submission_script.sh $work_space $gen_frag_path $lhe_file_for_job $model_name $n_events $seed $submission_dir
     condor_submit $work_space/submission_scripts/condor_submission_${seed}.job
