@@ -88,6 +88,8 @@ for seed in $(seq 0 1 $n_jobs); do
     condor_submit $work_space/submission_scripts/condor_submission_${seed}.job
 done
 
+# Move the following code to their own scripts?
+
 # Create script to hadd output files
 echo "#!/bin/bash
 echo \"Warning: May take a while to hadd if many files are present\"
@@ -97,5 +99,16 @@ mv $work_space/output/${model_name}*NANOAOD*.root $work_space/output/components/
 " > $work_space/combineOutput_${model_name}.sh
 
 chmod +x $work_space/combineOutput_${model_name}.sh
+
+# Create script to check for failed jobs and resubmit
+echo "#!/bin/bash
+for i in \$(seq 0 1 $n_jobs); do
+    if [ ! -r $work_space/output/${model_name}_NANOAOD_\$i.root ]; then
+        condor_submit $work_space/submission_scripts/condor_submission_\$i.job
+    fi
+done
+" > $work_space/resubmit_${model_name}.sh
+
+chmod +x $work_space/resubmit_${model_name}.sh
 
 exit

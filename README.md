@@ -374,7 +374,7 @@ In [FullSim_files/Condor/](FullSim_files/Condor), you specify the input argument
 FullSim_files/Condor/submitFullSim_condor.py -c <YAML config>
 ```
 
-which should take care of everything. The output nanoAOD files will be located in `$work_space/output/` and can be combined using [haddnano.py](Utils/haddnano.py). A script which does that step will be in `$work_space/combineOutput_${model_name}.sh`, which can be run without any arguments.
+which should take care of everything. The output nanoAOD files will be located in `$work_space/output/` and can be combined using [haddnano.py](Utils/haddnano.py). A script which does that step will be in `$work_space/combineOutput_${model_name}.sh`, which can be run without any arguments. Also, if some jobs fail, they can be resubmitted by running `$work_space/resubmit_${model_name}.sh`.
 
 
 ## Contact <a name="contact"></a>
@@ -390,7 +390,6 @@ For questions or issues please contact:
 
 - Tidy up new FullSim Condor chain and make nicer. See if I can incorporate gridpack generation and LHE splitting into it somehow (even as separate steps, but organised).
 - Streamline different versions of FullSim chain (mainly, make running locally less cumbersome/remove altogether and just use Condor)
-- See if I can add resubmission support for Condor FullSim chain. Loop over output and if nanoAOD file doesn't exist for certain seed, resubmit condor job file for that seed?
 - Finish the CRAB submission chain?
 - Change gen fragment such that the dark meson can decay into each type of SM quark. Would need to figure out how to distribute remaining branching fraction (1-r_inv) amongst the decays.
 - Change gen fragment such that there's hadronisation to two dark mesons (so n_f = 2 makes sense), with one species decaying invisibly and one to SM quarks. But would need to figure out how to implement r_inv such that the proportion of invisibly decaying dark mesons = r_inv.
