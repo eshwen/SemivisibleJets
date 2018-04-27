@@ -92,11 +92,11 @@ done
 
 echo "#!/bin/bash
 echo \"Warning: May take a while to hadd if many files are present\"
-${SVJ_TOP_DIR}/Utils/haddnano.py $work_space/output/${model_name}_nanoAOD_final.root $work_space/output/*NANOAOD*.root
+${SVJ_TOP_DIR}/Utils/haddnano.py $work_space/output/${model_name}_nanoAOD_final.root $work_space/output/${model_name}*NANOAOD*.root
 mkdir $work_space/output/components
-mv $work_space/output/*NANOAOD*.root $work_space/output/components/
-" > $work_space/combineOutput.sh
+mv $work_space/output/${model_name}*NANOAOD*.root $work_space/output/components/
+" > $work_space/combineOutput_${model_name}.sh
 
-chmod +x $work_space/combineOutput.sh
+chmod +x $work_space/combineOutput_${model_name}.sh
 
 exit
