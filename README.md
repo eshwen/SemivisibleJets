@@ -390,4 +390,9 @@ For questions or issues please contact:
 
 - Tidy up new FullSim Condor chain and make nicer. See if I can incorporate gridpack generation and LHE splitting into it somehow (even as separate steps, but organised).
 - Streamline different versions of FullSim chain (mainly, make running locally less cumbersome/remove altogether and just use Condor)
-- Finish the CRAB submission chain
+- See if I can add resubmission support for Condor FullSim chain. Loop over output and if nanoAOD file doesn't exist for certain seed, resubmit condor job file for that seed?
+- Finish the CRAB submission chain?
+- Change gen fragment such that the dark meson can decay into each type of SM quark. Would need to figure out how to distribute remaining branching fraction (1-r_inv) amongst the decays.
+- Change gen fragment such that there's hadronisation to two dark mesons (so n_f = 2 makes sense), with one species decaying invisibly and one to SM quarks. But would need to figure out how to implement r_inv such that the proportion of invisibly decaying dark mesons = r_inv.
+- Figure out how to change dark quarks to spin-1/2 in MadGraph model files. Find out if that will affect decays or anything.
+- Find out if changing the masses of the particles in MadGraph model files will change, e.g., parameters in decays.py or any other files.
