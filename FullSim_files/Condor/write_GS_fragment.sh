@@ -1,5 +1,4 @@
 #!/bin/bash
-
 # Write the GEN-SIM fragment based on the model parameters specified
 
 model_name=$1
@@ -11,7 +10,7 @@ x_sec=$6
 m_d=$7
 work_space=$8
 
-# Calculate dark meson mass and stable dark particle masses here (as it's difficult to do it in bash)                                                                                                                                                                  
+# Calculate dark meson mass and stable dark particle masses here
 m_dark_meson=$(echo "$m_d * 2" | bc -l) # dark meson should be twice the dark quark mass
 m_dark_stable=$(echo "$m_d - 0.1" | bc -l) # 0.1 GeV lighter than dark quark so it stays stable
 

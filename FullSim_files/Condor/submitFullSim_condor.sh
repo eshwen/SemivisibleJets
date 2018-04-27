@@ -7,9 +7,7 @@ Usage ./runFullSim_condor.sh work_space lhe_file_path model_name n_events n_jobs
     exit
 fi
 
-
 : "${SVJ_TOP_DIR:?Certain environment variables do not exist. Please source the setup script first.}; exit"
-
 submission_dir=$SVJ_TOP_DIR/FullSim_files/Condor
 
 work_space=$(readlink -m $1)
@@ -92,8 +90,9 @@ for seed in $(seq 1 1 $n_jobs); do
     condor_submit $work_space/submission_scripts/condor_submission_${seed}.job
 done
 
-echo "#!/bin/bash 
-$submission_dir/../../Utils/haddnano.py $work_space/output/${model_name}_nanoAOD_final.root $work_space/output/*NANOAOD*.root
+echo "#!/bin/bash
+echo \"Warning: May take a while to hadd if many files are present\"
+${SVJ_TOP_DIR}/Utils/haddnano.py $work_space/output/${model_name}_nanoAOD_final.root $work_space/output/*NANOAOD*.root
 mkdir $work_space/output/components
 mv $work_space/output/*NANOAOD*.root $work_space/output/components/
 " > $work_space/combineOutput.sh
