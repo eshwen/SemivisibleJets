@@ -24,13 +24,7 @@ shopt -s expand_aliases
 
 cd CMSSW_7_1_30/src
 cmsenv
-if [ ! -r Configuration/GenProduction/python ]; then
-    mkdir -p Configuration/GenProduction/python
-fi
-
 cp $gen_frag_path Configuration/GenProduction/python
-scram b
-cmsenv
 
 
 # Run the cmsDriver and cmsRun commands for each step in the chain

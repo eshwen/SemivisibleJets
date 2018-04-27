@@ -73,6 +73,14 @@ else
     cmsrel CMSSW_7_1_30
 fi
 
+cd CMSSW_7_1_30/src
+cmsenv
+if [ ! -r Configuration/GenProduction/python ]; then
+    mkdir -p Configuration/GenProduction/python
+fi
+scram b
+cd $work_space
+
 # Create directories for logs, submissions scripts and GS fragments
 if [[ ! -d $work_space/{logs,submission_scripts,GS_fragments} ]]; then
     mkdir $work_space/{logs,submission_scripts,GS_fragments}
