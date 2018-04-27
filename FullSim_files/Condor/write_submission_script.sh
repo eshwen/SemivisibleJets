@@ -10,19 +10,21 @@ n_events=$5
 seed=$6
 submission_dir=$7
 
+job_path="$work_space/submission_scripts/$model_name/condor_submission_${seed}.job"
+
 echo "# HTCondor submission script
 Universe   = vanilla
 cmd        = $submission_dir/runFullSim_condor.sh
 args       = $work_space $gen_frag_path $lhe_file_path $model_name $n_events $seed
-Log        = $work_space/logs/condor_job_${seed}.log
-Output     = $work_space/logs/condor_job_${seed}.out
-Error      = $work_space/logs/condor_job_${seed}.error
+Log        = $work_space/logs/$model_name/condor_job_${seed}.log
+Output     = $work_space/logs/$model_name/condor_job_${seed}.out
+Error      = $work_space/logs/$model_name/condor_job_${seed}.error
 should_transfer_files   = YES
 when_to_transfer_output = ON_EXIT_OR_EVICT
-" > $work_space/submission_scripts/condor_submission_${seed}.job
+" > $job_path
 
 if [[ "$HOSTNAME" == "soolin"* ]]; then          
-    echo "use_x509userproxy = true" >> $work_space/run_scripts/condor_submission_${seed}.job
+    echo "use_x509userproxy = true" >> $job_path
 fi
 
 echo "# Resource requests (disk storage in kB, memory in MB)
@@ -32,6 +34,9 @@ request_memory = 2500
 +MaxRuntime = 28800
 # Number of instances of job to run
 queue 1
-" >> $work_space/submission_scripts/condor_submission_${seed}.job
+" >> $job_path
 
-chmod +x $work_space/submission_scripts/condor_submission_${seed}.job
+chmod +x $job_path
+
+# Basically return statement
+echo $job_path

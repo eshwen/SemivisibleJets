@@ -72,8 +72,8 @@ scram b
 cd $work_space
 
 # Create directories for logs, submission scripts and GS fragments
-if [[ ! -d $work_space/{logs,submission_scripts,GS_fragments} ]]; then
-    mkdir $work_space/{logs,submission_scripts,GS_fragments}
+if [[ ! -d $work_space/{logs{,"/$model_name"},submission_scripts{,"/$model_name"},GS_fragments} ]]; then
+    mkdir $work_space/{logs{,"/$model_name"},submission_scripts{,"/$model_name"},GS_fragments}
 fi
 
 # Write Condor submission files for each job and execute
@@ -84,8 +84,9 @@ for seed in $(seq 0 1 $n_jobs); do
     # Create the GS fragment
     gen_frag_path=$($submission_dir/write_GS_fragment.sh $model_name $seed $n_f $Lambda_d $r_inv $x_sec $m_d $work_space)
     
-    $submission_dir/write_submission_script.sh $work_space $gen_frag_path $lhe_file_for_job $model_name $n_events $seed $submission_dir
-    condor_submit $work_space/submission_scripts/condor_submission_${seed}.job
+    # Write Condor submission script and execute
+    job_path=$($submission_dir/write_submission_script.sh $work_space $gen_frag_path $lhe_file_for_job $model_name $n_events $seed $submission_dir)
+    condor_submit $job_path
 done
 
 # Move the following code to their own scripts?
@@ -102,9 +103,11 @@ chmod +x $work_space/combineOutput_${model_name}.sh
 
 # Create script to check for failed jobs and resubmit
 echo "#!/bin/bash
+# Resubmit failed jobs by running this script. It checks to see if the output nanoAOD file is present for each seed. 
+# Note that this should only be performed when all jobs have finished running.
 for i in \$(seq 0 1 $n_jobs); do
     if [ ! -r $work_space/output/${model_name}_NANOAOD_\$i.root ]; then
-        condor_submit $work_space/submission_scripts/condor_submission_\$i.job
+        condor_submit $work_space/submission_scripts/$model_name/condor_submission_\$i.job
     fi
 done
 " > $work_space/resubmit_${model_name}.sh

@@ -71,4 +71,5 @@ generator = cms.EDFilter(\"Pythia8HadronizerFilter\",
 )
 " > ${work_space}/GS_fragments/${model_name}_GS_fragment_${seed}.py
 
+# Basically return statement
 echo ${work_space}/GS_fragments/${model_name}_GS_fragment_${seed}.py

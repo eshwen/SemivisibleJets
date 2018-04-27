@@ -35,6 +35,16 @@ def main():
     r_inv = input_params['r_inv']
     x_sec = input_params['x_sec']
 
+    # Checking arguments in config file
+    if not os.path.exists(lhe_file_path):
+        raise ValueError('The LHE file path you have specified does not exist.')
+
+    if not all (type(i) is int for i in [n_events, n_jobs, n_f]):
+        raise TypeError('n_events, n_jobs and n_f are all required to be integers.')
+
+    if m_d < 0 or x_sec < 0.0 or  r_inv < 0.0 or r_inv > 1.0:
+        raise ValueError('m_d and x_sec must be positive, and 0 < r_inv < 1.')
+
     # Calculate Lambda_d (confinement scale)
     n_c = 2
     Lambda_d = cDP.calcLambdaD(n_c, n_f, alpha_d)
