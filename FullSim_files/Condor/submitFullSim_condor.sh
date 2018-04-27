@@ -40,54 +40,44 @@ cd $work_space
 # Allow use of aliases (specifically cvmfs ones)
 shopt -s expand_aliases
 
-# Set up CMSSW environments
 source /cvmfs/cms.cern.ch/cmsset_default.sh
-export SCRAM_ARCH=slc6_amd64_gcc530
-if [ -r $work_space/CMSSW_8_0_21/src ]; then
-    echo "CMSSW_8_0_21 release already exists!"
-else
-    cmsrel CMSSW_8_0_21
-fi
+# Declare arrays for looping over CMSSW versions and respective architectures
+declare -a cmssw_vers=("8_0_21" "9_4_4" "7_1_30")
+declare -a gcc_for_archs=("530" "630" "481") # each element corresponds to respective CMSSW version above
+arch_counter=0 # for looping over array gcc_for_archs
 
-cd CMSSW_8_0_21/src
-cmsenv
-scram b
+# Set up CMSSW environments
+for each_ver in "${cmssw_vers[@]}"; do    
+    export SCRAM_ARCH=slc6_amd64_gcc${gcc_for_archs[$arch_counter]}
 
-cd ../..
-export SCRAM_ARCH=slc6_amd64_gcc630
-if [ -r $work_space/CMSSW_9_4_4/src ]; then
-    echo "CMSSW_9_4_4 release already exists!"
-else
-    cmsrel CMSSW_9_4_4
-fi
+    if [ -r $work_space/CMSSW_${each_ver}/src ]; then
+	echo "CMSSW_${each_ver} release already exists!"
+    else
+	cmsrel CMSSW_${each_ver}
+    fi
 
-cd CMSSW_9_4_4/src
-cmsenv
-scram b
+    cd CMSSW_${each_ver}/src
+    cmsenv
+    scram b
+    cd $work_space
+    let "arch_counter+=1" # increment to export next architecture
+done
 
-cd ../..
-export SCRAM_ARCH=slc6_amd64_gcc481
-if [ -r $work_space/CMSSW_7_1_30/src ]; then
-    echo "CMSSW_7_1_30 release already exists!"
-else
-    cmsrel CMSSW_7_1_30
-fi
-
+# Create directories for gen fragments to occupy
 cd CMSSW_7_1_30/src
-cmsenv
-if [ ! -r Configuration/GenProduction/python ]; then
+if [ ! -d Configuration/GenProduction/python ]; then
     mkdir -p Configuration/GenProduction/python
 fi
 scram b
 cd $work_space
 
-# Create directories for logs, submissions scripts and GS fragments
+# Create directories for logs, submission scripts and GS fragments
 if [[ ! -d $work_space/{logs,submission_scripts,GS_fragments} ]]; then
     mkdir $work_space/{logs,submission_scripts,GS_fragments}
 fi
 
 # Write Condor submission files for each job and execute
-for seed in $(seq 1 1 $n_jobs); do
+for seed in $(seq 0 1 $n_jobs); do
     seed=$(echo $seed | bc)
     lhe_file_for_job=${lhe_file_list[$seed]}
 
@@ -98,6 +88,7 @@ for seed in $(seq 1 1 $n_jobs); do
     condor_submit $work_space/submission_scripts/condor_submission_${seed}.job
 done
 
+# Create script to hadd output files
 echo "#!/bin/bash
 echo \"Warning: May take a while to hadd if many files are present\"
 ${SVJ_TOP_DIR}/Utils/haddnano.py $work_space/output/${model_name}_nanoAOD_final.root $work_space/output/${model_name}*NANOAOD*.root

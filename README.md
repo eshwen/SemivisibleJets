@@ -374,7 +374,7 @@ In [FullSim_files/Condor/](FullSim_files/Condor), you specify the input argument
 FullSim_files/Condor/submitFullSim_condor.py -c <YAML config>
 ```
 
-which should take care of everything. The output nanoAOD files will be located in `$work_space/output/` and can be combined using [haddnano.py](Utils/haddnano.py). A script which does that step will be in `$work_space`, which can be run without any arguments.
+which should take care of everything. The output nanoAOD files will be located in `$work_space/output/` and can be combined using [haddnano.py](Utils/haddnano.py). A script which does that step will be in `$work_space/combineOutput_${model_name}.sh`, which can be run without any arguments.
 
 
 ## Contact <a name="contact"></a>
