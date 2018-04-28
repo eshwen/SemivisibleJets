@@ -374,7 +374,13 @@ In [FullSim_files/Condor/](FullSim_files/Condor), you specify the input argument
 FullSim_files/Condor/submitFullSim_condor.py -c <YAML config>
 ```
 
-which should take care of everything. The output nanoAOD files will be located in `$work_space/output/` and can be combined using [haddnano.py](Utils/haddnano.py). A script which does that step will be in `$work_space/combineOutput_${model_name}.sh`, which can be run without any arguments. Also, if some jobs fail, they can be resubmitted by running `$work_space/resubmit_${model_name}.sh`.
+which should take care of everything. The output nanoAOD files will be located in `$work_space/output/`. If some jobs fail, they can be resubmitted by running
+
+```bash
+$work_space/resubmit_${model_name}.sh
+```
+
+(note that all jobs must finish running first). When happy, the component output files can be combined using [haddnano.py](Utils/haddnano.py). A script which does that step will be in `$work_space/combineOutput_${model_name}.sh`, which can be run without any arguments.
 
 
 ## Contact <a name="contact"></a>
@@ -388,7 +394,7 @@ For questions or issues please contact:
 
 ## To do <a name="todo"></a>
 
-- Tidy up new FullSim Condor chain and make nicer. See if I can incorporate gridpack generation and LHE splitting into it somehow (even as separate steps, but organised).
+- Tidy up new FullSim Condor chain and make nicer. See if I can incorporate gridpack generation and LHE splitting into it somehow (as separate steps, but organised). But use the same config file, just add more arguments (Z'/Phi mass, etc.) and selectively read in arguments. So then the model name, dark quark mass, etc. will be ensured to be the same between gridpack generation and FullSim run making things simpler. For gridpack generation, would need to copy model files to new directory, then use `sed` to change parameters (need to determine whether model is s- or t-channel and then change stuff appropriately) and then run gridpack gen. 
 - Streamline different versions of FullSim chain (mainly, make running locally less cumbersome/remove altogether and just use Condor)
 - Finish the CRAB submission chain?
 - Change gen fragment such that the dark meson can decay into each type of SM quark. Would need to figure out how to distribute remaining branching fraction (1-r_inv) amongst the decays.

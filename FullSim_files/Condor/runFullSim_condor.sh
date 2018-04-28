@@ -22,6 +22,7 @@ source /cvmfs/cms.cern.ch/cmsset_default.sh
 # Allow use of aliases (specifically cvmfs ones)
 shopt -s expand_aliases
 
+# Write so CMSSW version aren't hardcoded, but can take from cmssw_vers array
 cd CMSSW_7_1_30/src
 cmsenv
 cp $gen_frag_path Configuration/GenProduction/python
@@ -37,7 +38,7 @@ sed -i "s/process.options = cms.untracked.PSet(/process.options = cms.untracked.
 cmsRun ${model_name}_GEN_SIM_${seed}.py
 echo "**** CREATED GEN-SIM FILE ****"
 
-cp ${model_name}_GEN_SIM_${seed}.root ../../CMSSW_8_0_21/src/
+mv ${model_name}_GEN_SIM_${seed}.root ../../CMSSW_8_0_21/src/
 cd ../../CMSSW_8_0_21/src
 cmsenv
 
@@ -61,13 +62,9 @@ cmsDriver.py --filein file:${model_name}_MINIAOD_${seed}.root --fileout file:${m
 cmsRun ${model_name}_NANOAOD_${seed}.py
 echo "**** CREATED NANOAOD FILE ****"
 
-if [ ! -d $work_space/output ]; then
-    mkdir $work_space/output
-    fi
-
 mv ${model_name}_NANOAOD_${seed}.root $work_space/output/
 
 echo "**** CLEANING UNNECESSARY FILES ****"
-rm $work_space/CMSSW_*/src/*_${seed}.{py,root}
+rm $work_space/CMSSW_{7_1_30,8_0_21,9_4_4}/src/${model_name}_{GEN_SIM,AOD_step1,AOD_step2_MINIAOD}_${seed}.{py,root}
 
 exit
