@@ -16,3 +16,5 @@ export PATH=${PATH}:${SVJ_cvmfs_PythonDir}/bin:${SVJ_cvmfs_PipDir}/bin
 
 # Install required Python packages
 pip install -r requirements.txt --ignore-installed --user
+
+unset SVJ_cvmfs_{PythonDir,PipDir,GCCSetup}

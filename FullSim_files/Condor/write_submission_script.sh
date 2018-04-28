@@ -29,9 +29,11 @@ fi
 
 echo "# Resource requests (disk storage in kB, memory in MB)
 request_cpus = 1
-request_disk = 1000000
+# Disk request size determined by n_events (1 GB per 100 events)
+request_disk = $(( 10000*${n_events} ))
 request_memory = 2500
-+MaxRuntime = 28800
+# Max runtime determined by n_events in job (4 hrs per 100 events)
++MaxRuntime = $(( 144*${n_events} ))
 # Number of instances of job to run
 queue 1
 " >> $job_path

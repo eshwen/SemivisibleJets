@@ -77,7 +77,7 @@ if [[ ! -d $work_space/{logs{,"/$model_name"},submission_scripts{,"/$model_name"
 fi
 
 # Write Condor submission files for each job and execute
-for seed in $(seq 0 1 $n_jobs); do
+for seed in $(seq 0 1 $(( $n_jobs-1 ))); do
     seed=$(echo $seed | bc)
     lhe_file_for_job=${lhe_file_list[$seed]}
 
@@ -105,7 +105,7 @@ chmod +x $work_space/combineOutput_${model_name}.sh
 echo "#!/bin/bash
 # Resubmit failed jobs by running this script. It checks to see if the output nanoAOD file is present for each seed. 
 # Note that this should only be performed when all jobs have finished running.
-for i in \$(seq 0 1 $n_jobs); do
+for i in \$(seq 0 1 $(( $n_jobs-1))); do
     if [ ! -r $work_space/output/${model_name}_NANOAOD_\$i.root ]; then
         condor_submit $work_space/submission_scripts/$model_name/condor_submission_\$i.job
     fi
