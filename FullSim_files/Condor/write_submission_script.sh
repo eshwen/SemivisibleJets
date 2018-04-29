@@ -19,6 +19,7 @@ args       = $work_space $gen_frag_path $lhe_file_path $model_name $n_events $se
 Log        = $work_space/logs/$model_name/condor_job_${seed}.log
 Output     = $work_space/logs/$model_name/condor_job_${seed}.out
 Error      = $work_space/logs/$model_name/condor_job_${seed}.error
+getenv     = True
 should_transfer_files   = YES
 when_to_transfer_output = ON_EXIT_OR_EVICT
 " > $job_path
@@ -31,9 +32,9 @@ echo "# Resource requests (disk storage in kB, memory in MB)
 request_cpus = 1
 # Disk request size determined by n_events (3 GB per 100 events)
 request_disk = $(( 30000*${n_events} ))
-request_memory = 2500
-# Max runtime determined by n_events in job (4 hrs per 100 events)
-+MaxRuntime = $(( 144*${n_events} ))
+request_memory = 4000
+# Max runtime determined by n_events in job (5 hrs per 100 events)
++MaxRuntime = $(( 180*${n_events} ))
 # Number of instances of job to run
 queue 1
 " >> $job_path

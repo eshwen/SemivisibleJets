@@ -8,7 +8,6 @@ Usage ./runFullSim_condor.sh WORKING_DIRECTORY PATH_TO_GEN_FRAGMENT PATH_TO_LHE_
     exit
 fi
 
-
 work_space=$(readlink -m $1)
 gen_frag_path=$(readlink -m $2)
 gen_frag_file=$(basename $gen_frag_path)
