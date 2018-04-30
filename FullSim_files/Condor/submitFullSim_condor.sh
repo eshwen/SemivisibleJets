@@ -105,6 +105,7 @@ chmod +x $work_space/combineOutput_${model_name}.sh
 echo "#!/bin/bash
 # Resubmit failed jobs by running this script. It checks to see if the output nanoAOD file is present for each seed. 
 # Note that this should only be performed when all jobs have finished running.
+: \"\${SVJ_TOP_DIR:?Please source the setup script before running this as environment variables are required.}; exit\"
 for i in \$(seq 0 1 $(( $n_jobs-1 ))); do
     if [ ! -r $work_space/output/${model_name}_NANOAOD_\$i.root ]; then
         echo \"Found no output file for $model_name with seed \$i. Resubmitting...\"
