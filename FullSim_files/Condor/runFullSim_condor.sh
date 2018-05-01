@@ -64,6 +64,6 @@ echo "**** CREATED NANOAOD FILE ****"
 mv ${model_name}_NANOAOD_${seed}.root $work_space/output/
 
 echo "**** CLEANING UNNECESSARY FILES ****"
-rm $work_space/CMSSW_{7_1_30,8_0_21,9_4_4}/src/${model_name}_{GEN_SIM,AOD_step1,AOD_step2_MINIAOD}_${seed}.{py,root}
+rm $work_space/CMSSW_{7_1_30,8_0_21,9_4_4}/src/${model_name}_{GEN_SIM,AOD_step1,AOD_step2,MINIAOD}_${seed}.{py,root}
 
 exit
