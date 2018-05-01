@@ -16,9 +16,6 @@ def main():
     work_space = args.work_space
     model_name = args.model_name
 
-    # Get environment variable
-    svjTopDir = os.environ["SVJ_TOP_DIR"]
-
     filePath = os.path.join(work_space, "combineOutput_{0}.sh".format(model_name))
     writeFile = open(filePath, "w")
 
@@ -28,11 +25,11 @@ echo "Warning: May take a while to hadd if many files are present"
 source /cvmfs/cms.cern.ch/cmsset_default.sh 
 cd {0}/CMSSW_9_4_4/src
 cmsenv
-cd -
-{1}/Utils/haddnano.py {0}/output/{2}__nanoAOD_final.root {0}/output/{2}*NANOAOD*.root
+cd {0}
+{1}/Utils/haddnano.py {0}/output/{1}_nanoAOD_final.root {0}/output/{1}*NANOAOD*.root
 mkdir {0}/output/components
-mv {0}/output/{2}*NANOAOD*.root {0}/output/components
-    """.format(work_space, svjTopDir, model_name)
+mv {0}/output/{1}*NANOAOD*.root {0}/output/components
+    """.format(work_space, model_name)
     )
     writeFile.close()
 

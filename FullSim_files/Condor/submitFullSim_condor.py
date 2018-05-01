@@ -54,9 +54,10 @@ def main():
         alpha_d = cDP.calcAlphaD(n_c, n_f, Lambda_d)
         print "Recalculated alpha_d =", alpha_d
 
-    call( "./submitFullSim_condor.sh {0} {1} {2} {3} {4} {5} {6} {7} {8} {9} {10}".format( work_space, lhe_file_path, model_name, n_events, n_jobs, Lambda_d, m_d, n_f, r_inv, x_sec, os.path.abspath(args.config) ), shell = True)
-    #call( ["source", "submitFullSim_condor.sh", "{0}".format(work_space), "{0}".format(lhe_file_path), "{0}".format(model_name), "{0}".format(n_events), "{0}".format(n_jobs), "{0}".format(Lambda_d), "{0}".format(m_d), "{0}".format(n_f), "{0}".format(r_inv), "{0}".format(x_sec), os.path.abspath(args.config) ], shell=True ) 
+    # Run the rest of the chain
+    call( "./submitFullSim_condor.sh {0} {1} {2} {3} {4} {5} {6}".format( work_space, lhe_file_path, model_name, n_events, n_jobs, Lambda_d, os.path.abspath(args.config) ), shell = True)
+    
 
 if __name__ == '__main__':
     main()
-#    sys.exit("Completed")
+

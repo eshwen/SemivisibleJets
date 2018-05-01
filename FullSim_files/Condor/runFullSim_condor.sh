@@ -24,7 +24,6 @@ shopt -s expand_aliases
 # Write so CMSSW version aren't hardcoded, but can take from cmssw_vers array
 cd CMSSW_7_1_30/src
 cmsenv
-cp $gen_frag_path Configuration/GenProduction/python
 
 
 # Run the cmsDriver and cmsRun commands for each step in the chain

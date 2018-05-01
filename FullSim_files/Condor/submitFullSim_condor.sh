@@ -1,9 +1,9 @@
 #!/bin/bash
 
 if [ -z $1 ]; then
-    echo "-------------------------------------------------------------------------------------------------------------
-Usage ./runFullSim_condor.sh work_space lhe_file_path model_name n_events n_jobs Lambda_d m_d n_f r_inv x_sec
--------------------------------------------------------------------------------------------------------------"
+    echo "-----------------------------------------------------------------------------------------------------
+Usage ./runFullSim_condor.sh work_space lhe_file_path model_name n_events n_jobs Lambda_d config_file
+-----------------------------------------------------------------------------------------------------"
     exit
 fi
 
@@ -31,17 +31,11 @@ if (( $n_jobs > $n_lhe_files )); then
 fi
 
 Lambda_d=$6
-m_d=$7
-n_f=$8
-r_inv=$9
-x_sec=${10}
-config_file=${11}
+config_file=$7
 
 cd $work_space
 # Allow use of aliases (specifically cvmfs ones)
 shopt -s expand_aliases
-
-#echo "THIS IS THE PYTHONPATH" $PYTHONPATH
 
 source /cvmfs/cms.cern.ch/cmsset_default.sh
 # Declare arrays for looping over CMSSW versions and respective architectures
@@ -75,18 +69,17 @@ scram b
 cd $work_space
 
 # Create directories for logs, submission scripts and GS fragments
-if [[ ! -d $work_space/{logs{,"/$model_name"},output,submission_scripts{,"/$model_name"},GS_fragments} ]]; then
-    mkdir $work_space/{logs{,"/$model_name"},output,submission_scripts{,"/$model_name"},GS_fragments}
+if [[ ! -d $work_space/{logs{,"/$model_name"},output,submission_scripts{,"/$model_name"}} ]]; then
+    mkdir $work_space/{logs{,"/$model_name"},output,submission_scripts{,"/$model_name"}}
 fi
 
-# Write Condor submission files for each job and execute
+# Create the GS fragment
+gen_frag_path=$(python $submission_dir/writers/write_GS_fragment.py -c $config_file -l $Lambda_d)
+
+# Write Condor submission file for each job and execute
 for seed in $(seq 0 1 $(( $n_jobs-1 ))); do
     seed=$(echo $seed | bc)
     lhe_file_for_job=${lhe_file_list[$seed]}
-
-    # Create the GS fragment
-    gen_frag_path=$($submission_dir/write_GS_fragment.sh $model_name $seed $n_f $Lambda_d $r_inv $x_sec $m_d $work_space)
-    #gen_frag_path=$(python $submission_dir/writers/write_GS_fragment.py -c $config_file -s $seed)
     
     # Write Condor submission script and execute
     job_path=$($submission_dir/write_submission_script.sh $work_space $gen_frag_path $lhe_file_for_job $model_name $n_events $seed $submission_dir)

@@ -8,3 +8,4 @@
 CMSSW*
 ebhal.cc
 *.root
+external/*
