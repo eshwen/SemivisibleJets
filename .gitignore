@@ -8,4 +8,4 @@
 CMSSW*
 ebhal.cc
 *.root
-external/*
+external/pip
