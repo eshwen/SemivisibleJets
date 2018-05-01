@@ -82,7 +82,7 @@ for seed in $(seq 0 1 $(( $n_jobs-1 ))); do
     lhe_file_for_job=${lhe_file_list[$seed]}
     
     # Write Condor submission script and execute
-    job_path=$($submission_dir/write_submission_script.sh $work_space $gen_frag_path $lhe_file_for_job $model_name $n_events $seed $submission_dir)
+    job_path=$($submission_dir/writers/write_submission_script.sh $work_space $gen_frag_path $lhe_file_for_job $model_name $n_events $seed $submission_dir)
     condor_submit $job_path
 done
 
