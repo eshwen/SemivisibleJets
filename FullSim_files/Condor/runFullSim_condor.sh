@@ -53,7 +53,7 @@ cmsDriver.py --filein file:${model_name}_AOD_step2_${seed}.root --fileout file:$
 cmsRun ${model_name}_MINIAOD_${seed}.py
 echo "**** CREATED MINIAOD FILE ****"
 
-cp ${model_name}_MINIAOD_${seed}.root ../../CMSSW_9_4_4/src/
+mv ${model_name}_MINIAOD_${seed}.root ../../CMSSW_9_4_4/src/
 cd ../../CMSSW_9_4_4/src
 cmsenv
 
@@ -64,6 +64,6 @@ echo "**** CREATED NANOAOD FILE ****"
 mv ${model_name}_NANOAOD_${seed}.root $work_space/output/
 
 echo "**** CLEANING UNNECESSARY FILES ****"
-rm $work_space/CMSSW_{7_1_30,8_0_21,9_4_4}/src/${model_name}_{GEN_SIM,AOD_step1,AOD_step2,MINIAOD}_${seed}.{py,root}
+rm $work_space/CMSSW_*/src/${model_name}_{GEN_SIM,AOD_step1,AOD_step2,MINIAOD}_${seed}.{py,root}
 
 exit
