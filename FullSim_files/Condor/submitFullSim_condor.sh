@@ -35,10 +35,13 @@ m_d=$7
 n_f=$8
 r_inv=$9
 x_sec=${10}
+config_file=${11}
 
 cd $work_space
 # Allow use of aliases (specifically cvmfs ones)
 shopt -s expand_aliases
+
+#echo "THIS IS THE PYTHONPATH" $PYTHONPATH
 
 source /cvmfs/cms.cern.ch/cmsset_default.sh
 # Declare arrays for looping over CMSSW versions and respective architectures
@@ -83,37 +86,15 @@ for seed in $(seq 0 1 $(( $n_jobs-1 ))); do
 
     # Create the GS fragment
     gen_frag_path=$($submission_dir/write_GS_fragment.sh $model_name $seed $n_f $Lambda_d $r_inv $x_sec $m_d $work_space)
+    #gen_frag_path=$(python $submission_dir/writers/write_GS_fragment.py -c $config_file -s $seed)
     
     # Write Condor submission script and execute
     job_path=$($submission_dir/write_submission_script.sh $work_space $gen_frag_path $lhe_file_for_job $model_name $n_events $seed $submission_dir)
     condor_submit $job_path
 done
 
-# Move the following code to their own scripts?
-
-# Create script to hadd output files
-echo "#!/bin/bash
-echo \"Warning: May take a while to hadd if many files are present\"
-${SVJ_TOP_DIR}/Utils/haddnano.py $work_space/output/${model_name}_nanoAOD_final.root $work_space/output/${model_name}*NANOAOD*.root
-mkdir $work_space/output/components
-mv $work_space/output/${model_name}*NANOAOD*.root $work_space/output/components/
-" > $work_space/combineOutput_${model_name}.sh
-
-chmod +x $work_space/combineOutput_${model_name}.sh
-
-# Create script to check for failed jobs and resubmit
-echo "#!/bin/bash
-# Resubmit failed jobs by running this script. It checks to see if the output nanoAOD file is present for each seed. 
-# Note that this should only be performed when all jobs have finished running.
-: \"\${SVJ_TOP_DIR:?Please source the setup script before running this as environment variables are required.}; exit\"
-for i in \$(seq 0 1 $(( $n_jobs-1 ))); do
-    if [ ! -r $work_space/output/${model_name}_NANOAOD_\$i.root ]; then
-        echo \"Found no output file for $model_name with seed \$i. Resubmitting...\"
-        condor_submit $work_space/submission_scripts/$model_name/condor_submission_\$i.job
-    fi
-done
-" > $work_space/resubmit_${model_name}.sh
-
-chmod +x $work_space/resubmit_${model_name}.sh
+# Create scripts to hadd output files and resubmit failed jobs
+python $submission_dir/writers/write_combine_script.py -w $work_space -m $model_name
+python $submission_dir/writers/write_resubmitter_script.py -w $work_space -m $model_name -n $n_jobs
 
 exit
