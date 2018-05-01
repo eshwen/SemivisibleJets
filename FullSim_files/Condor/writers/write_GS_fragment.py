@@ -29,6 +29,7 @@ def main():
 
     Lambda_d = args.Lambda_d
 
+    # Calculate masses of dark mesons and stable dark matter particles
     m_dark_meson = 2 * m_d
     m_dark_stable = m_d - 0.1
 
@@ -88,7 +89,7 @@ generator = cms.EDFilter("Pythia8HadronizerFilter",
                                     )
     )
 )
-""".format(x_sec, m_dark_meson, m_dark_stable, r_inv, 1 - r_inv, Lambda_d, n_f, 1.1 * Lambda_d)
+""".format(x_sec, m_dark_meson, m_dark_stable, r_inv, 1-r_inv, Lambda_d, n_f, 1.1*Lambda_d)
     )
     writeFile.close()
 
