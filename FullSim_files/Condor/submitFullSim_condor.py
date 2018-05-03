@@ -47,6 +47,7 @@ def main():
     # Calculate Lambda_d (confinement scale)
     n_c = 2
     Lambda_d = cDP.calcLambdaD(n_c, n_f, alpha_d)
+    print "Confinement scale Lambda_d =", Lambda_d
 
     # Rescale Lambda_d if too low (should be >= m_d), then recalc alpha_d
     if Lambda_d < m_d:

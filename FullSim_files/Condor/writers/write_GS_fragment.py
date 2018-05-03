@@ -78,7 +78,7 @@ generator = cms.EDFilter("Pythia8HadronizerFilter",
             'HiddenValley:alphaOrder = 1', # order at which running coupling runs
             'HiddenValley:Lambda = {5}', # parameter used for running coupling
             'HiddenValley:nFlav = {6}', # this dictates what kind of hadrons come out of the shower, if nFlav = 2, for example, there will be many different flavor of hadrons
-            'HiddenValley:probVector = 0.75', # ratio of number of vector mesons over scalar meson, 3:1 is from naive degrees of freedom counting
+            'HiddenValley:probVector = 0.', # ratio of number of vector mesons over scalar meson, 3:1 is from naive degrees of freedom counting (so 0.75). But allows hadronisation into more species of dark particle no nFlav may not make physical sense
             'HiddenValley:pTminFSR = {7}', # cutoff for the showering, should be roughly confinement scale
             ),
         parameterSets = cms.vstring('pythia8CommonSettings',

@@ -8,6 +8,6 @@ n_events: 100
 n_jobs: 500
 alpha_d: 0.23
 m_d: 10
-n_f: 2
+n_f: 1
 r_inv: 0.3
 x_sec: 97.0
