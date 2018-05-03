@@ -9,3 +9,4 @@ CMSSW*
 ebhal.cc
 *.root
 external/pip
+Plots/
