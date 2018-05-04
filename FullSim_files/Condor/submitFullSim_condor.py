@@ -1,5 +1,4 @@
 import argparse
-import math
 import os
 import pprint
 from subprocess import call
@@ -8,7 +7,7 @@ import yaml
 import calcDarkParams as cDP
 
 parser = argparse.ArgumentParser()
-parser.add_argument("-c", "--config", type = str, default = "model_params_s_spin1.yaml", help = "YAML config to parse")
+parser.add_argument("-c", "--config", type = str, default = os.path.join(os.environ['SVJ_TOP_DIR'], "config", "model_params_s_spin1.yaml"), help = "Path to YAML config to parse")
 args = parser.parse_args()
 
 def main():
@@ -25,14 +24,15 @@ def main():
     # Tidy this in a loop?
     work_space = input_params['work_space']
     lhe_file_path = input_params['lhe_file_path']
-    model_name = input_params['model_name']
     n_events = input_params['n_events']
     n_jobs = input_params['n_jobs']
     alpha_d = input_params['alpha_d']
+    m_med = input_params['m_med']
     m_d = input_params['m_d']
     n_f = input_params['n_f']
     r_inv = input_params['r_inv']
     x_sec = input_params['x_sec']
+    process_type = input_params['process_type']
 
     # Checking arguments in config file
     if not os.path.exists(lhe_file_path):
@@ -43,6 +43,15 @@ def main():
 
     if m_d < 0 or x_sec < 0.0 or  r_inv < 0.0 or r_inv > 1.0:
         raise ValueError('m_d and x_sec must be positive, and 0 < r_inv < 1.')
+
+    if 's-channel' in process_type:
+        med_type = 'Zp'
+    elif 't-channel' in process_type:
+        med_type = 'Phi'
+    else:
+        raise ValueError('Unknown process_type specified. Please either specify \'s-channel\' or \'t-channel\'.')
+
+    model_name = input_params['model_name'] + '_m' + med_type + '-' + m_med + '_mDQ' + m_d
 
     # Calculate Lambda_d (confinement scale)
     n_c = 2
