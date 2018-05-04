@@ -34,6 +34,7 @@ source "${SVJ_cvmfs_GCCSetup}"
 
 export SVJ_TOP_DIR="$(SVJ_top_dir)"
 export SVJ_EXTERNALS_DIR="$(SVJ_top_dir)/external"
+export SVJ_MODELS_DIR="$(SVJ_top_dir)/MG_models"
 export MG_GENPROD_DIR="${SVJ_TOP_DIR}/genproductions/bin/MadGraph5_aMCatNLO"
 export PYTHONPATH="$(SVJ_build_python_path)"
 export PATH="$(SVJ_build_sys_path)"
