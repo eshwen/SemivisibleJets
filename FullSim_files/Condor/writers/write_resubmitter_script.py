@@ -28,7 +28,7 @@ def main():
 : "${{SVJ_TOP_DIR:?Please source the setup script before running this as environment variables are required.}}; exit"
 for i in $(seq 0 1 {0}); do
     if [ ! -r {1}/output/{2}_NANOAOD_$i.root ]; then
-        echo "Found no output file for $model_name with seed $i. Resubmitting..."
+        echo "Found no output file for {2} with seed $i. Resubmitting..."
         condor_submit {1}/submission_scripts/{2}/condor_submission_$i.job
     fi
 done
