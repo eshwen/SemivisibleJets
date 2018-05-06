@@ -1,8 +1,9 @@
 import argparse
+import glob
 import os
 import pprint
 import shutil
-from string import Template
+from string import replace, Template
 from subprocess import call
 import sys
 import yaml
@@ -67,14 +68,43 @@ def main():
         newStr = oldParamsStr.substitute(dark_quark_mass = str(m_d), mediator_mass = str(m_med))
         paramsFile.write(newStr)
         paramsFile.close()
-        print "New parameters written!"
+        print "New parameters written in model files!"
+
+
+    input_cards_dir = os.path.join( os.environ['SVJ_GRIDPACK_DIR'], model_name+"_input" )
+    # Create directory to store input cards and model files for MadGraph
+    if not os.path.exists(input_cards_dir):
+        os.mkdir(input_cards_dir)
+    else:
+        print "Directory containing MadGraph input cards exists! No need to create it."
+        # Remove previous input cards in case, e.g., n_events has changed
+        for oldFile in glob.glob( os.path.join(input_cards_dir, '*.dat') ):
+            os.remove(oldFile)
+
+
+    # Copy template files from template card directory and replace placeholders with values chosen by user
+    # Even if input_cards_dir existed before, copy the template files over in case number of events has changed
+    for inFile in glob.glob( os.path.join(os.environ['SVJ_GRIDPACK_DIR'], model_prefix+'_input_template/*.dat') ):
+        shutil.copy(inFile, input_cards_dir)
+    
+    for modelFile in glob.glob( os.path.join(input_cards_dir, '*.dat') ):
+        card = open(modelFile, 'r+')
+        oldStr = card.read()
+        # Make sure there are no curly braces in the input cards except those containing the placeholders
+        newStr = oldStr.format(modelName = model_name, totalEvents = str(total_events)) 
+        card.write(newStr)
+        card.close()
+        print "Parameters written for input card", os.path.basename(modelFile)
+
+    # Zip up model directory
+    shutil.make_archive(os.path.join(input_cards_dir, model_name), 'tar', new_model_dir)
+
+    # NOW, I CAN DO SUBPROCESS.CALL(BASH_SCRIPT) TO RUN THE ACTUAL GRIDPACK GENERATION
+    
 
     # Run the gridpack generation
 #    call( "./submitGridpackGeneration.sh {0}".format( ), shell = True)
 
-# NOW, NEED TO TAR MODEL DIRECTORY, MAKE A DIRECTORY IN MG_gridpack_files/ WITH ${model_name}_input/, THEN PLACE TARRED MODEL AND OTHER FILES IN THERE
-# THEN, I CAN DO SUBPROCESS.CALL(BASH_SCRIPT) TO RUN THE ACTUAL GRIDPACK GENERATION
-    
 
 if __name__ == '__main__':
     main()
