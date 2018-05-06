@@ -2,6 +2,7 @@ import argparse
 import glob
 import os
 import pprint
+import re
 import shutil
 from string import replace, Template
 from subprocess import call
@@ -63,9 +64,12 @@ def main():
         shutil.copytree(default_model_dir, new_model_dir)
         # Read the parameters file (containing the dark particle masses) in the new model directory
         paramsFile = open( os.path.join(new_model_dir, 'parameters.py'), 'r+')
-        oldParamsStr = Template( paramsFile.read() )
-        # Replace all instances of $dark_quark_mass and $mediator_mass in parameters file with those chosen by user
-        newStr = oldParamsStr.substitute(dark_quark_mass = str(m_d), mediator_mass = str(m_med))
+        oldStr = Template( paramsFile.read() )
+        # Replace placeholders with those chosen by use
+        newStr = oldStr.substitute(dark_quark_mass = str(m_d), mediator_mass = str(m_med))
+        # Delete contents of file and update
+        paramsFile.seek(0)
+        paramsFile.truncate()
         paramsFile.write(newStr)
         paramsFile.close()
         print "New parameters written in model files!"
@@ -84,14 +88,15 @@ def main():
     # Copy template files from template card directory and replace placeholders with values chosen by user
     # Even if input_cards_dir existed before, copy the template files over in case number of events has changed
     for inFile in glob.glob( os.path.join(os.environ['SVJ_MG_INPUT_DIR'], model_prefix+'_input_template/*.dat') ):
-        shutil.copy(inFile, input_cards_dir)
+        # Get the suffix of the template card for specifying the basename in the dest. path
+        card_type = re.search("(?<={0})(\w+).dat".format(model_prefix), inFile).group(0)
+        shutil.copy(inFile, os.path.join(input_cards_dir, model_name+card_type) )
     
     for modelFile in glob.glob( os.path.join(input_cards_dir, '*.dat') ):
         card = open(modelFile, 'r+')
         oldStr = card.read()
         # Make sure there are no curly braces in the input cards except those containing the placeholders
         newStr = oldStr.format(modelName = model_name, totalEvents = str(total_events)) 
-        # Delete contents of file and update
         card.seek(0)
         card.truncate()
         card.write(newStr)
@@ -100,12 +105,14 @@ def main():
 
     # Zip up model directory
     shutil.make_archive(os.path.join(input_cards_dir, model_name), 'tar', new_model_dir)
+    print "Copied model files to input directory!"
 
+    # Require relative path between MG input files and genproductions' gridpack generation script
+    rel_cards_dir = os.path.relpath(input_cards_dir, os.environ['MG_GENPROD_DIR'])
     # NOW, I CAN DO SUBPROCESS.CALL(BASH_SCRIPT) TO RUN THE ACTUAL GRIDPACK GENERATION
     
-
     # Run the gridpack generation
-#    call( "./submitGridpackGeneration.sh {0}".format( ), shell = True)
+    call( "./runGridpackGeneration.sh {0} {1}".format(model_name, rel_cards_dir), shell = True)
 
 
 if __name__ == '__main__':
