@@ -71,7 +71,7 @@ def main():
         print "New parameters written in model files!"
 
 
-    input_cards_dir = os.path.join( os.environ['SVJ_GRIDPACK_DIR'], model_name+"_input" )
+    input_cards_dir = os.path.join( os.environ['SVJ_MG_INPUT_DIR'], model_name+"_input" )
     # Create directory to store input cards and model files for MadGraph
     if not os.path.exists(input_cards_dir):
         os.mkdir(input_cards_dir)
@@ -81,10 +81,9 @@ def main():
         for oldFile in glob.glob( os.path.join(input_cards_dir, '*.dat') ):
             os.remove(oldFile)
 
-
     # Copy template files from template card directory and replace placeholders with values chosen by user
     # Even if input_cards_dir existed before, copy the template files over in case number of events has changed
-    for inFile in glob.glob( os.path.join(os.environ['SVJ_GRIDPACK_DIR'], model_prefix+'_input_template/*.dat') ):
+    for inFile in glob.glob( os.path.join(os.environ['SVJ_MG_INPUT_DIR'], model_prefix+'_input_template/*.dat') ):
         shutil.copy(inFile, input_cards_dir)
     
     for modelFile in glob.glob( os.path.join(input_cards_dir, '*.dat') ):
@@ -92,6 +91,9 @@ def main():
         oldStr = card.read()
         # Make sure there are no curly braces in the input cards except those containing the placeholders
         newStr = oldStr.format(modelName = model_name, totalEvents = str(total_events)) 
+        # Delete contents of file and update
+        card.seek(0)
+        card.truncate()
         card.write(newStr)
         card.close()
         print "Parameters written for input card", os.path.basename(modelFile)
