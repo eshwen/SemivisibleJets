@@ -103,13 +103,12 @@ def main():
         card.close()
         print "Parameters written for input card", os.path.basename(modelFile)
 
-    # Zip up model directory
-    shutil.make_archive(os.path.join(input_cards_dir, model_name), 'tar', new_model_dir)
+    # Zip up model directory, specifying basedir to zip enclosing folder, not just files
+    shutil.make_archive(os.path.join(input_cards_dir, model_name), 'tar', os.environ['SVJ_MODELS_DIR'], model_name)
     print "Copied model files to input directory!"
 
     # Require relative path between MG input files and genproductions' gridpack generation script
     rel_cards_dir = os.path.relpath(input_cards_dir, os.environ['MG_GENPROD_DIR'])
-    # NOW, I CAN DO SUBPROCESS.CALL(BASH_SCRIPT) TO RUN THE ACTUAL GRIDPACK GENERATION
     
     # Run the gridpack generation
     call( "./runGridpackGeneration.sh {0} {1}".format(model_name, rel_cards_dir), shell = True)
