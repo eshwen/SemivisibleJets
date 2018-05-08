@@ -54,6 +54,20 @@ def main():
     model_name = model_prefix + '_m' + med_type + '-' + str(m_med) + '_mDQ-' + str(m_d)
     total_events = n_events * n_jobs
 
+    # Append config file with new parameters for simplicity in future steps
+    config_read = open(args.config, 'r')
+    if 'model_name:' and 'total_events:' in config_read.read():
+        config_read.close()
+    else:
+        print "Appending config file with new parameters..."
+        config_append = open(args.config, 'a')
+        config_append.write("""
+model_name: {0}
+total_events: {1}
+""".format(model_name, total_events)
+        )
+        config_append.close()
+
     # Copy model files to new directory and change relevant parameters according to config
     new_model_dir = os.path.join(os.environ['SVJ_MODELS_DIR'], model_name)
 
@@ -85,8 +99,8 @@ def main():
         for oldFile in glob.glob( os.path.join(input_cards_dir, '*.dat') ):
             os.remove(oldFile)
 
-    # Copy template files from template card directory and replace placeholders with values chosen by user
-    # Even if input_cards_dir existed before, copy the template files over in case number of events has changed
+    # Copy files from template card directory and replace placeholders with values chosen by user
+    # Even if input_cards_dir existed before, copy the template files over in case oarameters have changed
     for inFile in glob.glob( os.path.join(os.environ['SVJ_MG_INPUT_DIR'], model_prefix+'_input_template/*.dat') ):
         # Get the suffix of the template card for specifying the basename in the dest. path
         card_type = re.search("(?<={0})(\w+).dat".format(model_prefix), inFile).group(0)
