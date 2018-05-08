@@ -4,7 +4,7 @@ import os
 import pprint
 import re
 import shutil
-from string import replace, Template
+from string import Template
 from subprocess import call
 import sys
 import yaml
