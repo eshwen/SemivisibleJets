@@ -37,13 +37,26 @@ def main():
     
     # Append cross section to config file if not included already
     config_read = open(args.config, 'r')
-    if 'x_sec:' in config_read.read():
-        config_read.close()
+    config_orig_str = config_read.read()
+    config_read.close()
+    if str(x_sec) in config_orig_str:
+        print "No need to append config file with new cross section!"
     else:
         print "Appending config file with cross section as calculated by MadGraph..."
-        config_append = open(args.config, 'a')
+        config_append = open(args.config, 'r+')
+        original_str = config_append.readlines()
+        config_append.seek(0)
+        config_append.truncate()
+
+        for i in xrange( len(original_str) ):
+            if 'x_sec' in original_str[i]:
+                continue
+            else:
+                config_append.write(original_str[i])
+
         config_append.write("x_sec: {0}\n".format(x_sec))
         config_append.close()
+
 
     # COPY GRIDPACK TARBALL TO gridpacks/, RUN runcmsgrid.sh WITH N_EVENTS AND RANDOM SEED ARGUMENTS (FIND FUNCTION TO CREATE RANDOM INTEGER) ON UNTARRED VERSION TO GET LHE FILE, MOVE LHE FILE SOMEWHERE AND DELETE UNTARRED GRIDPACK,  THEN SPLIT LHE FILE AND STORE IN DIRECTORY SPECIFIED BY USER
 

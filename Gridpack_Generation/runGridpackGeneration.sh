@@ -23,10 +23,11 @@ unset CC
 unset COMPILER_PATH
 unset CXX
 
+# For running completely on the grid
 ./submit_gridpack_generation.sh 3000 3000 1nd $model_name $input_cards_dir 1nh
-
 echo "Check on the job status with \`bjobs\`"
 
+# For running on the grid, but get monitoring as if it's interactive
 #./gridpack_generation.sh $model_name $input_cards_dir 1nd
 
 exit
