@@ -13,7 +13,7 @@ m_med: 2500
 m_d: 20
 n_f: 1
 r_inv: 0.3
-x_sec: 81.3
 model_name: DMsimp_SVJ_s_spin1_mZp-2500_mDQ-20
 total_events: 50000
 
+x_sec: 2.364

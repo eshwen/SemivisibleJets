@@ -5,15 +5,13 @@
 # Directory to deposit CMSSW releases and output files
 work_space: /afs/cern.ch/work/e/ebhal/Semi_visible_jets_Condor_NewWorkflow
 
-# Directory to LHE files
+# Directory to store LHE files created by MadGraph, and access them for FullSim running
 lhe_file_path: /afs/cern.ch/work/e/ebhal/public/DMsimp_SVJ_s_spin1_splitLHE
 
-# Identifier for model
-model_name: DMsimp_SVJ_s_spin1
-
-# Number of events per job
+# Number of events per job (FullSim)
 n_events: 100
 
+# Number of jobs to run (FullSim)
 n_jobs: 500
 
 # Running dark coupling at 1 TeV
@@ -33,6 +31,15 @@ n_f: 2
 
 # Fraction of final state particles that are stable and invisible
 r_inv: 0.3
+#----------------------------------------------------------------
 
-# Cross section (pb) specified by MadGraph. Will be in one of the LHE files. See if I can tidy this to instead search the LHE for the cross section
+# The following parameters are written by various scripts as they are not set by the user
+
+# Descriptive identifier for model. Written in submitGridpackGeneration.py. MAYBE ADD ALPHA_D TO THIS
+model_name: DMsimp_SVJ_s_spin1_mZp-1000_mDQ-10
+
+# total_events written in submitGridpackGeneration.py
+total_events: 50000
+
+# Cross section (pb) specified by MadGraph. Written in runLHERetrieval.py
 x_sec: 81.3
