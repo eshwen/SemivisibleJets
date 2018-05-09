@@ -18,7 +18,7 @@ fi
 
 # For simplicity, use the splitLHE.py script on the large LHE file to generate the smaller ones to be given to the jobs
 lhe_file_path=$(readlink -m $2)
-declare -a lhe_file_list=( $(echo ${lhe_file_path}/*.lhe | tr ' ' '\n' | sort -h) ) # Need to fix sorting
+declare -a lhe_file_list=( $(echo ${lhe_file_path}/${model_name}_split*.lhe | tr ' ' '\n' | sort -h) ) # Need to fix sorting
 n_lhe_files=`echo ${#lhe_file_list[@]}`
 
 model_name=$3
