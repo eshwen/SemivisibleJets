@@ -5,6 +5,7 @@
 *~
 *\#
 ._*
+*.tar.xz
 CMSSW*
 ebhal.cc
 *.root
