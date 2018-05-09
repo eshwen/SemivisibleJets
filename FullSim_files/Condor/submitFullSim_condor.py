@@ -26,6 +26,7 @@ def main():
     lhe_file_path = input_params['lhe_file_path']
     n_events = input_params['n_events']
     n_jobs = input_params['n_jobs']
+    model_name = input_params['model_name']
     alpha_d = input_params['alpha_d']
     m_med = input_params['m_med']
     m_d = input_params['m_d']
@@ -34,24 +35,17 @@ def main():
     x_sec = input_params['x_sec']
     process_type = input_params['process_type']
 
+
     # Checking arguments in config file
     if not os.path.exists(lhe_file_path):
         raise ValueError('The LHE file path you have specified does not exist.')
-
     if not all (type(i) is int for i in [n_events, n_jobs, n_f]):
         raise TypeError('n_events, n_jobs and n_f are all required to be integers.')
-
     if m_d < 0 or x_sec < 0.0 or  r_inv < 0.0 or r_inv > 1.0:
         raise ValueError('m_d and x_sec must be positive, and 0 < r_inv < 1.')
-
-    if 's-channel' in process_type:
-        med_type = 'Zp'
-    elif 't-channel' in process_type:
-        med_type = 'Phi'
-    else:
+    if not 's-channel' in process_type and not 't-channel' in process_type:
         raise ValueError('Unknown process_type specified. Please either specify \'s-channel\' or \'t-channel\'.')
 
-    model_name = input_params['model_name'] + '_m' + med_type + '-' + m_med + '_mDQ' + m_d
 
     # Calculate Lambda_d (confinement scale)
     n_c = 2

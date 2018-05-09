@@ -18,10 +18,10 @@ fi
 
 # For simplicity, use the splitLHE.py script on the large LHE file to generate the smaller ones to be given to the jobs
 lhe_file_path=$(readlink -m $2)
+model_name=$3
 declare -a lhe_file_list=( $(echo ${lhe_file_path}/${model_name}_split*.lhe | tr ' ' '\n' | sort -h) ) # Need to fix sorting
 n_lhe_files=`echo ${#lhe_file_list[@]}`
 
-model_name=$3
 n_events=$4
 n_jobs=$5
 
@@ -80,7 +80,7 @@ gen_frag_path=$(python $submission_dir/writers/write_GS_fragment.py -c $config_f
 for seed in $(seq 0 1 $(( $n_jobs-1 ))); do
     seed=$(echo $seed | bc)
     lhe_file_for_job=${lhe_file_list[$seed]}
-    
+
     # Write Condor submission script and execute
     job_path=$($submission_dir/writers/write_submission_script.sh $work_space $gen_frag_path $lhe_file_for_job $model_name $n_events $seed $submission_dir)
     condor_submit $job_path
