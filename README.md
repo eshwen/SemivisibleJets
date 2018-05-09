@@ -14,17 +14,16 @@
         4. [AOD (step 2) to miniAOD](#aodstep2tominiaod)
         5. [MiniAOD to nanoAOD](#miniaodtonanoaod)
     - [FullSim chain using CRAB (Work-In-Progress)](#fullsimchaincrab)
-    - [FullSim chain using Condor](#fullsimchaincondor)
-4. [Contact](#contact)
-5. [To do](#todo)
+4. [Running the complete sample production in three steps](#completesampleproduction)
+5. [Contact](#contact)
+6. [To do](#todo)
 
 # Introduction <a name="introduction"></a>
 
 [![arXiv](https://img.shields.io/badge/arXiv-1707.05326%20-green.svg)](https://arxiv.org/abs/1707.05326)
 
 This repository contains model files necessary for generation of semi-visible jet Monte Carlo signal events in `MadGraph`. It also includes instructions of how to generate gridpacks for production with these models, and how to run them through the FullSim CMSSW chain to create nanoAOD files for analysis. Please see [1707.05326](https://arxiv.org/abs/1707.05326) and [1503.00009](https://arxiv.org/abs/1503.00009) for
-for further details. Please note that a recent version of `PYTHIA` (> 8.226) including the Hidden Valley module 
-and running of the dark coupling is required when implementing the subsequent dark hadronization.
+for further details about the models. Please note that a recent version of `PYTHIA` (> 8.226) including the Hidden Valley module and running of the dark coupling is required when implementing the subsequent dark hadronization.
 
 UFO files associated with two UV completions are provided (under [MG_models/](MG_models/)):
 
@@ -127,7 +126,7 @@ Once the PIDs have been changed, it is possible to run `PYTHIA` and `Delphes` co
 
 ### Generating `MadGraph` gridpacks <a name="generatinggridpacks"></a>
 
-For central production, gridpacks will be needed as external LHE generators don't cooperate with CMSSW. These gridpacks are made on the grid, with monitoring output such that it looks like you're running locally.
+For central production, gridpacks will be needed as external LHE generators don't cooperate with CMSSW. These gridpacks are set up locally, with each channel run as an LSF job.
 
 First, clone this repo somewhere with a lot of storage (the gridpacks end up in directories within the repository, and so its size can grow considerably) with
 
@@ -340,22 +339,39 @@ For the other steps in the FullSim chain, the procedure is the same as described
 _FINISH_
 
 
-### FullSim chain using Condor <a name="fullsimchaincondor"></a>
+## Running the complete sample production in three steps <a name="completesampleproduction"></a>
 
-Whilst CRAB is the easiest and cleanest way to submit jobs, it can be a pain if sites are blacklisted, etc. In [FullSim_files/Condor/](FullSim_files/Condor), there are scripts to run everything on a batch system with Condor.
+There are scripts included to run the entire sample production using a single config file. You specify the input arguments in a YAML file (see [model_params_demo.yaml](config/model_params_demo.yaml) for descriptions or the other files in that directory for complete examples).
 
-The only difference between this and the other workflows are that LHE file(s) are required for input, as opposed to running straight off the gridpack. Either unzip the gridpack or use the untarred version created along with the gridpack, navigate to `<model_gridpack/work/gridpack>` and run
+Make sure this repository is cloned somewhere and the genproductions repo is cloned as a submodule (detailed somehwere above in this README). Set up the environment with
 
 ```bash
-./runcmsgrid.sh <n_events> <random_seed>
+source setup.sh
 ```
 
-where `<n_events>` should be less than or equal to the number generated for the gridpack. Then, an LHE file should be produced, which can be split with [splitLHE.py](Utils/splitLHE.py). Each of these split LHE files can be associated to one Condor job.
-
-In [FullSim_files/Condor/](FullSim_files/Condor), you specify the input arguments in a YAML file (see [model_params_s_spin1.yaml](FullSim_files/Condor/model_params_s_spin1.yaml) for an example) and run
+then, run the gridpack generation according to the parameters in your config file with
 
 ```bash
-FullSim_files/Condor/submitFullSim_condor.py -c <YAML config>
+cd Gridpack_Generation
+python submitGridpackGeneration.py -c <path to YAML config>
+```
+
+If the parameters are okay (and there are no bugs in the code), the MadGraph model files and input cards from the template directories I have will be copied into the relevant directories, and the specified parameters will be added. Then, the gridpack will be created in [genproductions/bin/MadGraph5_aMCatNLO/](genproductions/bin/MadGraph5_aMCatNLO/).
+
+If you plan to run the rest of the sample production via CRAB or by some means that requires a gridpack, you're done! However, if you want to continue here and follow the rest of my steps, great! Now that you have the gridpack, the next stage is to get the LHE file out, apply the PDGID renumbering for the dark particles, and split the LHE file for running jobs easily. This is taken care of with
+
+```bash
+cd $SVJ_TOP_DIR/LHE_from_Gridpack
+python runLHERetrieval.py -c <path to YAML config>
+```
+
+The location of the split LHE files will be printed in the terminal, which will be the path specified by you in the config parameter `lhe_file_path`.
+
+Now, the final step is to run the full CMSSW chain on these split LHE files and get nanoAODs out. The cmsDriver commands are written to emulate 2016 MC with 2017 re-processing. If you would like to change that, edit [FullSim_files/Condor/runFullSim_condor.sh](runFullSim_condor.sh). And if you would like to change some more specific aspects of the model or hadronisation, either edit the config (as some parameters are detailed there) or [FullSim_files/Condor/writers/write_GS_fragment.py](write_GS_fragment.py). Now, just run, 
+
+```bash
+cd $SVJ_TOP_DIR/FullSim_files/Condor
+python submitFullSim_condor.py -c <YAML config>
 ```
 
 which should take care of everything. The output nanoAOD files will be located in `$work_space/output/`. If some jobs fail, they can be resubmitted by running
@@ -378,7 +394,7 @@ For questions or issues please contact:
 
 ## To do <a name="todo"></a>
 
-- Tidy up new FullSim Condor chain and make nicer. Finish incorporating gridpack generation and LHE splitting into it (as separate steps, but organised). But use the same config file, just add more arguments (Z'/Phi mass, etc.) and selectively read in arguments. So then the model name, dark quark mass, etc. will be ensured to be the same between gridpack generation and FullSim run making things simpler. The gridpack gen and LHE splitting steps should be achievable with Python scripts.
+- Tidy up new FullSim Condor chain and make nicer.
 - Consider rewriting `write_submission_script.sh` in Python for FullSim Condor
 - Finish the CRAB submission chain?
 - Change gen fragment such that the dark meson can decay into each type of SM quark. Would need to figure out how to distribute remaining branching fraction (1-r_inv) amongst the decays.
@@ -386,3 +402,4 @@ For questions or issues please contact:
 - Figure out how to change dark quarks to spin-1/2 in MadGraph model files. Find out if that will affect decays or anything.
 - Find out if changing the masses of the particles in MadGraph model files will change, e.g., parameters in decays.py or any other files.
 - Whenever I change/update things, remember to update the README as well
+- See if I still need to do the confinement scale rescaling
