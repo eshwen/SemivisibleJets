@@ -356,18 +356,18 @@ cd Gridpack_Generation
 python submitGridpackGeneration.py -c <path to YAML config>
 ```
 
-If the parameters are okay (and there are no bugs in the code), the MadGraph model files and input cards from the template directories I have will be copied into the relevant directories, and the specified parameters will be added. Then, the gridpack will be created in [genproductions/bin/MadGraph5_aMCatNLO/](genproductions/bin/MadGraph5_aMCatNLO/).
+If the parameters are okay (and there are no bugs in the code), the MadGraph model files and input cards from the template directories I have should be copied into model-specific directories, and the specified parameters will be added. Then, the gridpack will be created in [genproductions/bin/MadGraph5_aMCatNLO/](genproductions/bin/MadGraph5_aMCatNLO/).
 
-If you plan to run the rest of the sample production via CRAB or by some means that requires a gridpack, you're done! However, if you want to continue here and follow the rest of my steps, great! Now that you have the gridpack, the next stage is to get the LHE file out, apply the PDGID renumbering for the dark particles, and split the LHE file for running jobs easily. This is taken care of with
+If you plan to run the rest of the sample production via CRAB or by some means that requires a gridpack, you're done! However, if you want to continue here and follow the rest of my steps, great! Now that you have the gridpack, the next stage is to get the LHE file out, apply the PDGID renumbering for the dark particles, and split the LHE file for running the FullSim jobs easily. This is taken care of with
 
 ```bash
 cd $SVJ_TOP_DIR/LHE_from_Gridpack
 python runLHERetrieval.py -c <path to YAML config>
 ```
 
-The location of the split LHE files will be printed in the terminal, which will be the path specified by you in the config parameter `lhe_file_path`.
+The location of the split LHE files will be printed in the terminal, which will be the path specified in the config parameter `lhe_file_path`.
 
-Now, the final step is to run the full CMSSW chain on these split LHE files and get nanoAODs out. The cmsDriver commands are written to emulate 2016 MC with 2017 re-processing. If you would like to change that, edit [FullSim_files/Condor/runFullSim_condor.sh](runFullSim_condor.sh). And if you would like to change some more specific aspects of the model or hadronisation, either edit the config (as some parameters are detailed there) or [FullSim_files/Condor/writers/write_GS_fragment.py](write_GS_fragment.py). Now, just run, 
+Now, the final step is to run the full CMSSW chain on these split LHE files and get nanoAODs out. The cmsDriver commands are written to emulate 2016 MC with 2017 re-processing. If you would like to change that, edit [FullSim_files/Condor/runFullSim_condor.sh](runFullSim_condor.sh). And if you would like to change some more specific aspects of the model or hadronisation, either edit the config (as some parameters are detailed there) or [FullSim_files/Condor/writers/write_GS_fragment.py](write_GS_fragment.py). Now, just run
 
 ```bash
 cd $SVJ_TOP_DIR/FullSim_files/Condor
@@ -380,7 +380,7 @@ which should take care of everything. The output nanoAOD files will be located i
 $work_space/resubmit_${model_name}.sh
 ```
 
-(note that all jobs must finish running first). When happy, the component output files can be combined using [haddnano.py](Utils/haddnano.py). A script which does that step will be in `$work_space/combineOutput_${model_name}.sh`, which can be run without any arguments.
+(note that all jobs must _finish running_ first). When happy, the component output files can be combined using [haddnano.py](Utils/haddnano.py). A script which does that step will be in `$work_space/combineOutput_${model_name}.sh`, which can be run without any arguments.
 
 
 ## Contact <a name="contact"></a>
