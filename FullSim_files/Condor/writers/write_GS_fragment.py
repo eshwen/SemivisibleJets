@@ -29,7 +29,7 @@ def main():
     r_inv = input_params['r_inv']
     x_sec = input_params['x_sec']
 
-    Lambda_d = format(args.Lambda_d, '.1f')
+    Lambda_d = round(args.Lambda_d, 2)
 
     # Calculate masses of dark mesons and stable dark matter particles
     m_dark_meson = 2 * m_d
