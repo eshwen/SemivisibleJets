@@ -367,7 +367,7 @@ python runLHERetrieval.py -c <path to YAML config>
 
 The location of the split LHE files will be printed in the terminal, which will be the path specified in the config parameter `lhe_file_path`.
 
-Now, the final step is to run the full CMSSW chain on these split LHE files and get nanoAODs out. The cmsDriver commands are written to emulate 2016 MC with 2017 re-processing. If you would like to change that, edit [FullSim_files/Condor/runFullSim_condor.sh](runFullSim_condor.sh). And if you would like to change some more specific aspects of the model or hadronisation, either edit the config (as some parameters are detailed there) or [FullSim_files/Condor/writers/write_GS_fragment.py](write_GS_fragment.py). Now, just run
+Now, the final step is to run the full CMSSW chain on these split LHE files and get nanoAODs out. The cmsDriver commands are written to emulate 2016 MC with 2017 re-processing. If you would like to change that, edit [FullSim_files/Condor/runFullSim_condor.sh](runFullSim_condor.sh). And if you would like to change some more specific aspects of the model or hadronisation, either edit the config (as some parameters are detailed there) or [FullSim_files/Condor/writers/write_GS_fragment.py](write_GS_fragment.py). The batch system used for running the jobs is HTCondor, configured to run at lxplus (it _may_ run out of the box on other T2/T3 systems, but may need to be modified if specific requirements need to be met). Now, just run
 
 ```bash
 cd $SVJ_TOP_DIR/FullSim_files/Condor

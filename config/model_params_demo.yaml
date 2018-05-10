@@ -2,7 +2,7 @@
 # The key names cannot be changed
 # Paths can be given as local or absolute and strings are not required to be enclosed in quotes
 
-# Directory to deposit CMSSW releases and output root files from FullSim
+# Directory to deposit CMSSW releases and output root files from FullSim. Specify somewhere with a lot of space as output may be large
 work_space: /afs/cern.ch/work/e/ebhal/Semi_visible_jets_Condor_NewWorkflow
 
 # Directory to store LHE files created by MadGraph, and access them for FullSim running
