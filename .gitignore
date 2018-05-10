@@ -10,7 +10,6 @@ CMSSW*
 ebhal.cc
 *.root
 external/pip
-gridpacks
 Plots/
 MG_models/DMsimp_SVJ_s_spin1_mZp*
 MG_models/DMsimp_SVJ_t_mPhi*

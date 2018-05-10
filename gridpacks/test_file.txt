@@ -1,0 +1,2 @@
+Hello! This file is to make sure the gridpacks/ directory is part of the repository.
+This avoids anything weird when trying to copy a gridpack to this directory.
