@@ -68,15 +68,16 @@ def main():
     # Copy gridpack tarball to gridpacks/
     for tarball in glob.glob( os.path.join(genprod_dir, model_name+'*.xz') ):
         print "Copying {0} to gridpacks/".format( os.path.basename(tarball) )
-        shutil.copy(tarball, os.path.join(svj_top_dir, 'gridpacks'))
-        print "Copied gridpack to", os.path.join(svj_top_dir, 'gridpacks')
+        shutil.copyfile( tarball, os.path.join(svj_top_dir, 'gridpacks', os.path.basename(tarball)) )
+        os.remove(tarball)
+        
 
     # Run the script produced with the gridpack to get the LHE file out and copy to gridpacks/ dir
     random_seed = random.randint(0, 1000000)
     call("cd {0}; ./runcmsgrid.sh {1} {2}".format(lhe_gen_dir, total_events, random_seed), shell = True)
 
     lhe_output_path = os.path.join(svj_top_dir, 'gridpacks', model_name+'_LHE.lhe')
-    shutil.copy( os.path.join(lhe_gen_dir, 'cmsgrid_final.lhe'), lhe_output_path )
+    shutil.copyfile( os.path.join(lhe_gen_dir, 'cmsgrid_final.lhe'), lhe_output_path )
 
     # Delete untarred gridpack as it takes up unnecessary space
     shutil.rmtree(default_gridpack_dir)
