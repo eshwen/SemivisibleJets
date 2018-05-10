@@ -6,13 +6,6 @@ from progressbar import ProgressBar, Percentage, Bar, ETA
 
 # This script can be run either standalone with `python splitLHE.py [args]` or within another script by importing the file and calling the function `splitLHE(args)`
 
-parser = argparse.ArgumentParser()
-parser.add_argument("-i", "--inputFile", default = "unweighted_events.lhe", type = str, help = "Input LHE file")
-parser.add_argument("-o", "--outFileNameBase", default = "outputFile", type = str, help = "Base name for output files")
-parser.add_argument("-n", "--numFiles", default = 100, type = int, help = "Number of files to split input file in to") 
-args = parser.parse_args()
-
-
 def splitLHE(inputFile, outFileNameBase, numFiles):
     """
     Splits the LHE file inputFile into numFiles individual files of the form <outFileNameBase>_XXX.lhe
@@ -99,8 +92,15 @@ def splitLHE(inputFile, outFileNameBase, numFiles):
 
     for f in files:
         f.close()
- 
+
 
 if __name__ == '__main__':
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-i", "--inputFile", default = "unweighted_events.lhe", type = str, help = "Input LHE file")
+    parser.add_argument("-o", "--outFileNameBase", default = "outputFile", type = str, help = "Base name for output files")
+    parser.add_argument("-n", "--numFiles", default = 100, type = int, help = "Number of files to split input file in to") 
+    args = parser.parse_args()
+
     splitLHE(inputFile=args.inputFile, outFileNameBase=args.outFileNameBase, numFiles=args.numFiles)
     sys.exit("Completed")
