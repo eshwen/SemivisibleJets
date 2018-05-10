@@ -394,8 +394,9 @@ For questions or issues please contact:
 
 ## To do <a name="todo"></a>
 
-- Tidy up new FullSim Condor chain and make nicer.
+- Tidy up new complete sample production chain and make nicer.
 - Consider rewriting `write_submission_script.sh` in Python for FullSim Condor
+- Consider adding r_inv and alpha_d/Lambda_d to `model_name`
 - Finish the CRAB submission chain?
 - Change gen fragment such that the dark meson can decay into each type of SM quark. Would need to figure out how to distribute remaining branching fraction (1-r_inv) amongst the decays.
 - Change gen fragment such that there's hadronisation to two dark mesons (so n_f = 2 physical makes sense), with one species decaying invisibly and one to SM quarks. But would need to figure out how to implement r_inv such that the proportion of invisibly decaying dark mesons = r_inv.
