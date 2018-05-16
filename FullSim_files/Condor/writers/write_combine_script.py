@@ -30,7 +30,7 @@ cmsenv
 cd {0}
 {1}/Utils/haddnano.py {0}/output/{2}_nanoAOD_final.root {0}/output/{2}*NANOAOD*.root
 mkdir {0}/output/components
-mv {0}/output/{2}*NANOAOD*.root {0}/output/components
+mv {0}/output/{2}_NANOAOD_*.root {0}/output/components
     """.format(work_space, svj_top_dir, model_name)
     )
     writeFile.close()
