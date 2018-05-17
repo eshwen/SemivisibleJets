@@ -11,7 +11,7 @@ cmsTextFont   = 61
 
 writeExtraText = True
 # Spaces required in extraText for alignment purposes
-extraText   = "        Preliminary"
+extraText   = "          Preliminary"
 extraTextFont = 52 
 
 lumiTextSize     = 0.6
