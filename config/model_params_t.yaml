@@ -7,12 +7,13 @@ n_events: 100
 n_jobs: 500
 alpha_d: 0.23
 process_type: "t-channel"
-m_med: 2500
-m_d: 20
+m_med: 3000
+m_d: 100
 n_f: 1
 r_inv: 0.3
-x_sec: 97.0
 
 
-model_name: DMsimp_SVJ_t_mPhi-2500_mDQ-20
+
+model_name: DMsimp_SVJ_t_mPhi-3000_mDQ-100
 total_events: 50000
+x_sec: 0.0874

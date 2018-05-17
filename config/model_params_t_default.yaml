@@ -2,17 +2,16 @@
 # See model_params_demo.yaml for examples and descriptions
 
 work_space: /afs/cern.ch/work/e/ebhal/Semi_visible_jets_Condor_v4
-lhe_file_path: /afs/cern.ch/work/e/ebhal/public/DMsimp_SVJ_s_spin1_splitLHE
+lhe_file_path: /afs/cern.ch/work/e/ebhal/public/DMsimp_SVJ_t_splitLHE
 n_events: 100
 n_jobs: 500
 alpha_d: 0.23
-process_type: "s-channel"
-m_med: 3000
-m_d: 100
+process_type: "t-channel"
+m_med: 1000
+m_d: 10
 n_f: 1
 r_inv: 0.3
 
-
-model_name: DMsimp_SVJ_s_spin1_mZp-3000_mDQ-100
+model_name: DMsimp_SVJ_t_mPhi-1000_mDQ-10
 total_events: 50000
-x_sec: 0.8747
+x_sec: 96.99
