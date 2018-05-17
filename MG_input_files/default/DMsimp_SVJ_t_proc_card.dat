@@ -19,7 +19,7 @@
 #*                                                          *
 #************************************************************
 
-import DMsimp_tchannel
+import DMsimp_SVJ_t
 define gv = gv11 gv12 gv21 gv22
 define gv~ = gv11~ gv12~ gv21~ gv22~
 define j = g u c t d b s g u~ c~ t~ d~ b~ s~
@@ -27,7 +27,7 @@ generate p p > gv gv~
 add process p p > gv gv~ j
 add process p p > gv gv~ j j
 # Output directory
-output /afs/cern.ch/work/e/ebhal/MG_output/DMSVJ_t_channel
+output /afs/cern.ch/work/e/ebhal/DMsimp_SVJ_t
 
 launch
 set nevents 50000
