@@ -2,6 +2,7 @@
 from ROOT import TFile, TCanvas, gStyle, TLatex, TLegend, TH1F
 import os
 import CMS_lumi
+from math import pi
 from progressbar import ProgressBar, Percentage, Bar, ETA
 
 # Define global variables
@@ -68,12 +69,14 @@ def main():
     jetPtHist = [None] * len(models)
     leadJetPtHist = [None] * len(models)
     metPtHist = [None] * len(models)
+    dPhiJJHist = [None] * len(models)
 
     # x-axis labels for plots
-    nJetLabel = "n_{jet}"
-    jetPtLabel = "p_{T}^{jet}"
-    leadJetPtLabel = "p_{T}^{j_{1}}"
-    metPtLabel = "E_{T}^{miss}"
+    nJetLabel = "#it{n}_{jet}"
+    jetPtLabel = "#it{p}_{T}^{jet}"
+    leadJetPtLabel = "#it{p}_{T}^{j_{1}}"
+    metPtLabel = "#it{E}_{T}^{miss}"
+    dPhiJJLabel = "#Delta#it{#phi}_{j_{1} j_{2}}"
 
     # Initialise histograms here so I can use them later
     for i, model in enumerate(models):
@@ -81,6 +84,7 @@ def main():
         jetPtHist[i] = TH1F("jetPt"+model, "Jet pT dist "+model, 30, 0, 3000)
         leadJetPtHist[i] = TH1F("leadJetPt"+model, "Lead jet pT dist "+model, 30, 0, 3000)
         metPtHist[i] = TH1F("met"+model, "MET dist "+model, 30, 0, 3000)
+        dPhiJJHist[i] = TH1F("dPhijj"+model, "DPhi dist "+model, 20, -1*(pi+0.1), pi+0.1)
     
 
     # Open root files, then draw individual histograms
@@ -101,9 +105,14 @@ def main():
         
             for jet in xrange( len(tree.Jet_pt) ):
                 jetPtHist[i].Fill(tree.Jet_pt[jet])
-        
+
             if len(tree.Jet_pt) > 0: leadJetPtHist[i].Fill(tree.Jet_pt[0])
             metPtHist[i].Fill(tree.MET_pt)
+
+            if len(tree.Jet_phi) >=2:
+                deltaPhi = tree.Jet_phi[0] - tree.Jet_phi[1]
+                dPhiJJHist[i].Fill(deltaPhi)
+        
 
             pbar.update(entry+1)
         
@@ -114,6 +123,7 @@ def main():
         drawIndivHistos(model, jetPtHist[i], canv, myLeg, jetPtLabel, "jetPT", index=i)
         drawIndivHistos(model, leadJetPtHist[i], canv, myLeg, leadJetPtLabel, "leadJetPT", index=i)
         drawIndivHistos(model, metPtHist[i], canv, myLeg, metPtLabel, "MET", index=i)
+        drawIndivHistos(model, dPhiJJHist[i], canv, myLeg, dPhiJJLabel, "dPhi", index=i)
     
 
     # Draw histograms for different models overlaid
@@ -121,6 +131,7 @@ def main():
     drawMultipleHistos(jetPtHist, canv, myLeg, jetPtLabel, "jetPT")
     drawMultipleHistos(leadJetPtHist, canv, myLeg, leadJetPtLabel, "leadJetPT")
     drawMultipleHistos(metPtHist, canv, myLeg, metPtLabel, "MET")
+    drawMultipleHistos(dPhiJJHist, canv, myLeg, dPhiJJLabel, "dPhi")
 
 
 if __name__ == '__main__':

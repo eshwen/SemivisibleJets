@@ -396,7 +396,6 @@ For questions or issues please contact:
 
 ## To do <a name="todo"></a>
 
-- In `plotSVJHistos.py`, add a histogram to plot deltaPhi between leading and sub-leading jet. Make sure x-axis label uses proper labels.
 - Tidy up new complete sample production chain and make nicer.
 - Consider rewriting `write_submission_script.sh` in Python for FullSim Condor
 - Consider adding r_inv and alpha_d/Lambda_d to `model_name`
