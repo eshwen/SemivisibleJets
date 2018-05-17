@@ -1,4 +1,4 @@
 import calcDarkParams
 import CMS_lumi
-import plotSVJhistos
+import plotSVJHistos
 from splitLHE import splitLHE

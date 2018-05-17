@@ -109,16 +109,15 @@ def main():
             if len(tree.Jet_pt) > 0: leadJetPtHist[i].Fill(tree.Jet_pt[0])
             metPtHist[i].Fill(tree.MET_pt)
 
-            if len(tree.Jet_phi) >=2:
+            if len(tree.Jet_phi) >= 2:
                 deltaPhi = tree.Jet_phi[0] - tree.Jet_phi[1]
-                dPhiJJHist[i].Fill(deltaPhi)
-        
+                dPhiJJHist[i].Fill(deltaPhi)        
 
             pbar.update(entry+1)
         
         pbar.finish()
 
-        # Draw histogram(s) and save
+        # Draw individual histograms and save
         drawIndivHistos(model, nJetHist[i], canv, myLeg, nJetLabel, "nJet", index=i)
         drawIndivHistos(model, jetPtHist[i], canv, myLeg, jetPtLabel, "jetPT", index=i)
         drawIndivHistos(model, leadJetPtHist[i], canv, myLeg, leadJetPtLabel, "leadJetPT", index=i)
