@@ -85,6 +85,7 @@ def main():
 
     # Open root files, then draw individual histograms
     for i, model in enumerate(models):
+        print "Running over model {0}/{1}.".format(i+1, len(models))
         rootFile = os.path.join(baseDir, model+"_nanoAOD_final.root")
         openFile = TFile(rootFile)
         tree = openFile.Get("Events")
@@ -93,7 +94,6 @@ def main():
         # Initialise progress bar
         widgets = [Percentage(), Bar('>'), ETA()]
         pbar = ProgressBar(widgets = widgets, maxval = nEntries).start()    
-        print "Running over model {0}/{1}".format(i, len(models))
 
         for entry in xrange(nEntries):
             treeEntry = tree.GetEntry(entry)
