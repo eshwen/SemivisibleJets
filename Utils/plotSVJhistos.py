@@ -72,10 +72,10 @@ def main():
     # x-axis labels for plots
     nJetLabel = "n_{jet}"
     jetPtLabel = "p_{T}^{jet}"
-    leadJetPtLabel = "p_{T}^{j_1}"
+    leadJetPtLabel = "p_{T}^{j_{1}}"
     metPtLabel = "E_{T}^{miss}"
 
-    # Initialise histograms
+    # Initialise histograms here so I can use them later
     for i, model in enumerate(models):
         nJetHist[i] = TH1F("nJet"+model, "nJet dist "+model, 30, 0, 29)
         jetPtHist[i] = TH1F("jetPt"+model, "Jet pT dist "+model, 30, 0, 3000)
@@ -93,6 +93,7 @@ def main():
         # Initialise progress bar
         widgets = [Percentage(), Bar('>'), ETA()]
         pbar = ProgressBar(widgets = widgets, maxval = nEntries).start()    
+        print "Running over model {0}/{1}".format(i, len(models))
 
         for entry in xrange(nEntries):
             treeEntry = tree.GetEntry(entry)
