@@ -53,10 +53,10 @@ def main():
     print "Confinement scale Lambda_d =", Lambda_d
 
     # Rescale Lambda_d if too low (should be >= m_d), then recalc alpha_d
-    if Lambda_d < m_d:
-        Lambda_d = 1.1 * m_d
-        alpha_d = cDP.calcAlphaD(n_c, n_f, Lambda_d)
-        print "Recalculated alpha_d =", alpha_d
+    #if Lambda_d < m_d:
+    #    Lambda_d = 1.1 * m_d
+    #    alpha_d = cDP.calcAlphaD(n_c, n_f, Lambda_d)
+    #    print "Recalculated alpha_d =", alpha_d
 
     # Run the rest of the chain
     call( "./submitFullSim_condor.sh {0} {1} {2} {3} {4} {5} {6}".format( work_space, lhe_file_path, model_name, n_events, n_jobs, Lambda_d, os.path.abspath(args.config) ), shell = True)

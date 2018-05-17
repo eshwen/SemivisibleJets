@@ -382,6 +382,8 @@ $work_space/resubmit_${model_name}.sh
 
 (note that all jobs must _finish running_ first). When happy, the component output files can be combined using [haddnano.py](Utils/haddnano.py). A script which does that step will be in `$work_space/combineOutput_${model_name}.sh`, which can be run without any arguments.
 
+Some rudimentary plotting, for a quick look at distributions, can be done by running [Utils/plotSVJhistos.py](plotSVJhistos.py). You just need to specify the base directory of the root files and the model names.
+
 
 ## Contact <a name="contact"></a>
 
@@ -394,6 +396,7 @@ For questions or issues please contact:
 
 ## To do <a name="todo"></a>
 
+- In `plotSVJHistos.py`, add a histogram to plot deltaPhi between leading and sub-leading jet. Make sure x-axis label uses proper labels.
 - Tidy up new complete sample production chain and make nicer.
 - Consider rewriting `write_submission_script.sh` in Python for FullSim Condor
 - Consider adding r_inv and alpha_d/Lambda_d to `model_name`
@@ -402,5 +405,6 @@ For questions or issues please contact:
 - Change gen fragment such that there's hadronisation to two dark mesons (so n_f = 2 physical makes sense), with one species decaying invisibly and one to SM quarks. But would need to figure out how to implement r_inv such that the proportion of invisibly decaying dark mesons = r_inv.
 - Figure out how to change dark quarks to spin-1/2 in MadGraph model files. Find out if that will affect decays or anything.
 - Find out if changing the masses of the particles in MadGraph model files will change, e.g., parameters in decays.py or any other files.
-- Whenever I change/update things, remember to update the README as well
 - See if I still need to do the confinement scale rescaling
+
+- Whenever I change/update things, remember to update the README as well
