@@ -30,7 +30,9 @@ SVJ_build_python_path(){
 SVJ_cvmfs_PythonDir=/cvmfs/sft.cern.ch/lcg/releases/Python/2.7.13-597a5/x86_64-slc6-gcc62-opt/
 SVJ_cvmfs_PipDir=/cvmfs/sft.cern.ch/lcg/releases/pip/8.1.2-c9f5a/x86_64-slc6-gcc62-opt/
 SVJ_cvmfs_GCCSetup=/cvmfs/sft.cern.ch/lcg/contrib/gcc/6.2/x86_64-slc6/setup.sh
+SVJ_cvmfs_RootSetup=/cvmfs/sft.cern.ch/lcg/releases/LCG_88/ROOT/6.08.06/x86_64-slc6-gcc62-opt/bin/thisroot.sh
 source "${SVJ_cvmfs_GCCSetup}"
+source "${SVJ_cvmfs_RootSetup}"
 
 export SVJ_TOP_DIR="$(SVJ_top_dir)"
 export SVJ_EXTERNALS_DIR="$(SVJ_top_dir)/external"
@@ -44,4 +46,4 @@ export PATH="$(SVJ_build_sys_path)"
 python -m pip install --prefix "${SVJ_EXTERNALS_DIR}"/pip -U setuptools --ignore-installed
 python -m pip install --prefix "${SVJ_EXTERNALS_DIR}"/pip -r requirements.txt --ignore-installed
 
-unset SVJ_cvmfs_{PythonDir,PipDir,GCCSetup}
+unset SVJ_cvmfs_{PythonDir,PipDir,GCCSetup,RootSetup}
