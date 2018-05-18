@@ -36,17 +36,20 @@ def main():
     n_events = input_params['n_events']
     n_jobs = input_params['n_jobs']
     m_d = input_params['m_d']
+    r_inv = input_params['r_inv']
 
 
     # Checking arguments in config file
     if not all (type(i) is int for i in [n_events, n_jobs]):
         raise TypeError('n_events and n_jobs are all required to be integers.')
     if m_d < 0 or m_med < 0:
-        raise ValueError('m_d must be positive.')
+        raise ValueError('m_d and m_med must be positive.')
     if m_med < 2*m_d:
         raise ValueError('m_med must be greater than 2*m_d for on-shell pair production of the dark quarks.')
     if not 's-channel' in process_type and not 't-channel' in process_type:
         raise ValueError('Unknown process_type specified. Please either specify \'s-channel\' or \'t-channel\'.')
+    if r_inv < 0 or r_inv > 1.0:
+        raise ValueError('r_inv is required to be in the range 0 < r_inv < 1.0.')
 
 
     # Set process-specific variables
@@ -59,7 +62,7 @@ def main():
         model_prefix = 'DMsimp_SVJ_t'
         default_model_dir = os.path.join( os.environ['SVJ_MODELS_DIR'], 'DMsimp_SVJ_t_editTemplate')
 
-    model_name = model_prefix + '_m' + med_type + '-' + str(m_med) + '_mDQ-' + str(m_d)
+    model_name = model_prefix + '_m' + med_type + '-' + str(m_med) + '_mDQ-' + str(m_d) + '_rinv-' + str(r_inv).replace('.', 'p')
     total_events = n_events * n_jobs
 
 
