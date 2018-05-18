@@ -1,4 +1,5 @@
 import argparse
+from colorama import Fore, Style
 import glob
 import os
 import pprint
@@ -15,6 +16,7 @@ parser.add_argument("-c", "--config", type = str, default = os.path.join(os.envi
 args = parser.parse_args()
 
 
+
 def main():
     """
     Handle the input and parsing from a YAML config file for submitGridpackGeneration.sh.
@@ -25,7 +27,8 @@ def main():
     print "Using config file", args.config
     input_params = yaml.load( open(args.config, 'r') )
 
-    print "The arguments you have set are the following:\n", pprint.pprint(input_params)
+    print Fore.CYAN + "The arguments you have set are the following:\n", pprint.pprint(input_params)
+    print Style.RESET_ALL
 
     # Set variables from config file
     process_type = input_params['process_type']
@@ -105,7 +108,7 @@ total_events: {1}
         paramsFile.truncate()
         paramsFile.write(newStr)
         paramsFile.close()
-        print "New parameters written in model files!"
+        print Fore.MAGENTA + "New parameters written in model files!", Style.RESET_ALL
 
 
     input_cards_dir = os.path.join( os.environ['SVJ_MG_INPUT_DIR'], model_name+"_input" )
@@ -136,12 +139,12 @@ total_events: {1}
         card.truncate()
         card.write(newStr)
         card.close()
-        print "Parameters written for input card", os.path.basename(modelFile)
+        print Fore.MAGENTA + "Parameters written for input card", os.path.basename(modelFile), Style.RESET_ALL
 
 
     # Zip up model directory, specifying basedir to zip enclosing folder, not just files
     shutil.make_archive(os.path.join(input_cards_dir, model_name), 'tar', os.environ['SVJ_MODELS_DIR'], model_name)
-    print "Copied model files to input directory!"
+    print Fore.MAGENTA + "Copied model files to input directory!", Style.RESET_ALL
 
     # Require relative path between MG input files and genproductions' gridpack generation script
     rel_cards_dir = os.path.relpath(input_cards_dir, os.environ['MG_GENPROD_DIR'])

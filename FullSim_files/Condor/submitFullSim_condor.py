@@ -1,4 +1,5 @@
 import argparse
+from colorama import Fore, Style
 import os
 import pprint
 from subprocess import call
@@ -6,9 +7,12 @@ import sys
 import yaml
 import calcDarkParams as cDP
 
+
 parser = argparse.ArgumentParser()
 parser.add_argument("-c", "--config", type = str, default = os.path.join(os.environ['SVJ_TOP_DIR'], "config", "model_params_s_spin1.yaml"), help = "Path to YAML config to parse")
 args = parser.parse_args()
+
+
 
 def main():
     """
@@ -19,9 +23,9 @@ def main():
     print "Using config file", args.config
     input_params = yaml.load( open(args.config, 'r') )
 
-    print "The arguments you have set are the following:\n", pprint.pprint(input_params)
+    print Fore.CYAN + "The arguments you have set are the following:\n", pprint.pprint(input_params)
+    print Style.RESET_ALL
 
-    # Tidy this in a loop?
     work_space = input_params['work_space']
     lhe_file_path = input_params['lhe_file_path']
     n_events = input_params['n_events']
@@ -61,6 +65,7 @@ def main():
     # Run the rest of the chain
     call( "./submitFullSim_condor.sh {0} {1} {2} {3} {4} {5} {6}".format( work_space, lhe_file_path, model_name, n_events, n_jobs, Lambda_d, os.path.abspath(args.config) ), shell = True)
     
+
 
 if __name__ == '__main__':
     main()

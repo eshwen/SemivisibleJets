@@ -1,4 +1,5 @@
 import argparse
+from colorama import Fore, Style
 import glob
 import os
 import pprint
@@ -9,21 +10,24 @@ from splitLHE import splitLHE
 from subprocess import call
 import yaml
 
+
 parser = argparse.ArgumentParser()
 parser.add_argument("-c", "--config", type = str, default = os.path.join(os.environ['SVJ_TOP_DIR'], "config", "model_params_s_spin1.yaml"), help = "Path to YAML config to parse")
 args = parser.parse_args()
 
+
+
 def main():
     """
-    Handle the input and parsing from a YAML config file, and .
-
+    Handle the input and parsing from a YAML config file. Run gridpack to retrieve LHE file, then split it and move output to directory specified by user.
     """
 
     # Load YAML config into a dictionary and assign values to variables for cleanliness
     print "Using config file", args.config
     input_params = yaml.load( open(args.config, 'r') )
 
-    print "The arguments you have set are the following:\n", pprint.pprint(input_params)
+    print Fore.CYAN + "The arguments you have set are the following:\n", pprint.pprint(input_params)
+    print Style.RESET_ALL
 
     model_name = input_params['model_name']
     total_events = input_params['total_events']
@@ -95,7 +99,7 @@ def main():
     for splitFile in glob.glob( os.path.join(os.getcwd(), model_name+'_split*.lhe') ):
         shutil.copy(splitFile, split_lhe_file_path)
         os.remove(splitFile)
-    print "Split LHE files copied to", split_lhe_file_path
+    print Fore.MAGENTA + "Split LHE files copied to", split_lhe_file_path, Style.RESET_ALL
 
 
 

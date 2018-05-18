@@ -1,14 +1,18 @@
 #!/usr/bin/python 
-from ROOT import TFile, TCanvas, gStyle, TLatex, TLegend, TH1F
-import os
 import CMS_lumi
+from colorama import Fore, init
 from math import pi
+import os
 from progressbar import ProgressBar, Percentage, Bar, ETA
+from ROOT import TFile, TCanvas, gStyle, TLatex, TLegend, TH1F
 
 # Define global variables
 baseDir = "/afs/cern.ch/work/e/ebhal/Semi_visible_jets_Condor/v3"
 models = ["DMsimp_SVJ_s_spin1_mZp-1000_mDQ-10", "DMsimp_SVJ_t_mPhi-1000_mDQ-10"]
 rootColours = [4, 2, 3, 1, 6, 5, 7, 8, 9] # length needs to be >= len(models)
+
+# Reset terminal colours after print statement in which they've changed
+init(autoreset=True)
 
 # Add CMS-style plot header
 def addPlotTitle(canvas):
@@ -89,7 +93,7 @@ def main():
 
     # Open root files, then draw individual histograms
     for i, model in enumerate(models):
-        print "Running over model {0}/{1}.".format(i+1, len(models))
+        print Fore.MAGENTA + "Running over model {0}/{1}.".format(i+1, len(models))
         rootFile = os.path.join(baseDir, model+"_nanoAOD_final.root")
         openFile = TFile(rootFile)
         tree = openFile.Get("Events")
