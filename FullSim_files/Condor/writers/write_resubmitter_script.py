@@ -1,5 +1,6 @@
 #!/usr/bin/env python2
 import argparse
+from colorama import Fore, Style
 import os
 from subprocess import call
 
@@ -37,7 +38,7 @@ done
     writeFile.close()
 
     call("chmod +x {0}".format(filePath), shell = True)
-    print "Resubmission script written!"
+    print Fore.MAGENTA + "Resubmission script written!", Style.RESET_ALL
 
 
 if __name__ == '__main__':

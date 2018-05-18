@@ -1,5 +1,6 @@
 #!/usr/bin/env python2
 import argparse
+from colorama import Fore, Style
 import os
 from subprocess import call
 
@@ -36,7 +37,7 @@ mv {0}/output/{2}_NANOAOD_*.root {0}/output/components
     writeFile.close()
 
     call("chmod +x {0}".format(filePath), shell = True)
-    print "Hadding script written!"
+    print Fore.MAGENTA + "Hadding script written!", Style.RESET_ALL
 
 
 if __name__ == '__main__':
