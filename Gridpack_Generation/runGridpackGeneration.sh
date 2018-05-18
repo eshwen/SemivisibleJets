@@ -23,10 +23,10 @@ unset CC
 unset COMPILER_PATH
 unset CXX
 
-echo "Sometimes gridpack generation can fail.
+printf "\e[1;33mSometimes gridpack generation can fail.
 MadGraph is quite temperamental and so can fail when running subprocess for a model.
 When running on batch, disk quotas can also be exceeded.
-If the creation fails at any point, simply remove the directory created in $MG_GENPROD_DIR and retry."
+If the creation fails at any point, simply remove the directory created in $MG_GENPROD_DIR and retry.\n\e[0m"
 
 sleep 15
 
