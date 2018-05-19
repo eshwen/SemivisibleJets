@@ -23,7 +23,7 @@ def main():
 
     # Write bash combine script
     writeFile.write("""#!/bin/bash
-echo "Warning: May take a while to hadd if many files are present"
+printf "\e[1;33mWarning: May take a while to hadd if many files are present\n\e[0m"
 shopt -s expand_aliases
 source /cvmfs/cms.cern.ch/cmsset_default.sh 
 cd {0}/CMSSW_9_4_4/src
