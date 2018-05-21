@@ -40,8 +40,8 @@ def main():
 
 
     # Checking arguments in config file
-    if not all (type(i) is int for i in [n_events, n_jobs]):
-        raise TypeError('n_events and n_jobs are all required to be integers.')
+    if not all (type(i) is int for i in [n_events, n_jobs, m_med, m_d]):
+        raise TypeError('{0} is required to be an integer.'.format(i))
     if m_d < 0 or m_med < 0:
         raise ValueError('m_d and m_med must be positive.')
     if m_med < 2*m_d:

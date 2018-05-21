@@ -20,10 +20,10 @@ alpha_d: 0.23
 # Process type (s-channel or t-channel)
 process_type: "s-channel"
 
-# Mass of mediator (Z' for s-channel, Phi for t-channel)
+# Mass of mediator (Z' for s-channel, Phi for t-channel) in GeV
 m_med: 1000
 
-# Mass of dark quarks to specify in MadGraph model files
+# Mass of dark quarks in GeV
 m_d: 10
 
 # Number of dark hadron flavours. n_f = 2 recommended by theorists
@@ -36,7 +36,7 @@ r_inv: 0.3
 # The following parameters are written by various scripts as they are not set by the user
 
 # Descriptive identifier for model. Written in submitGridpackGeneration.py. MAYBE ADD ALPHA_D TO THIS
-model_name: DMsimp_SVJ_s_spin1_mZp-1000_mDQ-10
+model_name: DMsimp_SVJ_s_spin1_mZp-1000_mDQ-10_rinv-0p3
 
 # total_events written in submitGridpackGeneration.py
 total_events: 50000
