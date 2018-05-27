@@ -1,4 +1,5 @@
 import argparse
+from checkConfig import performThoroughChecks
 from colorama import Fore, Style
 import os
 import pprint
@@ -39,22 +40,13 @@ def main():
     x_sec = input_params['x_sec']
     process_type = input_params['process_type']
 
-
-    # Checking arguments in config file
-    if not os.path.exists(lhe_file_path):
-        raise ValueError('The LHE file path you have specified does not exist.')
-    if not all (type(i) is int for i in [n_events, n_jobs, n_f]):
-        raise TypeError('n_events, n_jobs and n_f are all required to be integers.')
-    if m_d < 0 or x_sec < 0.0 or  r_inv < 0.0 or r_inv > 1.0:
-        raise ValueError('m_d and x_sec must be positive, and 0 < r_inv < 1.')
-    if not 's-channel' in process_type and not 't-channel' in process_type:
-        raise ValueError('Unknown process_type specified. Please either specify \'s-channel\' or \'t-channel\'.')
-
+    # Check arguments in config file
+    performThoroughChecks(input_params)
 
     # Calculate Lambda_d (confinement scale)
     n_c = 2
     Lambda_d = cDP.calcLambdaD(n_c, n_f, alpha_d)
-    print "Confinement scale Lambda_d =", Lambda_d
+    print Fore.MAGENTA + "Confinement scale Lambda_d =", Lambda_d, Style.RESET_ALL
 
     # Rescale Lambda_d if too low (should be >= m_d), then recalc alpha_d
     #if Lambda_d < m_d:

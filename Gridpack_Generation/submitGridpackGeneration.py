@@ -1,4 +1,5 @@
 import argparse
+from checkConfig import performBasicChecks
 from colorama import Fore, Style
 import glob
 import os
@@ -38,22 +39,11 @@ def main():
     m_d = input_params['m_d']
     r_inv = input_params['r_inv']
 
-
-    # Checking arguments in config file
-    if not all (type(i) is int for i in [n_events, n_jobs, m_med, m_d]):
-        raise TypeError('{0} is required to be an integer.'.format(i))
-    if m_d < 0 or m_med < 0:
-        raise ValueError('m_d and m_med must be positive.')
-    if m_med < 2*m_d:
-        raise ValueError('m_med must be greater than 2*m_d for on-shell pair production of the dark quarks.')
-    if not 's-channel' in process_type and not 't-channel' in process_type:
-        raise ValueError('Unknown process_type specified. Please either specify \'s-channel\' or \'t-channel\'.')
-    if r_inv < 0 or r_inv > 1.0:
-        raise ValueError('r_inv is required to be in the range 0 < r_inv < 1.0.')
-
+    # Check arguments in config file
+    performBasicChecks(input_params)
 
     # Set process-specific variables
-    elif 's-channel' in process_type:
+    if 's-channel' in process_type:
         med_type = 'Zp'
         model_prefix = 'DMsimp_SVJ_s_spin1'
         default_model_dir = os.path.join( os.environ['SVJ_MODELS_DIR'], 'DMsimp_SVJ_s_spin1_editTemplate')
@@ -112,6 +102,11 @@ total_events: {1}
         paramsFile.write(newStr)
         paramsFile.close()
         print Fore.MAGENTA + "New parameters written in model files!", Style.RESET_ALL
+
+
+    # Write param_card text file
+    call('python {0}'.format( os.path.join(new_model_dir, 'write_param_card.py') ), shell=True)
+    shutil.move( 'param_card.dat', os.path.join(new_model_dir, 'param_card.dat') )
 
 
     input_cards_dir = os.path.join( os.environ['SVJ_MG_INPUT_DIR'], model_name+"_input" )
