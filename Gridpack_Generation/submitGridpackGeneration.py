@@ -1,6 +1,6 @@
 import argparse
 from checkConfig import performBasicChecks
-from colorama import Fore, Style
+from colorama import Fore, init
 import glob
 from loadYamlConfig import loadYamlConfig
 import os
@@ -11,6 +11,9 @@ from subprocess import call
 import sys
 import yaml
 
+
+# Reset text colours after colourful print statements
+init(autoreset=True)
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-c", "--config", type = str, default = os.path.join(os.environ['SVJ_TOP_DIR'], "config", "model_params_s_spin1.yaml"), help = "Path to YAML config to parse")
@@ -53,32 +56,28 @@ def main():
 
 
     # If required, append config file with new parameters for simplicity in future steps
-    config_read = open(args.config, 'r')
-    config_orig_str = config_read.read()
-    config_read.close()
+    read_config_file = open(args.config, 'r')
+    config_orig_str = read_config_file.read()
+    read_config_file.close()
     if model_name in config_orig_str and str(total_events) in config_orig_str:
         print "No need to append config file with new parameters!"
     else:
-        print "Appending config file with new parameters..."
-        config_append = open(args.config, 'r+')
-        original_str = config_append.readlines()
+        print Fore.CYAN + "Appending config file with new parameters..."
+        appended_config_file = open(args.config, 'r+')
+        original_str = appended_config_file.readlines()
         # Delete contents of file and update
-        config_append.seek(0)
-        config_append.truncate()        
+        appended_config_file.seek(0)
+        appended_config_file.truncate()        
 
         # Strip model name and total events if they've changed since last use of config
         for i in xrange( len(original_str) ):
             if 'model_name' in original_str[i] or 'total_events' in original_str[i]:
                 continue
             else:
-                config_append.write(original_str[i])
+                appended_config_file.write(original_str[i])
         # Write new model name and total number of events
-        config_append.write("""
-model_name: {0}
-total_events: {1}
-""".format(model_name, total_events)
-        )
-        config_append.close()
+        appended_config_file.write( "\nmodel_name: {0}\ntotal_events: {1}\n".format(model_name, total_events) )
+        appended_config_file.close()
 
 
     new_model_dir = os.path.join(os.environ['SVJ_MODELS_DIR'], model_name)
@@ -86,18 +85,18 @@ total_events: {1}
         print "Model of type {0} with parameters m_med = {1}, m_d = {2} already exists! No need to create it.".format(process_type, m_med, m_d)
     else:
         # Copy model files to new directory and change relevant parameters according to config
-        print "Copying template model..."
+        print Fore.CYAN + "Copying template model..."
         shutil.copytree(default_model_dir, new_model_dir)
         # Read the parameters file (containing the dark particle masses) in the new model directory
-        paramsFile = open( os.path.join(new_model_dir, 'parameters.py'), 'r+')
-        oldStr = Template( paramsFile.read() )
+        params_file = open( os.path.join(new_model_dir, 'parameters.py'), 'r+')
+        oldStr = Template( params_file.read() )
         # Replace placeholders with those chosen by use
-        newStr = oldStr.substitute(dark_quark_mass = str(m_d), mediator_mass = str(m_med))
-        paramsFile.seek(0)
-        paramsFile.truncate()
-        paramsFile.write(newStr)
-        paramsFile.close()
-        print Fore.MAGENTA + "New parameters written in model files!", Style.RESET_ALL
+        newStr = oldStr.substitute( dark_quark_mass = str(m_d), mediator_mass = str(m_med) )
+        params_file.seek(0)
+        params_file.truncate()
+        params_file.write(newStr)
+        params_file.close()
+        print Fore.MAGENTA + "New parameters written in model files!"
 
 
     # Write param_card text file
@@ -117,7 +116,7 @@ total_events: {1}
 
 
     # Copy MadGraph input files from template card directory
-    # Even if input_cards_dir existed before, copy the template files over in case oarameters have changed
+    # Even if input_cards_dir existed before, copy the template files over in case parameters have changed
     for inFile in glob.glob( os.path.join(os.environ['SVJ_MG_INPUT_DIR'], model_prefix+'_input_template/*.dat') ):
         # Get the suffix of the template card for specifying the basename in the dest. path
         card_type = re.search("(?<={0})(\w+).dat".format(model_prefix), inFile).group(0)
@@ -125,24 +124,24 @@ total_events: {1}
 
     # In input files, replace placeholders with values chosen by user
     for modelFile in glob.glob( os.path.join(input_cards_dir, '*.dat') ):
-        card = open(modelFile, 'r+')
-        oldStr = card.read()
+        mg_card = open(modelFile, 'r+')
+        oldStr = mg_card.read()
         # Make sure there are no curly braces in the input cards except those containing the placeholders
-        newStr = oldStr.format(modelName = model_name, totalEvents = str(total_events)) 
-        card.seek(0)
-        card.truncate()
-        card.write(newStr)
-        card.close()
-        print Fore.MAGENTA + "Parameters written for input card", os.path.basename(modelFile), Style.RESET_ALL
+        newStr = oldStr.format( modelName = model_name, totalEvents = str(total_events) )
+        mg_card.seek(0)
+        mg_card.truncate()
+        mg_card.write(newStr)
+        mg_card.close()
+        print Fore.MAGENTA + "Parameters written for input card", os.path.basename(modelFile)
 
 
     # Zip up model directory, specifying basedir to zip enclosing folder, not just files
     shutil.make_archive(os.path.join(input_cards_dir, model_name), 'tar', os.environ['SVJ_MODELS_DIR'], model_name)
-    print Fore.MAGENTA + "Copied model files to input directory!", Style.RESET_ALL
+    print Fore.MAGENTA + "Copied model files to input directory!"
 
     # Require relative path between MG input files and genproductions' gridpack generation script
     rel_cards_dir = os.path.relpath(input_cards_dir, os.environ['MG_GENPROD_DIR'])
-    
+
     # Run the gridpack generation
     call( "./runGridpackGeneration.sh {0} {1}".format(model_name, rel_cards_dir), shell = True)
 

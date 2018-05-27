@@ -1,6 +1,6 @@
 import argparse
 from checkConfig import performBasicChecks
-from colorama import Fore, Style
+from colorama import Fore, init
 import glob
 from loadYamlConfig import loadYamlConfig
 import os
@@ -11,6 +11,9 @@ from splitLHE import splitLHE
 from subprocess import call
 import yaml
 
+
+# Reset text colours after colourful print statements
+init(autoreset=True)
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-c", "--config", type = str, default = os.path.join(os.environ['SVJ_TOP_DIR'], "config", "model_params_s_spin1.yaml"), help = "Path to YAML config to parse")
@@ -47,31 +50,31 @@ def main():
     log_file.close()
 
     # Append cross section to config file if not included already
-    config_read = open(args.config, 'r')
-    config_orig_str = config_read.read()
-    config_read.close()
+    read_config_file = open(args.config, 'r')
+    config_orig_str = read_config_file.read()
+    read_config_file.close()
     if str(x_sec) in config_orig_str:
         print "No need to append config file with new cross section!"
     else:
-        print "Appending config file with cross section as calculated by MadGraph..."
-        config_append = open(args.config, 'r+')
-        original_str = config_append.readlines()
-        config_append.seek(0)
-        config_append.truncate()
+        print Fore.CYAN + "Appending config file with cross section as calculated by MadGraph..."
+        appended_cfg = open(args.config, 'r+')
+        original_str = appended_cfg.readlines()
+        appended_cfg.seek(0)
+        appended_cfg.truncate()
 
         for i in xrange( len(original_str) ):
             if 'x_sec' in original_str[i]:
                 continue
             else:
-                config_append.write(original_str[i])
+                appended_cfg.write(original_str[i])
 
-        config_append.write("x_sec: {0}\n".format(x_sec))
-        config_append.close()
+        appended_cfg.write("x_sec: {0}\n".format(x_sec))
+        appended_cfg.close()
 
 
     # Copy gridpack tarball to gridpacks/
     for tarball in glob.glob( os.path.join(genprod_dir, model_name+'*.xz') ):
-        print "Copying {0} to gridpacks/".format( os.path.basename(tarball) )
+        print Fore.CYAN + "Copying {0} to gridpacks/".format( os.path.basename(tarball) )
         shutil.copyfile( tarball, os.path.join(svj_top_dir, 'gridpacks', os.path.basename(tarball)) )
         os.remove(tarball)
         
@@ -85,11 +88,11 @@ def main():
 
     # Delete untarred gridpack as it takes up unnecessary space
     shutil.rmtree(default_gridpack_dir)
-    print "Removed untarred version of gridpack!"
+    print Fore.MAGENTA + "Removed untarred version of gridpack!"
 
 
     # Split the LHE file, the output files being stored in the current directory
-    print "Splitting LHE file..."
+    print Fore.CYAN + "Splitting LHE file..."
     splitLHE(inputFile=lhe_output_path, outFileNameBase=model_name+'_split', numFiles=n_jobs)
     os.remove(lhe_output_path)
 
@@ -99,7 +102,7 @@ def main():
     for splitFile in glob.glob( os.path.join(os.getcwd(), model_name+'_split*.lhe') ):
         shutil.copy(splitFile, split_lhe_file_path)
         os.remove(splitFile)
-    print Fore.MAGENTA + "Split LHE files copied to", split_lhe_file_path, Style.RESET_ALL
+    print Fore.MAGENTA + "Split LHE files copied to", Fore.MAGENTA + split_lhe_file_path
 
 
 

@@ -1,16 +1,22 @@
-from colorama import Fore, Style
+from colorama import deinit, Fore, init, Style
 import pprint
 import yaml
+
 
 def loadYamlConfig(configFile):
     """
     Parse YAML config file and load into a dictionary.
     """
+    # Resets colour env. so config dict can be coloured
+    deinit()
 
     print "Using config file", configFile
     configDict = yaml.load( open(configFile, 'r') )
 
-    print Fore.CYAN + "The arguments you have set are the following:\n", pprint.pprint(configDict)
     print Style.RESET_ALL
+    print Fore.CYAN + "The arguments you have set are the following:\n", pprint.pprint(configDict)
+
+    # Reset colourful after print statement
+    init(autoreset=True)
 
     return configDict

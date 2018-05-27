@@ -1,6 +1,6 @@
 import argparse
 from checkConfig import performThoroughChecks
-from colorama import Fore, Style
+from colorama import Fore, init
 from loadYamlConfig import loadYamlConfig
 import os
 from subprocess import call
@@ -8,6 +8,9 @@ import sys
 import yaml
 import calcDarkParams as cDP
 
+
+# Reset text colours after colourful print statements
+init(autoreset=True)
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-c", "--config", type = str, default = os.path.join(os.environ['SVJ_TOP_DIR'], "config", "model_params_s_spin1.yaml"), help = "Path to YAML config to parse")
@@ -42,13 +45,13 @@ def main():
     # Calculate Lambda_d (confinement scale)
     n_c = 2
     Lambda_d = cDP.calcLambdaD(n_c, n_f, alpha_d)
-    print Fore.MAGENTA + "Confinement scale Lambda_d =", Lambda_d, Style.RESET_ALL
+    print Fore.MAGENTA + "Confinement scale Lambda_d =", Lambda_d
 
     # Rescale Lambda_d if too low (should be >= m_d), then recalc alpha_d
     #if Lambda_d < m_d:
     #    Lambda_d = 1.1 * m_d
     #    alpha_d = cDP.calcAlphaD(n_c, n_f, Lambda_d)
-    #    print "Recalculated alpha_d =", alpha_d
+    #    print Fore.MAGENTA + "Recalculated alpha_d =", alpha_d
 
     # Run the rest of the chain
     call( "./submitFullSim_condor.sh {0} {1} {2} {3} {4} {5} {6}".format( work_space, lhe_file_path, model_name, n_events, n_jobs, Lambda_d, os.path.abspath(args.config) ), shell = True)
