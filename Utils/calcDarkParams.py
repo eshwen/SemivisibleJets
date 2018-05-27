@@ -1,6 +1,7 @@
-#!/bin/env python 
-# Calculates alpha_d from Lambda_d, n_c, n_f
 import math
+
+# Calculates quantities required in semi-visible jet models
+
 
 def calcAlphaD(n_c, n_f, Lambda_d):
     b_param = calcBParam(n_c, n_f)
