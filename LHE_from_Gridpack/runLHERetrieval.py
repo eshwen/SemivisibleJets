@@ -1,8 +1,9 @@
 import argparse
+from checkConfig import performBasicChecks
 from colorama import Fore, Style
 import glob
+from loadYamlConfig import loadYamlConfig
 import os
-import pprint
 import random
 import re
 import shutil
@@ -23,16 +24,15 @@ def main():
     """
 
     # Load YAML config into a dictionary and assign values to variables for cleanliness
-    print "Using config file", args.config
-    input_params = yaml.load( open(args.config, 'r') )
-
-    print Fore.CYAN + "The arguments you have set are the following:\n", pprint.pprint(input_params)
-    print Style.RESET_ALL
+    input_params = loadYamlConfig(args.config)
 
     model_name = input_params['model_name']
     total_events = input_params['total_events']
     n_jobs = input_params['n_jobs']
     split_lhe_file_path = input_params['lhe_file_path']
+
+    # Check arguments in config file
+    performBasicChecks(input_params)
 
     # Set up some path variables for use later
     svj_top_dir = os.environ['SVJ_TOP_DIR']

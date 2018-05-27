@@ -2,8 +2,8 @@ import argparse
 from checkConfig import performBasicChecks
 from colorama import Fore, Style
 import glob
+from loadYamlConfig import loadYamlConfig
 import os
-import pprint
 import re
 import shutil
 from string import Template
@@ -25,11 +25,7 @@ def main():
     """
 
     # Load YAML config into a dictionary and assign values to variables for cleanliness
-    print "Using config file", args.config
-    input_params = yaml.load( open(args.config, 'r') )
-
-    print Fore.CYAN + "The arguments you have set are the following:\n", pprint.pprint(input_params)
-    print Style.RESET_ALL
+    input_params = loadYamlConfig(args.config)
 
     # Set variables from config file
     process_type = input_params['process_type']

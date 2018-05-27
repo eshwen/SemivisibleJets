@@ -1,8 +1,8 @@
 import argparse
 from checkConfig import performThoroughChecks
 from colorama import Fore, Style
+from loadYamlConfig import loadYamlConfig
 import os
-import pprint
 from subprocess import call
 import sys
 import yaml
@@ -21,11 +21,7 @@ def main():
     """
 
     # Load YAML config into a dictionary and assign values to variables for cleanliness
-    print "Using config file", args.config
-    input_params = yaml.load( open(args.config, 'r') )
-
-    print Fore.CYAN + "The arguments you have set are the following:\n", pprint.pprint(input_params)
-    print Style.RESET_ALL
+    input_params = loadYamlConfig(args.config)
 
     work_space = input_params['work_space']
     lhe_file_path = input_params['lhe_file_path']
