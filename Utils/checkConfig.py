@@ -1,12 +1,6 @@
 import argparse
 from colorama import Fore, Style
-import glob
 import os
-import pprint
-import re
-import shutil
-from string import Template
-from subprocess import call
 import sys
 import yaml
 
