@@ -1,9 +1,6 @@
 import argparse
 import math
 import os
-import pprint
-from subprocess import call
-import sys
 import yaml
 import calcDarkParams as cDP
 
