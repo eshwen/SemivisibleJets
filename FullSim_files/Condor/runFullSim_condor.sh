@@ -16,6 +16,9 @@ model_name=$4
 n_events=$5
 seed=$6 # index for job
 
+# Allow use of aliases (specifically cvmfs ones)
+shopt -s expand_aliases
+
 cd $work_space
 source /cvmfs/cms.cern.ch/cmsset_default.sh
 
@@ -23,9 +26,6 @@ source /cvmfs/cms.cern.ch/cmsset_default.sh
 if ! type cmsenv > /dev/null; then
     alias cmsenv='eval `scramv1 runtime -sh`';
 fi
-
-# Allow use of aliases (specifically cvmfs ones)
-shopt -s expand_aliases
 
 # Write so CMSSW version aren't hardcoded, but can take from cmssw_vers array
 cd CMSSW_7_1_30/src
