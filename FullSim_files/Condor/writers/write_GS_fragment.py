@@ -65,12 +65,12 @@ generator = cms.EDFilter("Pythia8HadronizerFilter",
             'JetMatching:doShowerKt = off', #off for MLM matching, turn on for shower-kT matching
             ),
         processParameters = cms.vstring(
-            '4900111:m0 = {1}', # Dark meson mass
-            '4900211:m0 = {2}', # Stable dark particle mass
+            '4900111:m0 = {1}', # Dark meson mass. PDGID corresponds to pivDiag HV spin-0 meson that can decay into SM particles
+            '4900211:m0 = {2}', # Stable dark particle mass. PDGID corresponds to pivUp off-diagonal HV spin-0 meson that's stable and invisible
             '4900111: oneChannel = 1 {3} 4900211 -4900211', # Dark meson decay into stable dark particles with branching fraction r_inv
             '4900111: addChannel = 1 {4} 91 1 -1', # Dark meson decay into down quarks with branching fraction 1 - r_inv
             #'TimeShower:nPartonsInBorn = 2', #number of coloured particles (before resonance decays) in born matrix element
-            'HiddenValley:ffbar2Zv = on', #it works only in the case of narrow width approx
+            #'HiddenValley:ffbar2Zv = on', #it works only in the case of narrow width approx
             'HiddenValley:fragment = on', # enable hidden valley fragmentation
             #'HiddenValley:NBFlavRun = 0', # number of bosonic flavor for running
             #'HiddenValley:NFFlavRun = 2', # number of fermionic flavor for running
