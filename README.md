@@ -396,13 +396,13 @@ For questions or issues please contact:
 
 ## To do <a name="todo"></a>
 
-- Consider copying `runFullSimCondor.sh` to `work_space` with some sort of identifier (date+time stamp?), so that running is more self contained (i.e., if I ran some jobs, edited that script, then wanted to resubmit). Then make sure the correct `runFullSim` script is called when submitting/resubmitting.
+- When running FullSim Condor step, consider copying `runFullSimCondor.sh` to `work_space` with some sort of identifier (date+time stamp?), so that running is more self contained (i.e., if I ran some jobs, edited that script, then wanted to resubmit). Then make sure the correct `runFullSim` script is called when submitting/resubmitting.
 - Consider rewriting `write_submission_script.sh` in Python for FullSim Condor
 - Consider adding alpha_d/Lambda_d to `model_name`
 - Finish the CRAB submission chain?
-- Change gen fragment such that the dark meson can decay into each type of SM quark. Would need to figure out how to distribute remaining branching fraction (1-r_inv) amongst the decays.
+- Change gen fragment such that the dark meson can decay into more than just d quarks. Would need to figure out how to distribute remaining branching fraction (1-r_inv) amongst the decays.
 - Change gen fragment such that there's hadronisation to two dark mesons (so n_f = 2 physical makes sense), with one species decaying invisibly and one to SM quarks. But would need to figure out how to implement r_inv such that the proportion of invisibly decaying dark mesons = r_inv.
-- Figure out how to change dark quarks to spin-1/2 in MadGraph model files. Find out if that will affect decays or anything.
+- Figure out how to change dark quarks to spin-1/2 in MadGraph model files. Find out if that will affect decays or anything. Would also need to consider the spin of the dark hadron (see HV documentation in Pythia for PDGIDs).
 - See if I still need to do the confinement scale rescaling
 - Add n_c to config file? How would that affect things physically/kinematically?
 - In plotSVJHistos.py, scale histograms by number of entries in tree?
