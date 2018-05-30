@@ -21,10 +21,12 @@ def main():
 
     work_space = input_params['work_space']
     model_name = input_params['model_name']
+    m_med = input_params['m_med']
     m_d = input_params['m_d']
     n_f = input_params['n_f']
     r_inv = input_params['r_inv']
     x_sec = input_params['x_sec']
+    process_type = input_params['process_type']
 
     Lambda_d = round(args.Lambda_d, 2)
 
@@ -64,7 +66,19 @@ generator = cms.EDFilter("Pythia8HadronizerFilter",
             'JetMatching:nJetMax = 2', #number of partons in born matrix element for highest multiplicity
             'JetMatching:doShowerKt = off', #off for MLM matching, turn on for shower-kT matching
             ),
-        processParameters = cms.vstring(
+        processParameters = cms.vstring(""".format(x_sec))
+    writeFile.close()
+
+    appendFile = open(filePath, "a")
+    if process_type == 's-channel':
+        appendFile.write("""
+            '4900023:m0 = {0}',""".format(m_med))
+    elif process_type == 't-channel':
+        appendFile.write("""
+            # ADD SHIT HERE""")
+
+    appendFile.write("""
+            '4900101:m0 = {0}',
             '4900111:m0 = {1}', # Dark meson mass. PDGID corresponds to pivDiag HV spin-0 meson that can decay into SM particles
             '4900211:m0 = {2}', # Stable dark particle mass. PDGID corresponds to pivUp off-diagonal HV spin-0 meson that's stable and invisible
             '4900111: oneChannel = 1 {3} 4900211 -4900211', # Dark meson decay into stable dark particles with branching fraction r_inv
@@ -88,9 +102,9 @@ generator = cms.EDFilter("Pythia8HadronizerFilter",
                                     )
     )
 )
-""".format(x_sec, m_dark_meson, m_dark_stable, r_inv, 1-r_inv, Lambda_d, n_f, 1.1*Lambda_d)
+""".format(m_d, m_dark_meson, m_dark_stable, r_inv, 1-r_inv, Lambda_d, n_f, 1.1*Lambda_d)
     )                   
-    writeFile.close()
+    appendFile.close()
 
     # Basically return statement for bash script. DO NOT CHANGE!
     print filePath
