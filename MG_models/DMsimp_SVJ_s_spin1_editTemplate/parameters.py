@@ -377,7 +377,7 @@ MY1 = Parameter(name = 'MY1',
                 value = $mediator_mass,
                 texname = '\\text{MY1}',
                 lhablock = 'MASS',
-                lhacode = [ 5000001 ])
+                lhacode = [ 4900023 ])
 
 WZ = Parameter(name = 'WZ',
                nature = 'external',
@@ -417,7 +417,7 @@ WY1 = Parameter(name = 'WY1',
                 value = 10.,
                 texname = '\\text{WY1}',
                 lhablock = 'DECAY',
-                lhacode = [ 5000001 ])
+                lhacode = [ 4900023 ])
 
 aEW = Parameter(name = 'aEW',
                 nature = 'internal',
