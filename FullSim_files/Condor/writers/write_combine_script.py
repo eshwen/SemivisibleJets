@@ -30,7 +30,11 @@ cd {0}/CMSSW_9_4_4/src
 cmsenv
 cd {0}
 {1}/Utils/haddnano.py {0}/output/{2}_nanoAOD_final.root {0}/output/{2}*NANOAOD*.root
-mkdir {0}/output/components
+
+if [ ! -d {0}/output/components ]; then
+    mkdir {0}/output/components
+fi
+
 mv {0}/output/{2}_NANOAOD_*.root {0}/output/components
     """.format(work_space, svj_top_dir, model_name)
     )
