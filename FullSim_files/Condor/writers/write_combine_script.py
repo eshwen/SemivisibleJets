@@ -5,8 +5,8 @@ import os
 from subprocess import call
 
 parser = argparse.ArgumentParser()
-parser.add_argument("-w", "--work_space", type = str, help = "Work space containing CMSSW releases, input and output files")
-parser.add_argument("-m", "--model_name", type = str, help = "Identifying name of model")
+parser.add_argument("-w", "--work_space", type = str, required = True, help = "Work space containing CMSSW releases, input and output files")
+parser.add_argument("-m", "--model_name", type = str, required = True, help = "Identifying name of model")
 args = parser.parse_args()
 
 def main():
