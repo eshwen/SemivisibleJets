@@ -431,7 +431,7 @@ Xd = Particle(pdg_code = 5000521,
 
 Xd__tilde__ = Xd.anti()
 
-Y1 = Particle(pdg_code = 4900023,
+Y1 = Particle(pdg_code = 5000001,
               name = 'Y1',
               antiname = 'Y1',
               spin = 3,

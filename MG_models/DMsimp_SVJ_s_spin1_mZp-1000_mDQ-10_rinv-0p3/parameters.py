@@ -376,7 +376,7 @@ MY1 = Parameter(name = 'MY1',
                 value = 1000.,
                 texname = '\\text{MY1}',
                 lhablock = 'MASS',
-                lhacode = [ 4900023 ])
+                lhacode = [ 5000001 ])
 
 WZ = Parameter(name = 'WZ',
                nature = 'external',
@@ -416,7 +416,7 @@ WY1 = Parameter(name = 'WY1',
                 value = 10.,
                 texname = '\\text{WY1}',
                 lhablock = 'DECAY',
-                lhacode = [ 4900023 ])
+                lhacode = [ 5000001 ])
 
 aEW = Parameter(name = 'aEW',
                 nature = 'internal',

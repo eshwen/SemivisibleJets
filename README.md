@@ -396,7 +396,9 @@ For questions or issues please contact:
 
 ## To do <a name="todo"></a>
 
+- Figure out which HV particles correspond to t-channel mediators and add to `write_GS_fragment`
 - When running FullSim Condor step, consider copying `runFullSimCondor.sh` to `work_space` with some sort of identifier (date+time stamp?), so that running is more self contained (i.e., if I ran some jobs, edited that script, then wanted to resubmit). Then make sure the correct `runFullSim` script is called when submitting/resubmitting.
+- Consider moving genproductions repo to `external/`. Would need to update Gridpack_Generation and LHE_from_gridpack scripts
 - Consider rewriting `write_submission_script.sh` in Python for FullSim Condor
 - Consider adding alpha_d/Lambda_d to `model_name`
 - Finish the CRAB submission chain?
