@@ -4,15 +4,29 @@ from colorama import Fore, init
 from math import pi
 import os
 from progressbar import ProgressBar, Percentage, Bar, ETA
+import re
 from ROOT import TFile, TCanvas, gStyle, TLatex, TLegend, TH1F
 
 # Define global variables
 baseDir = "/afs/cern.ch/work/e/ebhal/Semi_visible_jets_Condor/v3"
 models = ["DMsimp_SVJ_s_spin1_mZp-1000_mDQ-10", "DMsimp_SVJ_t_mPhi-1000_mDQ-10"]
 rootColours = [4, 2, 3, 1, 6, 5, 7, 8, 9] # length needs to be >= len(models)
+legModelNames = []
+
+# Write strings to be included in legend
+for i, model in enumerate(models):
+    m_d = re.search("(?<=mDQ-)[0-9]*", model).group(0)
+    if 'mZp' in model:
+        mZp = re.search("(?<=mZp-)[0-9]*", model).group(0)
+        legModel = "#splitline{#it{s}-channel}{#it{m_{Z'}} = %s, #it{m_{d}} = %s}" % (mZp, m_d)
+    elif 'mPhi' in model:
+        mPhi = re.search("(?<=mPhi-)[0-9]*", model).group(0)
+        legModel = "#splitline{#it{t}-channel}{#it{m}_{#Phi} = %s, #it{m_{d}} = %s}" % (mPhi, m_d)
+    legModelNames.append(legModel)
 
 # Reset terminal colours after print statement in which they've changed
 init(autoreset=True)
+
 
 # Add CMS-style plot header
 def addPlotTitle(canvas):
@@ -24,7 +38,7 @@ def addPlotTitle(canvas):
 
 # Set plot aesthetics
 def setTheGoodStuff(histo, model, index, xTitle, legend):
-    legend.AddEntry(histo, model, 'l')
+    legend.AddEntry(histo, legModelNames[index], 'l')
     histo.SetLineColor( rootColours[index] )
     histo.GetXaxis().SetTitle(xTitle)
     histo.GetXaxis().SetTitleOffset(1.15)
@@ -65,8 +79,8 @@ def main():
     gStyle.SetOptTitle(0)
 
     # Initialise legend and set colours
-    myLeg = TLegend(0.55, 0.8, 0.9, 0.9)
-    myLeg.SetTextSize(0.015)
+    myLeg = TLegend(0.65, 0.8, 0.9, 0.9)
+    myLeg.SetTextSize(0.02)
 
     # Initialise histogram arrays
     nJetHist = [None] * len(models)
