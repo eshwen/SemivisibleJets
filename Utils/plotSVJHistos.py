@@ -8,20 +8,24 @@ import re
 from ROOT import TFile, TCanvas, gStyle, TLatex, TLegend, TH1F
 
 # Define global variables
-baseDir = "/afs/cern.ch/work/e/ebhal/Semi_visible_jets_Condor/v3"
-models = ["DMsimp_SVJ_s_spin1_mZp-1000_mDQ-10", "DMsimp_SVJ_t_mPhi-1000_mDQ-10"]
+baseDir = "/afs/cern.ch/work/e/ebhal/Semi_visible_jets_Condor/v4_rinv_var"
+#models = ["DMsimp_SVJ_s_spin1_mZp-1000_mDQ-10", "DMsimp_SVJ_t_mPhi-1000_mDQ-10"]
+models = [ "DMsimp_SVJ_s_spin1_mZp-1000_mDQ-10_rinv-0p1", "DMsimp_SVJ_s_spin1_mZp-1000_mDQ-10_rinv-0p3" ]
 rootColours = [4, 2, 3, 1, 6, 5, 7, 8, 9] # length needs to be >= len(models)
 legModelNames = []
 
 # Write strings to be included in legend
 for i, model in enumerate(models):
     m_d = re.search("(?<=mDQ-)[0-9]*", model).group(0)
+    r_inv = re.search("(?<=rinv-)(\w+)", model).group(0).replace('p', '.')
     if 'mZp' in model:
         mZp = re.search("(?<=mZp-)[0-9]*", model).group(0)
-        legModel = "#splitline{#it{s}-channel}{#it{m_{Z'}} = %s, #it{m_{d}} = %s}" % (mZp, m_d)
+        legModel = "#splitline{#it{s}-channel}{#it{m_{Z'}} = %s, " % mZp
     elif 'mPhi' in model:
         mPhi = re.search("(?<=mPhi-)[0-9]*", model).group(0)
-        legModel = "#splitline{#it{t}-channel}{#it{m}_{#Phi} = %s, #it{m_{d}} = %s}" % (mPhi, m_d)
+        legModel = "#splitline{#it{t}-channel}{#it{m}_{#Phi} = %s, " % mPhi
+    legModel += "#it{m_{d}} = %s, #it{r}_{inv.} = %s}" % (m_d, r_inv)
+    print legModel
     legModelNames.append(legModel)
 
 # Reset terminal colours after print statement in which they've changed
@@ -80,7 +84,7 @@ def main():
     gStyle.SetOptTitle(0)
 
     # Initialise legend and set colours
-    myLeg = TLegend(0.65, 0.8, 0.9, 0.9)
+    myLeg = TLegend(0.55, 0.8, 0.9, 0.9)
     myLeg.SetTextSize(0.02)
 
     # Initialise histogram arrays
