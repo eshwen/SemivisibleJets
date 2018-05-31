@@ -8,3 +8,5 @@ Below is a rough style guide to keep in mind when developing/maintaining code. T
   - exceptions or built-in Python errors (ValueError etc.) in green
   - print statements signifying important finished processes in magenta
 - Decide on whether to use snake case (this_is_the_file) or camel case (ThisIsTheFile/thisIsTheFile) in files and code. Different types can be used in different situations
+- Add shebangs to executable Python and shell scripts
+- Add imports to Python scripts in alphabetical order
