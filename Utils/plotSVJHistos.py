@@ -42,6 +42,7 @@ def setTheGoodStuff(histo, model, index, xTitle, legend):
     histo.SetLineColor( rootColours[index] )
     histo.GetXaxis().SetTitle(xTitle)
     histo.GetXaxis().SetTitleOffset(1.15)
+    legend.SetFillStyle(0)
     legend.Draw()    
 
 
