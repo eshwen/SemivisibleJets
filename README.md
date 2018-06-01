@@ -142,12 +142,12 @@ All the necessary files for spin1-s- and t-channel production are in [MG_input_f
 tar -cf <output file name>.tar <input file(s)>
 ```
 
-and be copied to the generator web repository on `/afs/cern.ch/cms/generators/www/`. Note that you will need to contact Cms.Computing@cern.ch and cms.generators@cern.ch to request write access to the directory. Though, you will have read access by default. In my branch, I hacked the [gridpack_generation.sh](genproductions/bin/MadGraph5_aMCatNLO/gridpack_generation.sh) script and changed L193 (below the "Loading extra model" line) to the same path as the input card directory and specify the model files there.
+and be copied to the generator web repository on `/afs/cern.ch/cms/generators/www/`. Note that you will need to contact Cms.Computing@cern.ch and cms.generators@cern.ch to request write access to the directory. Though, you will have read access by default. In my branch, I hacked the [gridpack_generation.sh](external/genproductions/bin/MadGraph5_aMCatNLO/gridpack_generation.sh) script and changed L193 (below the "Loading extra model" line) to the same path as the input card directory and specify the model files there.
 
 Once the models are in place and the input cards have been written, clone my fork of the `genproductions` repo (which includes some minor fixes for bugs I was receiving) as a submodule with
 
 ```bash
-git submodule add -b mg26x git@github.com:eshwen/genproductions.git
+git submodule add -b mg26x git@github.com:eshwen/genproductions.git external/genproductions/
 git submodule init
 git submodule update
 ```
@@ -157,21 +157,21 @@ The branch specified above is necessary to run MadGraph version 2.6.x, with some
 Validate the input cards you have with
 
 ```bash
-cd genproductions/bin/MadGraph5_aMCatNLO/Utilities/parsing_code
+cd external/genproductions/bin/MadGraph5_aMCatNLO/Utilities/parsing_code
 python parsing.py <path to process card directory/name of process card without _proc_card.dat>
 ```
 
 Once validated, run the gridpack generation with
 
 ```bash
-cd genproductions/bin/MadGraph5_aMCatNLO/
+cd external/genproductions/bin/MadGraph5_aMCatNLO/
 ./gridpack_generation.sh <name of process card without _proc_card.dat> <relative path to cards directory> <queue selection>
 ```
 
 where `<queue selection>` options can be found by typing `bqueues` ("1nd" is usually fine). If instead, you would like to run on Condor (either at lxplus or at a T2/T3 site), run
 
 ```bash
-cd genproductions/bin/MadGraph5_aMCatNLO/
+cd external/genproductions/bin/MadGraph5_aMCatNLO/
 ./submit_condor_gridpack_generation.sh <name of process card without _proc_card.dat> <relative path to cards directory> 
 ```
 
@@ -356,7 +356,7 @@ cd Gridpack_Generation
 python submitGridpackGeneration.py -c <path to YAML config>
 ```
 
-If the parameters are okay (and there are no bugs in the code), the MadGraph model files and input cards from the template directories I have should be copied into model-specific directories, and the specified parameters will be added. Then, the gridpack will be created in [genproductions/bin/MadGraph5_aMCatNLO/](genproductions/bin/MadGraph5_aMCatNLO/).
+If the parameters are okay (and there are no bugs in the code), the MadGraph model files and input cards from the template directories I have should be copied into model-specific directories, and the specified parameters will be added. Then, the gridpack will be created in [genproductions/bin/MadGraph5_aMCatNLO/](external/genproductions/bin/MadGraph5_aMCatNLO/).
 
 If you plan to run the rest of the sample production via CRAB or by some means that requires a gridpack, you're done! However, if you want to continue here and follow the rest of my steps, great! Now that you have the gridpack, the next stage is to get the LHE file out, apply the PDGID renumbering for the dark particles, and split the LHE file for running the FullSim jobs easily. This is taken care of with
 
@@ -398,7 +398,6 @@ For questions or issues please contact:
 
 - Figure out which HV particles correspond to t-channel mediators and add to `write_GS_fragment`
 - When running FullSim Condor step, consider copying `runFullSimCondor.sh` to `work_space` with some sort of identifier (date+time stamp?), so that running is more self contained (i.e., if I ran some jobs, edited that script, then wanted to resubmit). Then make sure the correct `runFullSim` script is called when submitting/resubmitting.
-- Consider moving genproductions repo to `external/`. Would need to update Gridpack_Generation and LHE_from_gridpack scripts
 - Consider rewriting `write_submission_script.sh` in Python for FullSim Condor
 - Consider adding alpha_d/Lambda_d to `model_name`
 - Finish the CRAB submission chain?
