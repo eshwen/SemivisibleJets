@@ -8,16 +8,21 @@ import re
 from ROOT import TFile, TCanvas, gStyle, TLatex, TLegend, TH1F
 
 # Define global variables
-baseDir = "/afs/cern.ch/work/e/ebhal/Semi_visible_jets_Condor/v4_rinv_var"
-#models = ["DMsimp_SVJ_s_spin1_mZp-1000_mDQ-10", "DMsimp_SVJ_t_mPhi-1000_mDQ-10"]
-models = [ "DMsimp_SVJ_s_spin1_mZp-1000_mDQ-10_rinv-0p1", "DMsimp_SVJ_s_spin1_mZp-1000_mDQ-10_rinv-0p3" ]
+baseDir = "/afs/cern.ch/work/e/ebhal/Semi_visible_jets_Condor/v5_pythia_params_var"
+# Names of root files without '.root' extension
+#models = [ "DMsimp_SVJ_s_spin1_mZp-1000_mDQ-10_rinv-0p1_nanoAOD_final",
+#           "DMsimp_SVJ_s_spin1_mZp-1000_mDQ-10_rinv-0p3_nanoAOD_final" ]
+models = [ 'DMsimp_SVJ_s_spin1_mZp-4000_mDQ-50_rinv-0p5_doShowerKtOn',
+           'DMsimp_SVJ_s_spin1_mZp-4000_mDQ-50_rinv-0p5_nJetMax4',
+           'DMsimp_SVJ_s_spin1_mZp-4000_mDQ-50_rinv-0p5_qCut-50',
+           'DMsimp_SVJ_s_spin1_mZp-4000_mDQ-50_rinv-0p5_setMadOn' ]
 rootColours = [4, 2, 3, 1, 6, 5, 7, 8, 9] # length needs to be >= len(models)
 legModelNames = []
 
 # Write strings to be included in legend
 for i, model in enumerate(models):
     m_d = re.search("(?<=mDQ-)[0-9]*", model).group(0)
-    r_inv = re.search("(?<=rinv-)(\w+)", model).group(0).replace('p', '.')
+    r_inv = re.search('(?<=rinv-)[0-9]*p[0-9]*',model).group(0).replace('p', '.')
     if 'mZp' in model:
         mZp = re.search("(?<=mZp-)[0-9]*", model).group(0)
         legModel = "#splitline{#it{s}-channel}{#it{m_{Z'}} = %s, " % mZp
@@ -25,7 +30,6 @@ for i, model in enumerate(models):
         mPhi = re.search("(?<=mPhi-)[0-9]*", model).group(0)
         legModel = "#splitline{#it{t}-channel}{#it{m}_{#Phi} = %s, " % mPhi
     legModel += "#it{m_{d}} = %s, #it{r}_{inv.} = %s}" % (m_d, r_inv)
-    print legModel
     legModelNames.append(legModel)
 
 # Reset terminal colours after print statement in which they've changed
@@ -84,7 +88,8 @@ def main():
     gStyle.SetOptTitle(0)
 
     # Initialise legend and set colours
-    myLeg = TLegend(0.55, 0.8, 0.9, 0.9)
+    leg_height = len(models) * 0.06 # make y-length of legend dependent on n_models
+    myLeg = TLegend(0.55, 0.9 - leg_height, 0.9, 0.9)
     myLeg.SetTextSize(0.02)
 
     # Initialise histogram arrays
@@ -113,7 +118,7 @@ def main():
     # Open root files, then draw individual histograms
     for i, model in enumerate(models):
         print Fore.MAGENTA + "Running over model {0}/{1}.".format(i+1, len(models))
-        rootFile = os.path.join(baseDir, model+"_nanoAOD_final.root")
+        rootFile = os.path.join(baseDir, model+'.root')
         openFile = TFile(rootFile)
         tree = openFile.Get("Events")
         nEntries = tree.GetEntries()
