@@ -58,8 +58,9 @@ def main():
     # If required, append config file with new parameters for simplicity in future steps
     read_config_file = open(args.config, 'r')
     config_orig_str = read_config_file.read()
-    read_config_file.close()
-    if model_name in config_orig_str and str(total_events) in config_orig_str:
+    read_config_file.close()    
+
+    if model_name+'\n' in config_orig_str and str(total_events)+'\n' in config_orig_str:
         print "No need to append config file with new parameters!"
     else:
         print Fore.CYAN + "Appending config file with new parameters..."
@@ -69,9 +70,9 @@ def main():
         appended_config_file.seek(0)
         appended_config_file.truncate()        
 
-        # Strip model name and total events if they've changed since last use of config
+        # Strip model name and total events if they've changed since last use of config, and also blank lines
         for i in xrange( len(original_str) ):
-            if 'model_name' in original_str[i] or 'total_events' in original_str[i]:
+            if 'model_name:' in original_str[i] or 'total_events:' in original_str[i] or '\n' == original_str[i]:
                 continue
             else:
                 appended_config_file.write(original_str[i])
