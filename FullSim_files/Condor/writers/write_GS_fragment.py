@@ -55,30 +55,28 @@ generator = cms.EDFilter("Pythia8HadronizerFilter",
         pythia8CUEP8M1SettingsBlock,
         pythia8aMCatNLOSettingsBlock,
         JetMatchingParameters = cms.vstring(
-            'JetMatching:setMad = off',
-            'JetMatching:scheme = 1',
-            'JetMatching:merge = on',
-            'JetMatching:jetAlgorithm = 2',
-            'JetMatching:etaJetMax = 5.',
-            'JetMatching:coneRadius = 1.',
-            'JetMatching:slowJetPower = 1',
-            'JetMatching:qCut = 100.', #this is the actual merging scale                           
-            'JetMatching:nJetMax = 2', #number of partons in born matrix element for highest multiplicity
-            'JetMatching:doShowerKt = off', #off for MLM matching, turn on for shower-kT matching
+            'JetMatching:setMad = on', # if 'on', merging parameters are set according to LHE file
+            'JetMatching:scheme = 1', # 1 = scheme inspired by Madgraph matching code
+            'JetMatching:merge = on', # master switch to activate parton-jet matching. when off, all external events accepted 
+            'JetMatching:jetAlgorithm = 2', # 2 = SlowJet clustering
+            'JetMatching:etaJetMax = 5.', # max eta of any jet
+            'JetMatching:coneRadius = 1.1', # gives the jet R parameter
+            'JetMatching:slowJetPower = 1', # -1 = anti-kT algo, 1 = kT algo. Only kT w/ SlowJet is supported for MadGraph-style matching
+            'JetMatching:qCut = 100.', # this is the actual merging scale. should be roughly equal to xqcut in MadGraph
+            'JetMatching:nJetMax = 2', # number of partons in born matrix element for highest multiplicity
+            'JetMatching:doShowerKt = off', # off for MLM matching, turn on for shower-kT matching
             ),
         processParameters = cms.vstring(""".format(x_sec))
-    writeFile.close()
 
-    appendFile = open(filePath, "a")
     if process_type == 's-channel':
-        appendFile.write("""
-            '4900023:m0 = {0}',""".format(m_med))
+        writeFile.write("""
+            '4900023:m0 = {0}', # explicitly stating Z' mass in case it's not picked up properly by Pythia""".format(m_med))
     elif process_type == 't-channel':
-        appendFile.write("""
+        writeFile.write("""
             # ADD SHIT HERE""")
 
-    appendFile.write("""
-            '4900101:m0 = {0}',
+    writeFile.write("""
+            '4900101:m0 = {0}', # explicitly stating dark quark mass in case it's not picked up properly by Pythia
             '4900111:m0 = {1}', # Dark meson mass. PDGID corresponds to pivDiag HV spin-0 meson that can decay into SM particles
             '4900211:m0 = {2}', # Stable dark particle mass. PDGID corresponds to pivUp off-diagonal HV spin-0 meson that's stable and invisible
             '4900111: oneChannel = 1 {3} 4900211 -4900211', # Dark meson decay into stable dark particles with branching fraction r_inv
@@ -104,7 +102,7 @@ generator = cms.EDFilter("Pythia8HadronizerFilter",
 )
 """.format(m_d, m_dark_meson, m_dark_stable, r_inv, 1-r_inv, Lambda_d, n_f, 1.1*Lambda_d)
     )                   
-    appendFile.close()
+    writeFile.close()
 
     # Basically return statement for bash script. DO NOT CHANGE!
     print filePath
