@@ -9,8 +9,7 @@ Usage ./runFullSim_condor.sh WORKING_DIRECTORY PATH_TO_GEN_FRAGMENT PATH_TO_LHE_
 fi
 
 work_space=$(readlink -m $1)
-gen_frag_path=$(readlink -m $2)
-gen_frag_file=$(basename $gen_frag_path)
+gen_frag_file=$2
 lhe_file_path=$(readlink -m $3)
 model_name=$4
 n_events=$5
@@ -24,13 +23,13 @@ source /cvmfs/cms.cern.ch/cmsset_default.sh
 
 # If script above cannot be sourced, manually set cmsenv alias
 if ! type cmsenv > /dev/null; then
-    alias cmsenv='eval `scramv1 runtime -sh`';
+    alias cmsenv='eval `scramv1 runtime -sh`'
 fi
 
 # Write so CMSSW version aren't hardcoded, but can take from cmssw_vers array
 cd CMSSW_7_1_30/src
 cmsenv
-
+scram b
 
 # Run the cmsDriver and cmsRun commands for each step in the chain
 

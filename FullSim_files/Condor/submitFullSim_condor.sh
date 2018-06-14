@@ -75,6 +75,7 @@ fi
 
 # Create the GS fragment
 gen_frag_path=$(python $submission_dir/writers/write_GS_fragment.py -c $config_file -l $Lambda_d)
+gen_frag_file=$(basename $gen_frag_path)
 
 # Create scripts to hadd output files and resubmit failed jobs
 python $submission_dir/writers/write_combine_script.py -w $work_space -m $model_name
@@ -86,7 +87,7 @@ for seed in $(seq 0 1 $(( $n_jobs-1 ))); do
     lhe_file_for_job=${lhe_file_list[$seed]}
 
     # Write Condor submission script and execute
-    job_path=$($submission_dir/writers/write_submission_script.sh $work_space $gen_frag_path $lhe_file_for_job $model_name $n_events $seed $submission_dir)
+    job_path=$($submission_dir/writers/write_submission_script.sh $work_space $gen_frag_file $lhe_file_for_job $model_name $n_events $seed $submission_dir)
     condor_submit $job_path
 done
 
