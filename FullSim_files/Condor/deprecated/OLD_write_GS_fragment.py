@@ -1,16 +1,25 @@
+import argparse
 import math
 import os
 import yaml
 import calcDarkParams as cDP
 
-def write_GS_fragment(config, Lambda_d, GS_dir):
+parser = argparse.ArgumentParser()
+parser.add_argument("-c", "--config", type = str, default = os.path.join(os.environ['SVJ_TOP_DIR'], "config", "model_params_s_spin1.yaml"), required = True, help = "Path to YAML config to parse")
+parser.add_argument("-l", "--Lambda_d", type = float, required = True, help = "Confinement scale for dark hadrons")
+args = parser.parse_args()
+
+def main():
     """
-    Write GEN-SIM fragment for job and return its path.
+    Write GEN-SIM fragment for job. Due to the nature of the "return" statement at the end,
+    users editing this script are to refrain from including any print statements as it disrupts
+    the returning of the file path.
     """
 
     # Load YAML config into a dictionary and assign values to variables for cleanliness
-    input_params = yaml.load( open(config, 'r') )
+    input_params = yaml.load( open(args.config, 'r') )
 
+    work_space = input_params['work_space']
     model_name = input_params['model_name']
     m_med = input_params['m_med']
     m_d = input_params['m_d']
@@ -19,13 +28,15 @@ def write_GS_fragment(config, Lambda_d, GS_dir):
     x_sec = input_params['x_sec']
     process_type = input_params['process_type']
 
-    Lambda_d = round(Lambda_d, 2)
+    Lambda_d = round(args.Lambda_d, 2)
 
     # Calculate masses of dark mesons and stable dark matter particles
     m_dark_meson = 2 * m_d
     m_dark_stable = m_d - 0.1
 
-    filePath = os.path.join(GS_dir, "{0}_GS_fragment.py".format(model_name))
+    cmsswDir = "CMSSW_7_1_30/src/Configuration/GenProduction/python"
+
+    filePath = os.path.join(work_space, cmsswDir, "{0}_GS_fragment.py".format(model_name))
     writeFile = open(filePath, "w")
     
     writeFile.write("""import FWCore.ParameterSet.Config as cms
@@ -93,4 +104,10 @@ generator = cms.EDFilter("Pythia8HadronizerFilter",
     )                   
     writeFile.close()
 
-    return filePath
+    # Basically return statement for bash script. DO NOT CHANGE!
+    print filePath
+
+
+if __name__ == '__main__':
+    main()
+

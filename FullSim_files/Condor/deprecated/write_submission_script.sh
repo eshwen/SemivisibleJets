@@ -3,7 +3,7 @@
 # Write the HTCondor submission script for sample generation
 
 work_space=$1
-gen_frag_path=$2
+gen_frag_file=$2
 lhe_file_path=$3
 model_name=$4
 n_events=$5
@@ -15,7 +15,7 @@ job_path="$work_space/submission_scripts/$model_name/condor_submission_${seed}.j
 echo "# HTCondor submission script
 Universe   = vanilla
 cmd        = $submission_dir/runFullSim_condor.sh
-args       = $work_space $gen_frag_path $lhe_file_path $model_name $n_events $seed
+args       = $work_space $gen_frag_file $lhe_file_path $model_name $n_events $seed
 Log        = $work_space/logs/$model_name/condor_job_${seed}.log
 Output     = $work_space/logs/$model_name/condor_job_${seed}.out
 Error      = $work_space/logs/$model_name/condor_job_${seed}.error

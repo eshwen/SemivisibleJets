@@ -19,7 +19,7 @@ fi
 # For simplicity, use the splitLHE.py script on the large LHE file to generate the smaller ones to be given to the jobs
 lhe_file_path=$(readlink -m $2)
 model_name=$3
-declare -a lhe_file_list=( $(echo ${lhe_file_path}/${model_name}_split*.lhe | tr ' ' '\n' | sort -h) ) # Need to fix sorting
+declare -a lhe_file_list=( $(echo ${lhe_file_path}/${model_name}_split*.lhe | tr ' ' '\n' | sort -h) )
 n_lhe_files=`echo ${#lhe_file_list[@]}`
 
 n_events=$4
@@ -48,9 +48,9 @@ for each_ver in "${cmssw_vers[@]}"; do
     export SCRAM_ARCH=slc6_amd64_gcc${gcc_for_archs[$arch_counter]}
 
     if [ -r $work_space/CMSSW_${each_ver}/src ]; then
-	echo "CMSSW_${each_ver} release already exists!"
+	    echo "CMSSW_${each_ver} release already exists!"
     else
-	cmsrel CMSSW_${each_ver}
+	    cmsrel CMSSW_${each_ver}
     fi
 
     cd CMSSW_${each_ver}/src
@@ -68,7 +68,7 @@ fi
 scram b
 cd $work_space
 
-# Create directories for logs, submission scripts and GS fragments
+# Create directories for logs, submission scripts and output
 if [[ ! -d $work_space/{logs{,"/$model_name"},output,submission_scripts{,"/$model_name"}} ]]; then
     mkdir $work_space/{logs{,"/$model_name"},output,submission_scripts{,"/$model_name"}}
 fi

@@ -26,7 +26,7 @@ def main():
 printf "\e[1;33mWarning: May take a while to hadd if many files are present\n\e[0m"
 shopt -s expand_aliases
 source /cvmfs/cms.cern.ch/cmsset_default.sh 
-cd {0}/CMSSW_9_4_4/src
+cd {0}/CMSSW_9_4_4/src # Try to make this not hardcoded in case that version doesn't exist
 cmsenv
 cd {0}
 {1}/Utils/haddnano.py {0}/output/{2}_nanoAOD_final.root {0}/output/{2}*NANOAOD*.root
