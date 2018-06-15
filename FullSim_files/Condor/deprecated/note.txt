@@ -1,0 +1,2 @@
+This folder contains scripts that are obselete, now that I've rewritten my FullSim code mostly in Python.
+Although, I'm keeping them for the moment in case something breaks in the new version that I haven't tested properly/overlooked.
