@@ -25,7 +25,7 @@ if [[ "$PYTHIA8DATA" == "$work_space"* ]]; then
 else
     # For Pythia 8.230
     cp $SVJ_TOP_DIR/Utils/installNewPythiaVer.sh .
-    ./installPythia.sh
+    ./installNewPythiaVer.sh
     scram b
     cmsenv
     cd $CMSSW_BASE/src
