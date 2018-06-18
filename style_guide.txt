@@ -4,7 +4,7 @@ Below is a rough style guide to keep in mind when developing/maintaining code. T
 - Try to obey pep8 styling (https://www.python.org/dev/peps/pep-0008/)
 - For terminal colours,
   - print warnings in bold yellow
-  - print statements signifying ongoing processes or printing the config file in yellow
+  - print statements signifying ongoing processes or printing the config file in cyan
   - exceptions or built-in Python errors (ValueError etc.) in green
   - print statements signifying important finished processes in magenta
 - Decide on whether to use snake case (this_is_the_file) or camel case (ThisIsTheFile/thisIsTheFile) in files and code. Different types can be used in different situations
