@@ -44,7 +44,7 @@ generator = cms.EDFilter("Pythia8HadronizerFilter",
         pythia8CUEP8M1SettingsBlock,
         pythia8aMCatNLOSettingsBlock,
         JetMatchingParameters = cms.vstring(
-            'JetMatching:setMad = on', # if 'on', merging parameters are set according to LHE file
+            'JetMatching:setMad = off', # if 'on', merging parameters are set according to LHE file
             'JetMatching:scheme = 1', # 1 = scheme inspired by Madgraph matching code
             'JetMatching:merge = on', # master switch to activate parton-jet matching. when off, all external events accepted 
             'JetMatching:jetAlgorithm = 2', # 2 = SlowJet clustering
