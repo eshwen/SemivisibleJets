@@ -28,6 +28,7 @@ fi
 # Write so CMSSW versions aren't hardcoded, but can take from dict in submitFullSim_condor.py or something
 cd CMSSW_7_1_30/src
 cmsenv
+scram b
 
 
 # Run the cmsDriver and cmsRun commands for each step in the chain
