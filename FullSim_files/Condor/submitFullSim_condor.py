@@ -85,6 +85,11 @@ def main():
         else:
             call('./sourceCMSSW.sh {0} {1} {2}'.format(cmssw_ver, arch, work_space), shell=True)
 
+    if os.getcwd() != submission_dir:
+        os.chdir(submission_dir)
+
+    # Install new Pythia version if not already done so
+    call('./sourceNewPythiaVer.sh {0} {1} {2}'.format(work_space, 'CMSSW_7_1_30', submission_dir), shell=True)
 
     # Create directories for gen fragments to occupy
     gen_fragment_dir = os.path.join(work_space, 'CMSSW_7_1_30', 'src', 'Configuration', 'GenProduction', 'python')
