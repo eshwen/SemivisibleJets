@@ -1,9 +1,8 @@
 #!/bin/bash
 
 if [ -z $1 ]; then
-    echo "---------------------------------------------
-Usage ./sourceCMSSW.sh CMSSW_VER ARCH TOP_DIR
----------------------------------------------"
+    usr_msg="Usage ./sourceCMSSW.sh CMSSW_VER ARCH TOP_DIR"
+    $SVJ_TOP_DIR/Utils/printBashScriptUsage.sh "$usr_msg"
     exit
 fi
 

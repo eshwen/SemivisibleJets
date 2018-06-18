@@ -2,9 +2,8 @@
 # Script to run FullSim CMSSW chain
 
 if [ -z $1 ]; then
-echo "---------------------------------------------------------------------------------------------------------------
-Usage ./runFullSim_condor.sh WORKING_DIRECTORY GEN_FRAGMENT_BASENAME PATH_TO_LHE_FILES MODEL_NAME N_EVENTS SEED
----------------------------------------------------------------------------------------------------------------"
+    usr_msg="Usage ./runFullSim_condor.sh WORKING_DIRECTORY GEN_FRAGMENT_BASENAME PATH_TO_LHE_FILES MODEL_NAME N_EVENTS SEED"
+    $SVJ_TOP_DIR/Utils/printBashScriptUsage.sh "$usr_msg"
     exit
 fi
 
@@ -26,10 +25,11 @@ if ! type cmsenv > /dev/null; then
     alias cmsenv='eval `scramv1 runtime -sh`'
 fi
 
-# Write so CMSSW version aren't hardcoded, but can take from cmssw_vers array
+# Write so CMSSW versions aren't hardcoded, but can take from dict in submitFullSim_condor.py or something
 cd CMSSW_7_1_30/src
 cmsenv
 scram b
+
 
 # Run the cmsDriver and cmsRun commands for each step in the chain
 

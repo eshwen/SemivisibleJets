@@ -1,9 +1,8 @@
 #!/bin/bash
 
 if [ -z $1 ]; then
-    echo "---------------------------------------------------------------------
-Usage ./runGridpackGeneration.sh model_name rel_path(input_cards_dir)
----------------------------------------------------------------------"
+    usr_msg="Usage ./runGridpackGeneration.sh model_name rel_path(input_cards_dir)"
+    $SVJ_TOP_DIR/Utils/printBashScriptUsage.sh "$usr_msg"
     exit
 fi
 
@@ -30,12 +29,21 @@ If the creation fails at any point, simply remove the directory created in $MG_G
 
 sleep 15
 
-# For running completely on the grid
-#./submit_gridpack_generation.sh 3000 3000 1nd $model_name $input_cards_dir 1nh
-#echo "Check on the job status with \`bjobs\`. Kill jobs with \`bkill\`."
-
 # For running on the grid, but get monitoring as if it's interactive
 ./gridpack_generation.sh $model_name $input_cards_dir 1nd
+
+# For running on the grid with CMSConnect
+#n_cores=1
+#mem_req="4 Gb"
+
+# Proxy of grid certificate required for running gridpack gen
+#if ! echo $(voms-proxy-info) | grep -q 'subject'; then
+#   voms-proxy-init --voms cms --valid 168:00
+#fi
+
+#nohup ./submit_cmsconnect_gridpack_generation.sh $model_name $input_cards_dir $n_cores "$mem_req" > ${model_name}.debug 2>&1 &
+#echo "Job submitted. Check on it with \"condor_q $USER\""
+
 
 exit
 
