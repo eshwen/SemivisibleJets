@@ -24,8 +24,7 @@ if [[ "$PYTHIA8DATA" == "$work_space"* ]]; then
     printf "\e[1;94mThe new version of Pythia has already been installed. No need to do it again.\n\e[0m"
 else
     # For Pythia 8.230
-    wget https://gist.github.com/kpedro88/d9f882cce5c7b3261349cdeaf2da0498/raw/87695f0179bc7f732194b9042ccb5fa7b33c8354/installPythia.sh
-    chmod +x installPythia.sh
+    cp $SVJ_TOP_DIR/Utils/installNewPythiaVer.sh .
     ./installPythia.sh
     scram b
     cmsenv
