@@ -13,6 +13,11 @@ work_space=$1
 cmssw_ver=$2
 call_dir=$3 # directory script is called from, so as to return to it after running
 
+# Unset env variables otherwise Pythia module compilation fails
+unset CXX
+unset COMPILER_PATH
+unset CC
+
 # Allow use of aliases (specifically cvmfs ones)
 shopt -s expand_aliases
 
