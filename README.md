@@ -374,7 +374,7 @@ cd $SVJ_TOP_DIR/FullSim_files/Condor
 python submitFullSim_condor.py -c <YAML config>
 ```
 
-which should take care of everything. The output nanoAOD files will be located in `$work_space/output/`. If some jobs fail, they can be resubmitted by running
+which should take care of everything. Hadronisation is taken care of with `PYTHIA 8.230` -- through a hack, as the default architecture that ships with CMSSW_7_1_30 doesn't include that version -- because some LHE files tended to hang with 8.226 (presumably the new module contains patches and bug fixes). The output nanoAOD files will be located in `$work_space/output/`. If some jobs fail, they can be resubmitted by running
 
 ```bash
 $work_space/resubmit_${model_name}.sh
@@ -399,7 +399,6 @@ For questions or issues please contact:
 - Figure out which HV particles correspond to t-channel mediators and add to `write_GS_fragment`
 - When running FullSim Condor step, consider copying `runFullSimCondor.sh` to `work_space` with some sort of identifier (date+time stamp?), so that running is more self contained (i.e., if I ran some jobs, edited that script, then wanted to resubmit). Then make sure the correct `runFullSim` script is called when submitting/resubmitting.
 - Consider adding alpha_d/Lambda_d to `model_name`
-- Finish the CRAB submission chain?
 - Change gen fragment such that the dark meson can decay into more than just d quarks. Would need to figure out how to distribute remaining branching fraction (1-r_inv) amongst the decays.
 - Change gen fragment such that there's hadronisation to two dark mesons (so n_f = 2 physical makes sense), with one species decaying invisibly and one to SM quarks. But would need to figure out how to implement r_inv such that the proportion of invisibly decaying dark mesons = r_inv.
 - Figure out how to change dark quarks to spin-1/2 in MadGraph model files. Find out if that will affect decays or anything. Would also need to consider the spin of the dark hadron (see HV documentation in Pythia for PDGIDs).
