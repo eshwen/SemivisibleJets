@@ -1,19 +1,17 @@
 # This config contains the parameters required for running the FullSim CMSSW chain on Condor
 # See model_params_demo.yaml for examples and descriptions
 
-work_space: /afs/cern.ch/work/e/ebhal/Semi_visible_jets_Condor_v4
-lhe_file_path: /afs/cern.ch/work/e/ebhal/public/DMsimp_SVJ_t_splitLHE
+work_space: /afs/cern.ch/work/e/ebhal/Semi_visible_jets_Condor_v6
+lhe_file_path: /afs/cern.ch/work/e/ebhal/public/DMsimp_SVJ_t_splitLHE_v5
 n_events: 100
 n_jobs: 500
 alpha_d: 0.23
 process_type: "t-channel"
 m_med: 3000
-m_d: 100
+m_d: 50
 n_f: 1
-r_inv: 0.3
+r_inv: 0.7
 
-
-
-model_name: DMsimp_SVJ_t_mPhi-3000_mDQ-100
+model_name: DMsimp_SVJ_t_mPhi-3000_mDQ-50_rinv-0p7
 total_events: 50000
-x_sec: 0.0874
+x_sec: 0.09423
