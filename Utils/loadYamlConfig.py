@@ -13,10 +13,10 @@ def loadYamlConfig(configFile):
     print "Using config file", configFile
     configDict = yaml.load( open(configFile, 'r') )
 
-    print Style.RESET_ALL
-    print Fore.CYAN + "The arguments you have set are the following:\n", pprint.pprint(configDict)
+    print Style.RESET_ALL, Fore.CYAN + "The arguments you have set are the following:\n", pprint.pprint(configDict)
 
     # Reset colourful after print statement
     init(autoreset=True)
+    print Style.RESET_ALL
 
     return configDict
