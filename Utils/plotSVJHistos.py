@@ -14,9 +14,9 @@ from ROOT import TFile, TCanvas, gStyle, TLatex, TLegend, TH1F
 # Define global variables
 
 # Files to run over
-files = [ '/afs/cern.ch/work/e/ebhal/Semi_visible_jets_Condor_v6/output/DMsimp_SVJ_s_spin1_mZp-1000_mDQ-10_rinv-0p3_nanoAOD_final.root',
-          '/afs/cern.ch/work/e/ebhal/Semi_visible_jets_Condor_v6/output/DMsimp_SVJ_t_mPhi-1000_mDQ-10_rinv-0p3_nanoAOD_final.root',
-        ]
+files = [ '/afs/cern.ch/work/e/ebhal/Semi_visible_jets_Condor/v3/DMsimp_SVJ_s_spin1_mZp-1000_mDQ-10_nanoAOD_final.root',
+          '/afs/cern.ch/work/e/ebhal/Semi_visible_jets_Condor_v6/output/DMsimp_SVJ_s_spin1_mZp-1000_mDQ-10_rinv-0p3_nJetMax1.root',
+          ]
 
 # Models, from which to extract info
 models = []
@@ -94,6 +94,9 @@ def main():
     """
     Simply plot semi-visible jets histograms stored in nanoAOD files for a quick look at distributions
     """
+
+    if not os.path.exists( os.path.join(os.getcwd(), 'Plots') ):
+        os.mkdir('Plots')
 
     # Initialise the canvas and set aesthetics
     canv = TCanvas("canv", "canv", 600, 600)
