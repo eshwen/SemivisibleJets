@@ -1,5 +1,8 @@
 import argparse
-from checkConfig import performBasicChecks
+try:
+    from checkConfig import performBasicChecks
+except ImportError:
+    sys.exit('Please source the setup script first.')
 from colorama import Fore, init
 import glob
 from loadYamlConfig import loadYamlConfig
