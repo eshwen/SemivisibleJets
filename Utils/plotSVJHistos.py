@@ -1,36 +1,50 @@
 #!/usr/bin/python 
 import CMS_lumi
-from colorama import Fore, init
+try:
+    from colorama import Fore, init
+except ImportError:
+    sys.exit('Please source the setup script first.')
 from math import pi
 import os
 from progressbar import ProgressBar, Percentage, Bar, ETA
 import re
 from ROOT import TFile, TCanvas, gStyle, TLatex, TLegend, TH1F
 
+
 # Define global variables
-baseDir = "/afs/cern.ch/work/e/ebhal/Semi_visible_jets_Condor/v5_pythia_params_var"
-# Names of root files without '.root' extension
-#models = [ "DMsimp_SVJ_s_spin1_mZp-1000_mDQ-10_rinv-0p1_nanoAOD_final",
-#           "DMsimp_SVJ_s_spin1_mZp-1000_mDQ-10_rinv-0p3_nanoAOD_final" ]
-models = [ 'DMsimp_SVJ_s_spin1_mZp-4000_mDQ-50_rinv-0p5_doShowerKtOn',
-           'DMsimp_SVJ_s_spin1_mZp-4000_mDQ-50_rinv-0p5_nJetMax4',
-           'DMsimp_SVJ_s_spin1_mZp-4000_mDQ-50_rinv-0p5_qCut-50',
-           'DMsimp_SVJ_s_spin1_mZp-4000_mDQ-50_rinv-0p5_setMadOn' ]
+
+# Files to run over
+files = [ '/afs/cern.ch/work/e/ebhal/Semi_visible_jets_Condor_v6/output/DMsimp_SVJ_s_spin1_mZp-1000_mDQ-10_rinv-0p3_nanoAOD_final.root',
+          '/afs/cern.ch/work/e/ebhal/Semi_visible_jets_Condor_v6/output/DMsimp_SVJ_t_mPhi-1000_mDQ-10_rinv-0p3_nanoAOD_final.root',
+        ]
+
+# Models, from which to extract info
+models = []
+for file in files:
+    models.append( os.path.basename(file.replace('.root', '') ) )
+
 rootColours = [4, 2, 3, 1, 6, 5, 7, 8, 9] # length needs to be >= len(models)
 legModelNames = []
+
 
 # Write strings to be included in legend
 for i, model in enumerate(models):
     m_d = re.search("(?<=mDQ-)[0-9]*", model).group(0)
     r_inv = re.search('(?<=rinv-)[0-9]*p[0-9]*',model).group(0).replace('p', '.')
+
     if 'mZp' in model:
         mZp = re.search("(?<=mZp-)[0-9]*", model).group(0)
-        legModel = "#splitline{#it{s}-channel}{#it{m_{Z'}} = %s, " % mZp
+        legModel = "#splitline{#it{s}-channel}"
+        legModel += "{#it{m_{Z'}} = %s, " % mZp
+
     elif 'mPhi' in model:
         mPhi = re.search("(?<=mPhi-)[0-9]*", model).group(0)
-        legModel = "#splitline{#it{t}-channel}{#it{m}_{#Phi} = %s, " % mPhi
+        legModel = "#splitline{#it{t}-channel}"
+        legModel += "{#it{m}_{#Phi} = %s, " % mPhi
+
     legModel += "#it{m_{d}} = %s, #it{r}_{inv.} = %s}" % (m_d, r_inv)
     legModelNames.append(legModel)
+
 
 # Reset terminal colours after print statement in which they've changed
 init(autoreset=True)
@@ -118,8 +132,7 @@ def main():
     # Open root files, then draw individual histograms
     for i, model in enumerate(models):
         print Fore.MAGENTA + "Running over model {0}/{1}.".format(i+1, len(models))
-        rootFile = os.path.join(baseDir, model+'.root')
-        openFile = TFile(rootFile)
+        openFile = TFile(files[i])
         tree = openFile.Get("Events")
         nEntries = tree.GetEntries()
 
