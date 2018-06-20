@@ -14,7 +14,7 @@
         4. [AOD (step 2) to miniAOD](#aodstep2tominiaod)
         5. [MiniAOD to nanoAOD](#miniaodtonanoaod)
     - [FullSim chain using CRAB (Work-In-Progress)](#fullsimchaincrab)
-4. [Running the complete sample production in three steps](#completesampleproduction)
+4. [Running the complete sample production with HTCondor (recommended)](#completesampleproduction)
 5. [Contact](#contact)
 6. [To do](#todo)
 
@@ -339,24 +339,35 @@ For the other steps in the FullSim chain, the procedure is the same as described
 _FINISH_
 
 
-## Running the complete sample production in three steps <a name="completesampleproduction"></a>
+## Running the complete sample production with HTCondor (recommended) <a name="completesampleproduction"></a>
 
 There are scripts included to run the entire sample production using a single config file. You specify the input arguments in a YAML file (see [model_params_demo.yaml](config/model_params_demo.yaml) for descriptions or the other files in that directory for complete examples).
 
-Make sure this repository is cloned somewhere and the genproductions repo is cloned as a submodule (detailed somehwere above in this README). Set up the environment with
+Make sure this repository is cloned somewhere and the genproductions repo is cloned as a submodule:
+
+```bash
+git clone git@github.com:eshwen/SemivisibleJets.git
+cd SemivisibleJets
+source setup.sh
+git submodule add -b mg26x git@github.com:eshwen/genproductions.git external/genproductions/
+git submodule init
+git submodule update
+```
+
+In a new session, you must set up the environment with
 
 ```bash
 source setup.sh
 ```
 
-then, run the gridpack generation according to the parameters in your config file with
+then run the gridpack generation according to the parameters in your config file with
 
 ```bash
 cd Gridpack_Generation
 python submitGridpackGeneration.py -c <path to YAML config>
 ```
 
-If the parameters are okay (and there are no bugs in the code), the MadGraph model files and input cards from the template directories I have should be copied into model-specific directories, and the specified parameters will be added. Then, the gridpack will be created in [genproductions/bin/MadGraph5_aMCatNLO/](external/genproductions/bin/MadGraph5_aMCatNLO/).
+If the parameters are okay (and there are no bugs in the code), the MadGraph model files and input cards from the template directories I have should be copied into model-specific directories, and the specified parameters will be added. Then, the gridpack will be created in [external/genproductions/bin/MadGraph5_aMCatNLO/](external/genproductions/bin/MadGraph5_aMCatNLO/).
 
 If you plan to run the rest of the sample production via CRAB or by some means that requires a gridpack, you're done! However, if you want to continue here and follow the rest of my steps, great! Now that you have the gridpack, the next stage is to get the LHE file out, apply the PDGID renumbering for the dark particles, and split the LHE file for running the FullSim jobs easily. This is taken care of with
 
@@ -365,16 +376,16 @@ cd $SVJ_TOP_DIR/LHE_from_Gridpack
 python runLHERetrieval.py -c <path to YAML config>
 ```
 
-The location of the split LHE files will be printed in the terminal, which will be the path specified in the config parameter `lhe_file_path`.
+The location of the split LHE files will be printed in the terminal, which will be the path specified by the config parameter `lhe_file_path`.
 
-Now, the final step is to run the full CMSSW chain on these split LHE files and get nanoAODs out. The cmsDriver commands are written to emulate 2016 MC with 2017 re-processing. If you would like to change that, edit [FullSim_files/Condor/runFullSim_condor.sh](runFullSim_condor.sh). And if you would like to change some more specific aspects of the model or hadronisation, either edit the config (as some parameters are detailed there) or [FullSim_files/Condor/writers/write_GS_fragment.py](write_GS_fragment.py). The batch system used for running the jobs is HTCondor, configured to run at lxplus (it _may_ run out of the box on other T2/T3 systems, but may need to be modified if specific requirements need to be met). Now, just run
+Now, the final step is to run the full CMSSW chain on these split LHE files and get nanoAODs out. The cmsDriver commands are written to emulate 2016 MC with 2017 re-processing. If you would like to change that, edit [FullSim_files/Condor/runFullSim_condor.sh](runFullSim_condor.sh). And if you would like to change some more specific aspects of the model or hadronisation, either edit your config (as some parameters are detailed there) or [FullSim_files/Condor/writers/write_GS_fragment.py](write_GS_fragment.py). The batch system used for running the jobs is HTCondor, configured to run at lxplus (it _may_ run out of the box on other T2/T3 systems, but may need to be modified if specific requirements need to be met). Now, just run
 
 ```bash
 cd $SVJ_TOP_DIR/FullSim_files/Condor
 python submitFullSim_condor.py -c <YAML config>
 ```
 
-which should take care of everything. Hadronisation is taken care of with `PYTHIA 8.230` -- through a hack, as the default architecture that ships with CMSSW_7_1_30 doesn't include that version -- because some LHE files tended to hang with 8.226 (presumably the new module contains patches and bug fixes). The output nanoAOD files will be located in `$work_space/output/`. If some jobs fail, they can be resubmitted by running
+which should take care of everything. Hadronisation is performed in `PYTHIA 8.230` -- integrated in an unconventional manner as the default architecture that ships with CMSSW_7_1_30 doesn't include that version -- because some LHE files tended to hang with 8.226 (presumably the new module contains patches and bug fixes). The output nanoAOD files will be located in `$work_space/output/`. If some jobs fail, they can be resubmitted by running
 
 ```bash
 $work_space/resubmit_${model_name}.sh
@@ -382,7 +393,7 @@ $work_space/resubmit_${model_name}.sh
 
 (note that all jobs must _finish running_ first). When happy, the component output files can be combined using [haddnano.py](Utils/haddnano.py). A script which does that step will be in `$work_space/combineOutput_${model_name}.sh`, which can be run without any arguments.
 
-Some rudimentary plotting, for a quick look at distributions, can be done by running [Utils/plotSVJHistos.py](plotSVJHistos.py). You just need to specify the base directory of the root files and the model names.
+Some rudimentary plotting, for a quick look at distributions, can be done by running [Utils/plotSVJHistos.py](plotSVJHistos.py). You just need to specify the root files in the list `files`.
 
 
 ## Contact <a name="contact"></a>
