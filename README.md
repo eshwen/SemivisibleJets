@@ -343,10 +343,10 @@ _FINISH_
 
 There are scripts included to run the entire sample production using a single config file. You specify the input arguments in a YAML file (see [model_params_demo.yaml](config/model_params_demo.yaml) for descriptions or the other files in that directory for complete examples).
 
-Make sure this repository is cloned somewhere and the genproductions repo is cloned as a submodule:
+Fork this repository, then clone it somewhere with the genproductions repo as a submodule:
 
 ```bash
-git clone git@github.com:eshwen/SemivisibleJets.git
+git clone git@github.com:<your fork>/SemivisibleJets.git
 cd SemivisibleJets
 source setup.sh
 git submodule add -b mg26x git@github.com:eshwen/genproductions.git external/genproductions/
@@ -354,7 +354,7 @@ git submodule init
 git submodule update
 ```
 
-In a new session, you must set up the environment with
+In each new session, you must set up the environment with
 
 ```bash
 source setup.sh
