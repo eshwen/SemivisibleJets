@@ -37,7 +37,7 @@ generator = cms.EDFilter("Pythia8HadronizerFilter",
     pythiaPylistVerbosity = cms.untracked.int32(1),
     filterEfficiency = cms.untracked.double(1.0),
     pythiaHepMCVerbosity = cms.untracked.bool(False),
-    crossSection = cms.untracked.double({0}),
+    crossSection = cms.untracked.double({cross_section:f}),
     comEnergy = cms.double(13000.),
     PythiaParameters = cms.PSet(
         pythia8CommonSettingsBlock,
@@ -55,7 +55,7 @@ generator = cms.EDFilter("Pythia8HadronizerFilter",
             'JetMatching:nJetMax = 2', # number of partons in born matrix element for highest multiplicity
             'JetMatching:doShowerKt = off', # off for MLM matching, turn on for shower-kT matching
             ),
-        processParameters = cms.vstring(""".format(x_sec))
+        processParameters = cms.vstring(""".format( cross_section=x_sec ) )
 
     if process_type == 's-channel':
         writeFile.write("""
@@ -65,21 +65,21 @@ generator = cms.EDFilter("Pythia8HadronizerFilter",
             # ADD SHIT HERE""")
 
     writeFile.write("""
-            '4900101:m0 = {0}', # explicitly stating dark quark mass in case it's not picked up properly by Pythia
-            '4900111:m0 = {1}', # Dark meson mass. PDGID corresponds to pivDiag HV spin-0 meson that can decay into SM particles
-            '4900211:m0 = {2}', # Stable dark particle mass. PDGID corresponds to pivUp off-diagonal HV spin-0 meson that's stable and invisible
-            '4900111: oneChannel = 1 {3} 4900211 -4900211', # Dark meson decay into stable dark particles with branching fraction r_inv
-            '4900111: addChannel = 1 {4} 91 1 -1', # Dark meson decay into down quarks with branching fraction 1 - r_inv
+            '4900101:m0 = {m_dark_quark:.0f}', # explicitly stating dark quark mass in case it's not picked up properly by Pythia
+            '4900111:m0 = {m_dark_meson:.0f}', # Dark meson mass. PDGID corresponds to pivDiag HV spin-0 meson that can decay into SM particles
+            '4900211:m0 = {m_dark_stable:.1f}', # Stable dark particle mass. PDGID corresponds to pivUp off-diagonal HV spin-0 meson that's stable and invisible
+            '4900111: oneChannel = 1 {r_inv:.2f} 4900211 -4900211', # Dark meson decay into stable dark particles with branching fraction r_inv
+            '4900111: addChannel = 1 {remain_BR:.2f} 91 1 -1', # Dark meson decay into down quarks with branching fraction 1 - r_inv
             #'TimeShower:nPartonsInBorn = 2', #number of coloured particles (before resonance decays) in born matrix element
             #'HiddenValley:ffbar2Zv = on', #it works only in the case of narrow width approx
             'HiddenValley:fragment = on', # enable hidden valley fragmentation
             #'HiddenValley:NBFlavRun = 0', # number of bosonic flavor for running
             #'HiddenValley:NFFlavRun = 2', # number of fermionic flavor for running
             'HiddenValley:alphaOrder = 1', # order at which running coupling runs
-            'HiddenValley:Lambda = {5}', # parameter used for running coupling
-            'HiddenValley:nFlav = {6}', # this dictates what kind of hadrons come out of the shower, if nFlav = 2, for example, there will be many different flavor of hadrons
+            'HiddenValley:Lambda = {Lambda_dark:.2f}', # parameter used for running coupling
+            'HiddenValley:nFlav = {nFlav:.0f}', # this dictates what kind of hadrons come out of the shower, if nFlav = 2, for example, there will be many different flavor of hadrons
             'HiddenValley:probVector = 0.', # ratio of number of vector mesons over scalar meson, 3:1 is from naive degrees of freedom counting (so 0.75). But allows hadronisation into more species of dark particle no nFlav may not make physical sense
-            'HiddenValley:pTminFSR = {7}', # cutoff for the showering, should be roughly confinement scale
+            'HiddenValley:pTminFSR = {pTminFSR:.2f}', # cutoff for the showering, should be roughly confinement scale
             ),
         parameterSets = cms.vstring('pythia8CommonSettings',
                                     'pythia8CUEP8M1Settings',
@@ -89,7 +89,8 @@ generator = cms.EDFilter("Pythia8HadronizerFilter",
                                     )
     )
 )
-""".format(m_d, m_dark_meson, m_dark_stable, r_inv, 1-r_inv, Lambda_d, n_f, 1.1*Lambda_d)
+""".format(m_dark_quark=m_d, m_dark_meson=m_dark_meson, m_dark_stable=m_dark_stable, r_inv=r_inv,
+           remain_BR=1-r_inv, Lambda_dark=Lambda_d, nFlav=n_f, pTminFSR=1.1*Lambda_d)
     )                   
     writeFile.close()
 
