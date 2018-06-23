@@ -143,10 +143,8 @@ request_memory = 5000
 +MaxRuntime = {8}
 # Number of instances of job to run
 queue 1
+use_x509userproxy = true
 """.format(submission_dir, work_space, gen_frag_file, lhe_file, model_name, n_events, seed, disk_req, runtime_req) )
-
-    if 'soolin' in os.environ['HOSTNAME']:
-        job_file.write("use_x509userproxy = true\n")
 
     job_file.close()
 
