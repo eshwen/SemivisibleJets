@@ -141,9 +141,9 @@ request_disk = {7}
 request_memory = 5000
 # Max runtime (seconds) determined by n_events
 +MaxRuntime = {8}
+use_x509userproxy = true
 # Number of instances of job to run
 queue 1
-use_x509userproxy = true
 """.format(submission_dir, work_space, gen_frag_file, lhe_file, model_name, n_events, seed, disk_req, runtime_req) )
 
     job_file.close()
