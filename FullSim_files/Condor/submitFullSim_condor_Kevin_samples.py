@@ -25,6 +25,8 @@ args = parser.parse_args()
 def main():
     """
     Handle the input and parsing from a YAML config file, then submit jobs for running FullSim sample production chain.
+    This is a stripped down version of submitFullSim_condor.py, designed to process Kevin Pedro's miniAODs (stored at
+    Fermilab) through to nanoAOD.
     """
 
     submission_dir = os.getcwd()
@@ -134,6 +136,7 @@ Error      = {1}/logs/{4}/condor_job_{6}.error
 getenv     = True
 should_transfer_files   = YES
 when_to_transfer_output = ON_EXIT_OR_EVICT
+use_x509userproxy = true
 # Resource requests (disk storage in kB, memory in MB)
 request_cpus = 1
 # Disk request size determined by n_events
@@ -141,7 +144,6 @@ request_disk = {7}
 request_memory = 5000
 # Max runtime (seconds) determined by n_events
 +MaxRuntime = {8}
-use_x509userproxy = true
 # Number of instances of job to run
 queue 1
 """.format(submission_dir, work_space, gen_frag_file, lhe_file, model_name, n_events, seed, disk_req, runtime_req) )
