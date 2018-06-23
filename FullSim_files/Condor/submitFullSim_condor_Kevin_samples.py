@@ -42,7 +42,7 @@ def main():
     n_f = input_params['n_f']
 
     # Check arguments in config file
-    performThoroughChecks(input_params)
+#    performThoroughChecks(input_params)
 
 
     # Calculate Lambda_d (confinement scale)
@@ -62,8 +62,8 @@ def main():
     # Make a list of split LHE files to run over
     lhe_file_list = []
     for seed in xrange(1,101):
-        lhe_name = '{0}_part-{1}.root'.format(model_name, seed)
-            lhe_file_list.append( os.path.join(lhe_file_path, lheFile) )
+        lheFile = '{0}_part-{1}.root'.format(model_name, seed)
+        lhe_file_list.append( os.path.join(lhe_file_path, lheFile) )
 
     if not os.path.exists(work_space):
         print "Work space doesn't exist. Creating it now.."
