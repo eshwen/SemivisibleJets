@@ -1,0 +1,16 @@
+# This config contains the parameters required for running the FullSim CMSSW chain on Condor
+# See model_params_demo.yaml for examples and descriptions
+work_space: /afs/cern.ch/work/e/ebhal/Semi_visible_jets_Condor_v6
+lhe_file_path: "root://cmseos.fnal.gov///store/user/lpcsusyhad/SVJ2017/ProductionV2/MINIAOD/"
+n_events: 500
+n_jobs: 100
+alpha_d: 0.2
+process_type: "s-channel"
+m_med: 4000
+m_d: 20
+n_f: 1
+r_inv: 0.3
+x_sec: 0.1297
+
+model_name: step4_MINIAOD_mZprime-4000_mDark-20_rinv-0.3_alpha-0.2_n-1000
+total_events: 50000

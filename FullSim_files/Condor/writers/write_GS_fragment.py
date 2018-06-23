@@ -43,18 +43,18 @@ generator = cms.EDFilter("Pythia8HadronizerFilter",
         pythia8CommonSettingsBlock,
         pythia8CUEP8M1SettingsBlock,
         pythia8aMCatNLOSettingsBlock,
-        JetMatchingParameters = cms.vstring(
-            'JetMatching:setMad = off', # if 'on', merging parameters are set according to LHE file
-            'JetMatching:scheme = 1', # 1 = scheme inspired by Madgraph matching code
-            'JetMatching:merge = on', # master switch to activate parton-jet matching. when off, all external events accepted 
-            'JetMatching:jetAlgorithm = 2', # 2 = SlowJet clustering
-            'JetMatching:etaJetMax = 5.', # max eta of any jet
-            'JetMatching:coneRadius = 1.1', # gives the jet R parameter
-            'JetMatching:slowJetPower = 1', # -1 = anti-kT algo, 1 = kT algo. Only kT w/ SlowJet is supported for MadGraph-style matching
-            'JetMatching:qCut = 100.', # this is the actual merging scale. should be roughly equal to xqcut in MadGraph
-            'JetMatching:nJetMax = 2', # number of partons in born matrix element for highest multiplicity
-            'JetMatching:doShowerKt = off', # off for MLM matching, turn on for shower-kT matching
-            ),
+       # JetMatchingParameters = cms.vstring(
+       #     'JetMatching:setMad = off', # if 'on', merging parameters are set according to LHE file
+       #     'JetMatching:scheme = 1', # 1 = scheme inspired by Madgraph matching code
+       #     'JetMatching:merge = on', # master switch to activate parton-jet matching. when off, all external events accepted 
+       #     'JetMatching:jetAlgorithm = 2', # 2 = SlowJet clustering
+       #     'JetMatching:etaJetMax = 5.', # max eta of any jet
+       #     'JetMatching:coneRadius = 1.1', # gives the jet R parameter
+       #     'JetMatching:slowJetPower = 1', # -1 = anti-kT algo, 1 = kT algo. Only kT w/ SlowJet is supported for MadGraph-style matching
+       #     'JetMatching:qCut = 100.', # this is the actual merging scale. should be roughly equal to xqcut in MadGraph
+       #     'JetMatching:nJetMax = 2', # number of partons in born matrix element for highest multiplicity
+       #     'JetMatching:doShowerKt = off', # off for MLM matching, turn on for shower-kT matching
+       #     ),
         processParameters = cms.vstring(""".format(x_sec))
 
     if process_type == 's-channel':
@@ -70,16 +70,16 @@ generator = cms.EDFilter("Pythia8HadronizerFilter",
             '4900211:m0 = {2}', # Stable dark particle mass. PDGID corresponds to pivUp off-diagonal HV spin-0 meson that's stable and invisible
             '4900111: oneChannel = 1 {3} 4900211 -4900211', # Dark meson decay into stable dark particles with branching fraction r_inv
             '4900111: addChannel = 1 {4} 91 1 -1', # Dark meson decay into down quarks with branching fraction 1 - r_inv
-            #'TimeShower:nPartonsInBorn = 2', #number of coloured particles (before resonance decays) in born matrix element
-            #'HiddenValley:ffbar2Zv = on', #it works only in the case of narrow width approx
-            'HiddenValley:fragment = on', # enable hidden valley fragmentation
-            #'HiddenValley:NBFlavRun = 0', # number of bosonic flavor for running
-            #'HiddenValley:NFFlavRun = 2', # number of fermionic flavor for running
-            'HiddenValley:alphaOrder = 1', # order at which running coupling runs
-            'HiddenValley:Lambda = {5}', # parameter used for running coupling
-            'HiddenValley:nFlav = {6}', # this dictates what kind of hadrons come out of the shower, if nFlav = 2, for example, there will be many different flavor of hadrons
-            'HiddenValley:probVector = 0.', # ratio of number of vector mesons over scalar meson, 3:1 is from naive degrees of freedom counting (so 0.75). But allows hadronisation into more species of dark particle no nFlav may not make physical sense
-            'HiddenValley:pTminFSR = {7}', # cutoff for the showering, should be roughly confinement scale
+            'HiddenValley:Ngauge = 1',
+            'HiddenValley:spinFv = 1',
+            'HiddenValley:spinqv = 0',
+            'HiddenValley:FSR = on',
+            'HiddenValley:fragment = on',
+            'HiddenValley:alphaOrder = 1',
+            'HiddenValley:Lambda = {5}',
+            'HiddenValley:nFlav = {6}',
+            'HiddenValley:probVector = 0.0',
+            'HiddenValley:pTminFSR = {2}',
             ),
         parameterSets = cms.vstring('pythia8CommonSettings',
                                     'pythia8CUEP8M1Settings',
