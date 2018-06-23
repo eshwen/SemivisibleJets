@@ -33,7 +33,7 @@ scram b
 
 # Run the cmsDriver and cmsRun commands for each step in the chain
 
-cmsDriver.py Configuration/GenProduction/python/${gen_frag_file} --filein file:${lhe_file_path} --fileout file:${model_name}_GEN_SIM_${seed}.root --mc --eventcontent RAWSIM --customise SLHCUpgradeSimulations/Configuration/postLS1Customs.customisePostLS1,Configuration/DataProcessing/Utils.addMonitoring --datatier GEN-SIM --conditions MCRUN2_71_V1::All --beamspot Realistic50ns13TeVCollision --step GEN,SIM --magField 38T_PostLS1 --python_filename ${model_name}_GEN_SIM_${seed}.py --no_exec -n $n_events
+cmsDriver.py Configuration/GenProduction/python/${gen_frag_file} --filein file:${lhe_file_path} --fileout file:${model_name}_GEN_SIM_${seed}.root --mc --eventcontent RAWSIM --customise SLHCUpgradeSimulations/Configuration/postLS1Customs.customisePostLS1,Configuration/DataProcessing/Utils.addMonitoring --datatier GEN-SIM --conditions MCRUN2_71_V3::All --beamspot Realistic50ns13TeVCollision --step GEN,SIM --magField 38T_PostLS1 --python_filename ${model_name}_GEN_SIM_${seed}.py --no_exec -n $n_events
 
 # Add the following string to CMSSW config in case stringent hadronisation cuts remove all events from a job
 sed -i "s/process.options = cms.untracked.PSet(/process.options = cms.untracked.PSet(SkipEvent = cms.untracked.vstring(\'ProductNotFound\'),/g" ${model_name}_GEN_SIM_${seed}.py
