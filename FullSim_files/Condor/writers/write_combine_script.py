@@ -30,11 +30,14 @@ cd {work_space}/CMSSW_9_4_4/src # Try to make this not hardcoded in case that ve
 cmsenv
 cd {work_space}
 {SVJ_top_dir}/Utils/haddnano.py {work_space}/output/{model}_nanoAOD_final.root {work_space}/output/{model}*NANOAOD*.root
+
 if [ ! -d {work_space}/output/components ]; then
     mkdir {work_space}/output/components
 fi
+
 mv {work_space}/output/{model}_NANOAOD_*.root {work_space}/output/components
-    """.format(work_space=work_space, SVJ_top_dir=svj_top_dir, model=model_name)    )
+    """.format(work_space=work_space, SVJ_top_dir=svj_top_dir, model=model_name)
+                    )
     writeFile.close()
 
     call("chmod +x {0}".format(filePath), shell = True)
