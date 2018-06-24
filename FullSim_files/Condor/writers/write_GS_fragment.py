@@ -37,7 +37,7 @@ generator = cms.EDFilter("Pythia8HadronizerFilter",
     pythiaPylistVerbosity = cms.untracked.int32(1),
     filterEfficiency = cms.untracked.double(1.0),
     pythiaHepMCVerbosity = cms.untracked.bool(False),
-    crossSection = cms.untracked.double({0}),
+    crossSection = cms.untracked.double({cross_section:f}),
     comEnergy = cms.double(13000.),
     PythiaParameters = cms.PSet(
         pythia8CommonSettingsBlock,
@@ -55,7 +55,7 @@ generator = cms.EDFilter("Pythia8HadronizerFilter",
        #     'JetMatching:nJetMax = 2', # number of partons in born matrix element for highest multiplicity
        #     'JetMatching:doShowerKt = off', # off for MLM matching, turn on for shower-kT matching
        #     ),
-        processParameters = cms.vstring(""".format(x_sec))
+        processParameters = cms.vstring(""".format(cross_section=x_sec))
 
     if process_type == 's-channel':
         writeFile.write("""
@@ -65,21 +65,21 @@ generator = cms.EDFilter("Pythia8HadronizerFilter",
             # ADD SHIT HERE""")
 
     writeFile.write("""
-            '4900101:m0 = {0}', # explicitly stating dark quark mass in case it's not picked up properly by Pythia
-            '4900111:m0 = {1}', # Dark meson mass. PDGID corresponds to pivDiag HV spin-0 meson that can decay into SM particles
-            '4900211:m0 = {2}', # Stable dark particle mass. PDGID corresponds to pivUp off-diagonal HV spin-0 meson that's stable and invisible
-            '4900111: oneChannel = 1 {3} 4900211 -4900211', # Dark meson decay into stable dark particles with branching fraction r_inv
-            '4900111: addChannel = 1 {4} 91 1 -1', # Dark meson decay into down quarks with branching fraction 1 - r_inv
+            '4900101:m0 = {m_dark_quark:.0f}', # explicitly stating dark quark mass in case it's not picked up properly by Pythia
+            '4900111:m0 = {m_dark_meson:.0f}', # Dark meson mass. PDGID corresponds to pivDiag HV spin-0 meson that can decay into SM particles
+            '4900211:m0 = {m_dark_stable:.1f}', # Stable dark particle mass. PDGID corresponds to pivUp off-diagonal HV spin-0 meson that's stable and invisible
+            '4900111: oneChannel = 1 {r_inv:.2f} 4900211 -4900211', # Dark meson decay into stable dark particles with branching fraction r_inv
+            '4900111: addChannel = 1 {remain_BR:.2f} 91 1 -1', # Dark meson decay into down quarks with branching fraction 1 - r_inv
             'HiddenValley:Ngauge = 1',
             'HiddenValley:spinFv = 1',
             'HiddenValley:spinqv = 0',
             'HiddenValley:FSR = on',
             'HiddenValley:fragment = on',
             'HiddenValley:alphaOrder = 1',
-            'HiddenValley:Lambda = {5}',
-            'HiddenValley:nFlav = {6}',
+            'HiddenValley:Lambda = {Lambda_dark:.2f}',
+            'HiddenValley:nFlav = {nFlav:.0f}',
             'HiddenValley:probVector = 0.0',
-            'HiddenValley:pTminFSR = {2}',
+            'HiddenValley:pTminFSR = {pTminFSR:.2f}',
             ),
         parameterSets = cms.vstring('pythia8CommonSettings',
                                     'pythia8CUEP8M1Settings',
@@ -89,8 +89,9 @@ generator = cms.EDFilter("Pythia8HadronizerFilter",
                                     )
     )
 )
-""".format(m_d, m_dark_meson, m_dark_stable, r_inv, 1-r_inv, Lambda_d, n_f, 1.1*Lambda_d)
-    )                   
+""".format(m_dark_quark=m_d, m_dark_meson=m_dark_meson, m_dark_stable=m_dark_stable, r_inv=r_inv,
+           remain_BR=1-r_inv, Lambda_dark=Lambda_d, nFlav=n_f, pTminFSR=1.1*Lambda_d)
+                    )                   
     writeFile.close()
 
     return filePath
