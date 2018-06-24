@@ -140,28 +140,28 @@ def write_submission_script(work_space, gen_frag_file, lhe_file, model_name, n_e
     job_file = open(job_path, 'w')
     job_file.write("""# HTCondor submission script
 Universe   = vanilla
-cmd        = {0}/runFullSim_condor.sh
-args       = {1} {2} {3} {4} {5} {6}
-Log        = {1}/logs/{4}/condor_job_{6}.log
-Output     = {1}/logs/{4}/condor_job_{6}.out
-Error      = {1}/logs/{4}/condor_job_{6}.error
+cmd        = {submission_dir}/runFullSim_condor.sh
+args       = {work_space} {gen_fragment} {lhe_file} {model} {n_events:.0f} {seed:.0f}
+Log        = {work_space}/logs/{model}/condor_job_{seed}.log
+Output     = {work_space}/logs/{model}/condor_job_{seed}.out
+Error      = {work_space}/logs/{model}/condor_job_{seed}.error
 getenv     = True
 should_transfer_files   = YES
 when_to_transfer_output = ON_EXIT_OR_EVICT
+{grid_proxy}
 # Resource requests (disk storage in kB, memory in MB)
 request_cpus = 1
 # Disk request size determined by n_events
-request_disk = {7}
+request_disk = {disk_req}
 request_memory = 5000
 # Max runtime (seconds) determined by n_events
-+MaxRuntime = {8}
++MaxRuntime = {runtime_req}
 # Number of instances of job to run
 queue 1
-""".format(submission_dir, work_space, gen_frag_file, lhe_file, model_name, n_events, seed, disk_req, runtime_req) )
-
-    if 'soolin' in os.environ['HOSTNAME']:
-        job_file.write("use_x509userproxy = true\n")
-
+""".format(submission_dir=submission_dir, work_space=work_space, gen_fragment=gen_frag_file, lhe_file=lhe_file,
+           model=model_name, n_events=n_events, seed=seed, disk_req=disk_req, runtime_req=runtime_req,
+           grid_proxy="use_x509userproxy = true" if 'soolin' in os.environ['HOSTNAME'] or 'root://' in lhe_file else '')
+                   )
     job_file.close()
 
     call('chmod +x {0}'.format(job_path), shell=True)
