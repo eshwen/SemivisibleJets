@@ -26,17 +26,17 @@ def main():
 printf "\e[1;33mWarning: May take a while to hadd if many files are present\n\e[0m"
 shopt -s expand_aliases
 source /cvmfs/cms.cern.ch/cmsset_default.sh 
-cd {0}/CMSSW_9_4_4/src # Try to make this not hardcoded in case that version doesn't exist
+cd {work_space}/CMSSW_9_4_4/src # Try to make this not hardcoded in case that version doesn't exist
 cmsenv
-cd {0}
-{1}/Utils/haddnano.py {0}/output/{2}_nanoAOD_final.root {0}/output/{2}*NANOAOD*.root
+cd {work_space}
+{SVJ_top_dir}/Utils/haddnano.py {work_space}/output/{model}_nanoAOD_final.root {0}/output/{2}*NANOAOD*.root
 
-if [ ! -d {0}/output/components ]; then
-    mkdir {0}/output/components
+if [ ! -d {work_space}/output/components ]; then
+    mkdir {work_space}/output/components
 fi
 
-mv {0}/output/{2}_NANOAOD_*.root {0}/output/components
-    """.format(work_space, svj_top_dir, model_name)
+mv {work_space}/output/{model}_NANOAOD_*.root {work_space}/output/components
+    """.format(work_space=work_space, SVJ_top_dir=svj_top_dir, model=model_name)
     )
     writeFile.close()
 
