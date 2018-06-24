@@ -85,7 +85,7 @@ generator = cms.EDFilter("Pythia8HadronizerFilter",
                                     'pythia8CUEP8M1Settings',
                                     'pythia8aMCatNLOSettings',
                                     'processParameters',
-                                    'JetMatchingParameters'
+                                    #'JetMatchingParameters'
                                     )
     )
 )
