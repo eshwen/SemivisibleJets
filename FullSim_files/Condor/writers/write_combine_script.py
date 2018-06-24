@@ -23,13 +23,13 @@ def main():
 
     # Write bash combine script
     writeFile.write("""#!/bin/bash
-printf "\e[1;33mWarning: May take a while to hadd if many files are present\n\e[0m"
+echo -e "\e[1;33mWarning: May take a while to hadd if many files are present.\e[0m"
 shopt -s expand_aliases
 source /cvmfs/cms.cern.ch/cmsset_default.sh 
 cd {work_space}/CMSSW_9_4_4/src # Try to make this not hardcoded in case that version doesn't exist
 cmsenv
 cd {work_space}
-{SVJ_top_dir}/Utils/haddnano.py {work_space}/output/{model}_nanoAOD_final.root {0}/output/{2}*NANOAOD*.root
+{SVJ_top_dir}/Utils/haddnano.py {work_space}/output/{model}_nanoAOD_final.root {work_space}/output/{model}*NANOAOD*.root
 
 if [ ! -d {work_space}/output/components ]; then
     mkdir {work_space}/output/components
