@@ -58,9 +58,6 @@ def main():
     #    alpha_d = cDP.calcAlphaD(n_c, n_f, Lambda_d)
     #    print Fore.MAGENTA + "Recalculated alpha_d =", alpha_d
 
-    # Initialise proxy of grid certificate as files will be retrieved via xrootd
-    call('voms-proxy-init --voms cms --valid 168:00', shell=True)
-
     # Make a list of split LHE files to run over
     input_file_list = []
     for seed in xrange(1,101):
@@ -70,6 +67,12 @@ def main():
     if not os.path.exists(work_space):
         print "Work space doesn't exist. Creating it now.."
         os.makedirs(work_space)
+
+    # Initialise proxy of grid certificate if required
+    if 'root://' in lhe_file_path:
+        grid_cert_path = '{0}/x509up_u{1}'.format(work_space, os.getuid())
+        call('voms-proxy-init --voms cms --valid 168:00 --out {0}'.format(grid_cert_path), shell=True)
+        os.environ['X509_USER_PROXY'] = grid_cert_path
 
 
     # Dict for architectures corresponding to different CMSSW versions
