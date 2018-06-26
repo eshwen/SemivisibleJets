@@ -45,7 +45,7 @@ def performThoroughChecks(configDict):
     n_f = configDict['n_f']
     x_sec = configDict['x_sec']
 
-    if not os.path.exists(lhe_file_path):
+    if 'root://' not in lhe_file_path and not os.path.exists(lhe_file_path):
         raise ValueError(Fore.GREEN + 'The LHE file path you have specified does not exist.')
     if not type(n_f) is int:
         raise TypeError(Fore.GREEN + 'n_f is required to be an integer.')
@@ -58,8 +58,8 @@ def performThoroughChecks(configDict):
 if __name__ == '__main__':
     
     parser = argparse.ArgumentParser()
-    parser.add_argument("-c", "--config", type = str, default = os.path.join(os.environ['SVJ_TOP_DIR'], "config", "model_params_s_spin1.yaml"), help = "Path to YAML config to parse")
-    parser.add_argument("-t", "--checkType", type = str, default = "basic", help = "Type of check to perform, either 'basic' or 'thorough'")
+    parser.add_argument('-c', '--config', type = str, default = os.path.join(os.environ['SVJ_TOP_DIR'], 'config', 'model_params_s_spin1.yaml'), help = "Path to YAML config to parse")
+    parser.add_argument('-t', '--checkType', type = str, default = 'basic', help = "Type of check to perform, either 'basic' or 'thorough'")
     args = parser.parse_args()
 
     print Fore.MAGENTA + "Checking config file...", Style.RESET_ALL
@@ -71,5 +71,8 @@ if __name__ == '__main__':
 
     elif args.checkType == 'thorough':
         performThoroughChecks(configDict)
+    
+    else:
+        sys.exit("The --checkType option must be either 'basic' or 'thorough'.")
 
     sys.exit("Completed")
