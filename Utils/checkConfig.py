@@ -72,4 +72,7 @@ if __name__ == '__main__':
     elif args.checkType == 'thorough':
         performThoroughChecks(configDict)
 
+    else:
+        sys.exit("The --checkType option must be either 'basic' or 'thorough'.")
+
     sys.exit("Completed")
