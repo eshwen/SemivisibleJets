@@ -70,6 +70,12 @@ def main():
         print "Work space doesn't exist. Creating it now.."
         os.makedirs(work_space)
 
+    # Initialise proxy of grid certificate if required
+    if 'root://' in lhe_file_path:
+        grid_cert_path = '{0}/x509up_u{1}'.format(work_space, os.getuid())
+        call('voms-proxy-init --voms cms --valid 168:00 --out {0}'.format(grid_cert_path), shell=True)
+        os.environ['X509_USER_PROXY'] = grid_cert_path
+
 
     # Dict for architectures corresponding to different CMSSW versions
     cmssw_archs = {
