@@ -1,5 +1,6 @@
 #!/usr/bin/python 
 import CMS_lumi
+import sys
 try:
     from colorama import Fore, init
 except ImportError:
@@ -14,8 +15,9 @@ from ROOT import TFile, TCanvas, gStyle, TLatex, TLegend, TH1F
 # Define global variables
 
 # Files to run over
-files = [ '/afs/cern.ch/work/e/ebhal/Semi_visible_jets_Condor_v6/output/DMsimp_SVJ_t_mPhi-1000_mDQ-10_rinv-0p3_nanoAOD_final.root',
-          '/afs/cern.ch/work/e/ebhal/Semi_visible_jets_Condor_v6/output/DMsimp_SVJ_s_spin1_mZp-1000_mDQ-10_rinv-0p3_nanoAOD_final.root',
+baseDir = '/afs/cern.ch/work/e/ebhal/Semi_visible_jets_Condor_v6/output/'
+files = [ baseDir + 'DMsimp_SVJ_s_spin1_mZp-1000_mDQ-20_rinv-0p3_nanoAOD_final.root',
+          baseDir + 'step4_MINIAOD_mZp-1000_mDQ-20_rinv-0p3_alpha-0.2_n-1000_nanoAOD_final.root',
           ]
 
 # Models, from which to extract info
@@ -42,7 +44,12 @@ for i, model in enumerate(models):
         legModel = "#splitline{#it{t}-channel}"
         legModel += "{#it{m}_{#Phi} = %s, " % mPhi
 
-    legModel += "#it{m_{d}} = %s, #it{r}_{inv.} = %s}" % (m_d, r_inv)
+    if i == 0:
+        legModel += "#it{m_{d}} = %s, #it{r}_{inv.} = %s, Esh}" % (m_d, r_inv)
+    else:
+        legModel += "#it{m_{d}} = %s, #it{r}_{inv.} = %s, Fermilab}" % (m_d, r_inv)
+
+#    legModel += "#it{m_{d}} = %s, #it{r}_{inv.} = %s}" % (m_d, r_inv)
     legModelNames.append(legModel)
 
 
@@ -71,7 +78,7 @@ def setTheGoodStuff(histo, model, index, xTitle, legend):
 # Plot histograms, then save
 def drawIndivHistos(model, histo, canvas, legend, xTitle, fileSuffix, index=0):
     setTheGoodStuff(histo, model, index, xTitle, legend)
-    histo.Draw()
+    histo.Draw("HIST")
     addPlotTitle(canvas)
     canvas.SaveAs("./Plots/"+model+"_"+fileSuffix+".pdf")
     legend.Clear()
@@ -82,9 +89,9 @@ def drawMultipleHistos(histoArray, canvas, legend, xTitle, fileSuffix, modelsArr
     for i, hist in enumerate(histoArray):
         setTheGoodStuff(histoArray[i], modelsArray[i], i, xTitle, legend)
         if i == 0:
-            histoArray[i].Draw()
+            histoArray[i].Draw("HIST")
         else:
-            histoArray[i].Draw("SAME")
+            histoArray[i].Draw("HIST SAME")
     addPlotTitle(canvas)
     canvas.SaveAs("./Plots/all_"+fileSuffix+".pdf")
     legend.Clear()
@@ -160,6 +167,13 @@ def main():
             pbar.update(entry+1)
         
         pbar.finish()
+
+        # Normalise histograms
+        nJetHist[i].Scale(1./nEntries)
+        jetPtHist[i].Scale(1./nEntries)
+        leadJetPtHist[i].Scale(1./nEntries)
+        metPtHist[i].Scale(1./nEntries)
+        dPhiJJHist[i].Scale(1./nEntries)
 
         # Draw individual histograms and save
         drawIndivHistos(model, nJetHist[i], canv, myLeg, nJetLabel, "nJet", index=i)
