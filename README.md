@@ -415,6 +415,5 @@ For questions or issues please contact:
 - Consider changing dark quarks to spin-1/2 in MadGraph model files (would have to change `spin` attribute in particles.py to '2'). Find out if that will affect decays or anything. Would also need to consider the spin of the dark hadron (see HV documentation in Pythia for PDGIDs).
 - See if I still need to do the confinement scale rescaling
 - Add n_c to config file? How would changing value affect things physically/kinematically?
-- In plotSVJHistos.py, scale histograms by number of entries in tree?
 
 - Whenever I change/update things, remember to update the README as well
