@@ -1,4 +1,5 @@
 import argparse
+import sys
 try:
     from checkConfig import performBasicChecks
 except ImportError:
