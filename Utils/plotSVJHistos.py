@@ -16,8 +16,9 @@ from ROOT import TFile, TCanvas, gStyle, TLatex, TLegend, TH1F
 
 # Files to run over
 baseDir = '/afs/cern.ch/work/e/ebhal/Semi_visible_jets_Condor_v6/output/'
-files = [ baseDir + 'DMsimp_SVJ_s_spin1_mZp-1000_mDQ-20_rinv-0p3_nanoAOD_final.root',
-          baseDir + 'step4_MINIAOD_mZp-1000_mDQ-20_rinv-0p3_alpha-0.2_n-1000_nanoAOD_final.root',
+files = [ baseDir + 'DMsimp_SVJ_s_spin1_mZp-1000_mDQ-20_rinv-0p3_nanoAOD_final_noMatching.root',
+          baseDir + 'DMsimp_SVJ_s_spin1_mZp-1000_mDQ-20_rinv-0p3_nanoAOD_final_withMatching.root',
+          baseDir + 'DMsimp_SVJ_s_spin1_mZp-1000_mDQ-10_rinv-0p3_nanoAOD_final.root',
           ]
 
 # Models, from which to extract info
@@ -45,9 +46,11 @@ for i, model in enumerate(models):
         legModel += "{#it{m}_{#Phi} = %s, " % mPhi
 
     if i == 0:
-        legModel += "#it{m_{d}} = %s, #it{r}_{inv.} = %s, Esh}" % (m_d, r_inv)
+        legModel += "#it{m_{d}} = %s, #it{r}_{inv.} = %s, noMatch}" % (m_d, r_inv)
+    elif i == 1:
+        legModel += "#it{m_{d}} = %s, #it{r}_{inv.} = %s, withMatch}" % (m_d, r_inv)
     else:
-        legModel += "#it{m_{d}} = %s, #it{r}_{inv.} = %s, Fermilab}" % (m_d, r_inv)
+        legModel += "#it{m_{d}} = %s, #it{r}_{inv.} = %s}" % (m_d, r_inv)
 
 #    legModel += "#it{m_{d}} = %s, #it{r}_{inv.} = %s}" % (m_d, r_inv)
     legModelNames.append(legModel)
