@@ -1,4 +1,5 @@
 import argparse
+import sys
 try:
     from checkConfig import performBasicChecks
 except ImportError:
@@ -11,7 +12,6 @@ import re
 import shutil
 from string import Template
 from subprocess import call
-import sys
 import yaml
 
 
