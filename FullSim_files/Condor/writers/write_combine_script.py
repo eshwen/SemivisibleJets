@@ -29,13 +29,23 @@ source /cvmfs/cms.cern.ch/cmsset_default.sh
 cd {work_space}/CMSSW_9_4_4/src # Try to make this not hardcoded in case that version doesn't exist
 cmsenv
 cd {work_space}
-{SVJ_top_dir}/Utils/haddnano.py {work_space}/output/{model}_nanoAOD_final.root {work_space}/output/{model}*NANOAOD*.root
+
+# Capture output of hadding command in file to check for errors
+temp_file=$(mktemp)
+
+{SVJ_top_dir}/Utils/haddnano.py {work_space}/output/{model}_nanoAOD_final.root {work_space}/output/{model}*NANOAOD*.root 2>&1 | tee $temp_file
 
 if [ ! -d {work_space}/output/components ]; then
     mkdir {work_space}/output/components
 fi
 
-mv {work_space}/output/{model}_NANOAOD_*.root {work_space}/output/components
+if grep -rq "Error in <TFile\|has size 0" $temp_file > /dev/null; then
+    echo "\e[1;32mFound an error while combining files. Check the output and try again.\e[0m"
+else
+    mv {work_space}/output/{model}_NANOAOD_*.root {work_space}/output/components
+fi
+
+exit
     """.format(work_space=work_space, SVJ_top_dir=svj_top_dir, model=model_name)
                     )
     writeFile.close()
