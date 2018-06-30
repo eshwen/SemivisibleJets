@@ -15,8 +15,9 @@ from ROOT import TFile, TCanvas, gStyle, TLatex, TLegend, TH1F
 # Define global variables
 
 # Files to run over
-files = [ '/afs/cern.ch/work/e/ebhal/Semi_visible_jets_Condor_v6/output/DMsimp_SVJ_s_spin1_mZp-1000_mDQ-10_rinv-0p3_nanoAOD_final.root',
-          '/afs/cern.ch/work/e/ebhal/Semi_visible_jets_Condor_v6/output/DMsimp_SVJ_s_spin1_mZp-3000_mDQ-20_rinv-0p1_nanoAOD_final.root',
+baseDir = '/afs/cern.ch/work/e/ebhal/Semi_visible_jets_Condor_v6/output/'
+files = [ baseDir + 'DMsimp_SVJ_s_spin1_mZp-1000_mDQ-20_rinv-0p3_nanoAOD_final_withMatching_Esh_settings.root',
+          baseDir + 'step4_MINIAOD_mZp-1000_mDQ-20_rinv-0p3_alpha-0.2_n-1000_nanoAOD_final.root',
           ]
 
 # Models, from which to extract info
@@ -75,7 +76,7 @@ def drawIndivHistos(model, histo, canvas, legend, xTitle, fileSuffix, index=0):
     setTheGoodStuff(histo, model, index, xTitle, legend)
     histo.Draw("HIST")
     addPlotTitle(canvas)
-    canvas.SaveAs("./Plots/"+model+"_"+fileSuffix+".root")
+    canvas.SaveAs("./Plots/"+model+"_"+fileSuffix+".pdf")
     legend.Clear()
 
 
@@ -88,7 +89,7 @@ def drawMultipleHistos(histoArray, canvas, legend, xTitle, fileSuffix, modelsArr
         else:
             histoArray[i].Draw("HIST SAME")
     addPlotTitle(canvas)
-    canvas.SaveAs("./Plots/all_"+fileSuffix+".root")
+    canvas.SaveAs("./Plots/all_"+fileSuffix+".pdf")
     legend.Clear()
 
 
