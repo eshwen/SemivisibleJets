@@ -48,4 +48,4 @@ python -m pip install --prefix "${SVJ_EXTERNALS_DIR}"/pip -r requirements.txt --
 
 unset SVJ_cvmfs_{PythonDir,PipDir,GCCSetup,RootSetup}
 
-cat Utils/splash_page2.txt
+echo -e "\e[1;36m$(cat Utils/splash_page.txt)\e[0m"
