@@ -47,3 +47,5 @@ python -m pip install --prefix "${SVJ_EXTERNALS_DIR}"/pip -U setuptools --ignore
 python -m pip install --prefix "${SVJ_EXTERNALS_DIR}"/pip -r requirements.txt --ignore-installed
 
 unset SVJ_cvmfs_{PythonDir,PipDir,GCCSetup,RootSetup}
+
+cat Utils/splash_page2.txt
