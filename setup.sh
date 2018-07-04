@@ -27,6 +27,7 @@ SVJ_build_python_path(){
     SVJ_build_some_path "$PYTHONPATH" "${Dirs[@]}"
 }
 
+# Source Python, pip, gcc and ROOT from cvmfs
 SVJ_cvmfs_PythonDir=/cvmfs/sft.cern.ch/lcg/releases/Python/2.7.13-597a5/x86_64-slc6-gcc62-opt/
 SVJ_cvmfs_PipDir=/cvmfs/sft.cern.ch/lcg/releases/pip/8.1.2-c9f5a/x86_64-slc6-gcc62-opt/
 SVJ_cvmfs_GCCSetup=/cvmfs/sft.cern.ch/lcg/contrib/gcc/6.2/x86_64-slc6/setup.sh
@@ -34,6 +35,7 @@ SVJ_cvmfs_RootSetup=/cvmfs/sft.cern.ch/lcg/releases/LCG_88/ROOT/6.08.06/x86_64-s
 source "${SVJ_cvmfs_GCCSetup}"
 source "${SVJ_cvmfs_RootSetup}"
 
+# Set environment variables
 export SVJ_TOP_DIR="$(SVJ_top_dir)"
 export SVJ_EXTERNALS_DIR="$(SVJ_top_dir)/external"
 export SVJ_MODELS_DIR="$(SVJ_top_dir)/MG_models"
@@ -48,4 +50,7 @@ python -m pip install --prefix "${SVJ_EXTERNALS_DIR}"/pip -r requirements.txt --
 
 unset SVJ_cvmfs_{PythonDir,PipDir,GCCSetup,RootSetup}
 
-echo -e "\e[1;36m$(cat Utils/splash_page.txt)\e[0m"
+# Display splash page if terminal is wide enough (otherwise it looks shit)
+if (( $COLUMNS >= 159 )); then
+    echo -e "\e[1;36m$(cat Utils/splash_page.txt)\e[0m"
+fi
