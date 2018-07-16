@@ -43,19 +43,19 @@ generator = cms.EDFilter("Pythia8HadronizerFilter",
         pythia8CommonSettingsBlock,
         pythia8CUEP8M1SettingsBlock,
         pythia8aMCatNLOSettingsBlock,
-       # JetMatchingParameters = cms.vstring(
-       #     'JetMatching:setMad = off', # if 'on', merging parameters are set according to LHE file
-       #     'JetMatching:scheme = 1', # 1 = scheme inspired by Madgraph matching code
-       #     'JetMatching:merge = on', # master switch to activate parton-jet matching. when off, all external events accepted 
-       #     'JetMatching:jetAlgorithm = 2', # 2 = SlowJet clustering
-       #     'JetMatching:etaJetMax = 5.', # max eta of any jet
-       #     'JetMatching:coneRadius = 1.1', # gives the jet R parameter
-       #     'JetMatching:slowJetPower = 1', # -1 = anti-kT algo, 1 = kT algo. Only kT w/ SlowJet is supported for MadGraph-style matching
-       #     'JetMatching:qCut = 100.', # this is the actual merging scale. should be roughly equal to xqcut in MadGraph
-       #     'JetMatching:nJetMax = 2', # number of partons in born matrix element for highest multiplicity
-       #     'JetMatching:doShowerKt = off', # off for MLM matching, turn on for shower-kT matching
-       #     ),
-        processParameters = cms.vstring(""".format(cross_section=x_sec))
+        JetMatchingParameters = cms.vstring(
+            'JetMatching:setMad = off', # if 'on', merging parameters are set according to LHE file
+            'JetMatching:scheme = 1', # 1 = scheme inspired by Madgraph matching code
+            'JetMatching:merge = on', # master switch to activate parton-jet matching. when off, all external events accepted 
+            'JetMatching:jetAlgorithm = 2', # 2 = SlowJet clustering
+            'JetMatching:etaJetMax = 5.', # max eta of any jet
+            'JetMatching:coneRadius = 1.0', # gives the jet R parameter
+            'JetMatching:slowJetPower = 1', # -1 = anti-kT algo, 1 = kT algo. Only kT w/ SlowJet is supported for MadGraph-style matching
+            'JetMatching:qCut = 100.', # this is the actual merging scale. should be roughly equal to xqcut in MadGraph
+            'JetMatching:nJetMax = 2', # number of partons in born matrix element for highest multiplicity
+            'JetMatching:doShowerKt = off', # off for MLM matching, turn on for shower-kT matching
+            ),
+        processParameters = cms.vstring(""".format( cross_section=x_sec ) )
 
     if process_type == 's-channel':
         writeFile.write("""
