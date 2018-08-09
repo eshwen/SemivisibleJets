@@ -127,7 +127,7 @@ def main():
         lhe_file_for_job = lhe_file_list[seed]
 
         job_path = write_submission_script(work_space, gen_frag_file, lhe_file_for_job, model_name, n_events, seed, submission_dir)
-        print Fore.CYAN + "Submitting job {0}/{1}".format(seed+1, n_jobs)
+        print Fore.CYAN + "Submitting job {0}/{1}...".format(seed+1, n_jobs)
         call('condor_submit {0}'.format(job_path), shell=True)
 
     # Run the rest of the chain
