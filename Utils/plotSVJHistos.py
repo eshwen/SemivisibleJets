@@ -15,9 +15,11 @@ from ROOT import TFile, TCanvas, gStyle, TLatex, TLegend, TH1F
 # Define global variables
 
 # Files to run over
-baseDir = '/afs/cern.ch/work/e/ebhal/Semi_visible_jets_Condor_v6/output/'
-files = [ baseDir + 'DMsimp_SVJ_s_spin1_mZp-1000_mDQ-20_rinv-0p3_nanoAOD_final_withMatching.root',
-          baseDir + 'DMsimp_SVJ_s_spin1_mZp-1000_mDQ-10_rinv-0p3_nanoAOD_final.root',
+baseDir = '/eos/user/e/ebhal/Semi_visible_jets_Condor/v6/esh_samples_with_esh_gen_frag_settings/'
+files = [ baseDir + 'DMsimp_SVJ_s_spin1_mZp-1000_mDQ-10_rinv-0p3_nanoAOD_final.root',
+          baseDir + 'DMsimp_SVJ_s_spin1_mZp-3000_mDQ-10_rinv-0p1_nanoAOD_final.root',
+          baseDir + 'DMsimp_SVJ_s_spin1_mZp-3000_mDQ-25_rinv-0p3_nanoAOD_final.root',
+          baseDir + 'DMsimp_SVJ_s_spin1_mZp-4000_mDQ-10_rinv-0p3_nanoAOD_final.root',
           ]
 
 # Models, from which to extract info
@@ -66,6 +68,8 @@ def setTheGoodStuff(histo, model, index, xTitle, legend):
     histo.SetLineColor( rootColours[index] )
     histo.GetXaxis().SetTitle(xTitle)
     histo.GetXaxis().SetTitleOffset(1.15)
+    histo.GetYaxis().SetTitle("entries / nEvents")
+    histo.GetYaxis().SetTitleOffset(1.10)
     legend.SetFillStyle(0)
     legend.Draw()    
 
