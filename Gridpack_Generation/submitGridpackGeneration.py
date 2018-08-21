@@ -20,6 +20,7 @@ init(autoreset=True)
 
 parser = argparse.ArgumentParser()
 parser.add_argument("config", type = str, default = os.path.join(os.environ['SVJ_TOP_DIR'], 'config', 'model_params_s_spin1.yaml'), help = "Path to YAML config to parse")
+parser.add_argument('-r', '--resub', action = "store_true", help = "Retry if previous attempt failed")
 args = parser.parse_args()
 
 
@@ -56,6 +57,19 @@ def main():
 
     model_name = model_prefix + '_m' + med_type + '-' + str(m_med) + '_mDQ-' + str(m_d) + '_rinv-' + str(r_inv).replace('.', 'p')
     total_events = n_events * n_jobs
+
+
+    # Remove failed gridpack for model if resubmitted
+    if args.resub:
+        print Fore.CYAN + "Removing failed gridpack and resubmitting..."
+        for file in glob.glob( os.path.join(os.environ['MG_GENPROD_DIR'], model_name+'*') ):
+            try:
+                if os.path.isfile(file):
+                    os.remove(file)
+                elif os.path.isdir(file):
+                    shutil.rmtree(file)
+            except OSError as e:
+                print "Error: {0} - {1}.".format(e.filename, e.strerror)
 
 
     # If required, append config file with new parameters for simplicity in future steps
