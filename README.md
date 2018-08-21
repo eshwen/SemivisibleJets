@@ -364,7 +364,7 @@ then run the gridpack generation according to the parameters in your config file
 
 ```bash
 cd Gridpack_Generation
-python submitGridpackGeneration.py -c <path to YAML config>
+python submitGridpackGeneration.py <path to YAML config>
 ```
 
 If the parameters are okay (and there are no bugs in the code), the MadGraph model files and input cards from the template directories I have should be copied into model-specific directories, and the specified parameters will be added. Then, the gridpack will be created in [external/genproductions/bin/MadGraph5_aMCatNLO/](external/genproductions/bin/MadGraph5_aMCatNLO/).
@@ -373,7 +373,7 @@ If you plan to run the rest of the sample production via CRAB or by some means t
 
 ```bash
 cd $SVJ_TOP_DIR/LHE_from_Gridpack
-python runLHERetrieval.py -c <path to YAML config>
+python runLHERetrieval.py <path to YAML config>
 ```
 
 The location of the split LHE files will be printed in the terminal, which will be the path specified by the config parameter `lhe_file_path`.
@@ -382,7 +382,7 @@ Now, the final step is to run the full CMSSW chain on these split LHE files and 
 
 ```bash
 cd $SVJ_TOP_DIR/FullSim_files/Condor
-python submitFullSim_condor.py -c <YAML config>
+python submitFullSim_condor.py <YAML config>
 ```
 
 which should take care of everything. Hadronisation is performed in `PYTHIA 8.230` -- integrated in an unconventional manner as the default architecture that ships with CMSSW_7_1_30 doesn't include that version -- because some LHE files tended to hang with 8.226 (presumably the new module contains patches and bug fixes). The output nanoAOD files will be located in `$work_space/output/`. If some jobs fail, they can be resubmitted by running
