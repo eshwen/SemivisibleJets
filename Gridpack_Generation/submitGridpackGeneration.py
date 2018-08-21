@@ -19,7 +19,7 @@ import yaml
 init(autoreset=True)
 
 parser = argparse.ArgumentParser()
-parser.add_argument("-c", "--config", type = str, default = os.path.join(os.environ['SVJ_TOP_DIR'], "config", "model_params_s_spin1.yaml"), required = True, help = "Path to YAML config to parse")
+parser.add_argument("config", type = str, default = os.path.join(os.environ['SVJ_TOP_DIR'], 'config', 'model_params_s_spin1.yaml'), help = "Path to YAML config to parse")
 args = parser.parse_args()
 
 
