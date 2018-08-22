@@ -108,7 +108,7 @@ def main():
         os.remove(splitFile)
     print Fore.MAGENTA + "Split LHE files copied to", Fore.MAGENTA + split_lhe_file_path
 
-    print "In case you forgot, your config file is", args.config
+    print "In case you forgot, your config file is", os.path.abspath(args.config)
 
 
 
