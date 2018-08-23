@@ -39,7 +39,7 @@ if [ ! -d {work_space}/output/components ]; then
     mkdir {work_space}/output/components
 fi
 
-if grep -rq "Error in <TFile\|has size 0" $temp_file > /dev/null; then
+if grep -rq "Error in <TFile\|has size 0\|AttributeError" $temp_file > /dev/null; then
     echo -e "\e[1;32mFound an error while combining files. Check the output and try again.\e[0m"
 else
     mv {work_space}/output/{model}_NANOAOD_*.root {work_space}/output/components
