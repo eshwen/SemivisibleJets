@@ -7,102 +7,153 @@ except ImportError:
     sys.exit('Please source the setup script first.')
 from math import pi
 import os
-from progressbar import ProgressBar, Percentage, Bar, ETA
+import argparse
+import sys
+try:
+    from progressbar import ProgressBar, Percentage, Bar, ETA
+except ImportError:
+    sys.exit('Please source the setup script first.')
 import re
 from ROOT import TFile, TCanvas, gStyle, TLatex, TLegend, TH1F
-
-
-# Define global variables
-
-# Files to run over
-baseDir = '/eos/user/e/ebhal/Semi_visible_jets_Condor/v6/esh_samples_with_esh_gen_frag_settings/'
-files = [ baseDir + 'DMsimp_SVJ_s_spin1_mZp-1000_mDQ-10_rinv-0p3_nanoAOD_final.root',
-          baseDir + 'DMsimp_SVJ_s_spin1_mZp-3000_mDQ-10_rinv-0p1_nanoAOD_final.root',
-          baseDir + 'DMsimp_SVJ_s_spin1_mZp-3000_mDQ-25_rinv-0p3_nanoAOD_final.root',
-          baseDir + 'DMsimp_SVJ_s_spin1_mZp-4000_mDQ-10_rinv-0p3_nanoAOD_final.root',
-          ]
-
-# Models, from which to extract info
-models = []
-for file in files:
-    models.append( os.path.basename(file.replace('.root', '') ) )
-
-rootColours = [4, 2, 3, 1, 6, 5, 7, 8, 9] # length needs to be >= len(models)
-legModelNames = []
-
-
-# Write strings to be included in legend
-for i, model in enumerate(models):
-    m_d = re.search("(?<=mDQ-)[0-9]*", model).group(0)
-    r_inv = re.search('(?<=rinv-)[0-9]*p[0-9]*',model).group(0).replace('p', '.')
-
-    if 'mZp' in model:
-        mZp = re.search("(?<=mZp-)[0-9]*", model).group(0)
-        legModel = "#splitline{#it{s}-channel}"
-        legModel += "{#it{m_{Z'}} = %s, " % mZp
-
-    elif 'mPhi' in model:
-        mPhi = re.search("(?<=mPhi-)[0-9]*", model).group(0)
-        legModel = "#splitline{#it{t}-channel}"
-        legModel += "{#it{m}_{#Phi} = %s, " % mPhi
-
-    legModel += "#it{m_{d}} = %s, #it{r}_{inv.} = %s}" % (m_d, r_inv)
-    legModelNames.append(legModel)
 
 
 # Reset terminal colours after print statement in which they've changed
 init(autoreset=True)
 
 
-# Add CMS-style plot header
+parser = argparse.ArgumentParser()
+parser.add_argument("file_list", type = str, default = 'file_list.txt', help = "Path to plain text file containing list of input files")
+args = parser.parse_args()
+
+
+# Define global variables
+rootColours = [4, 2, 3, 1, 6, 5, 7, 8, 9] # length needs to be >= len(models)
+
+
+class SVJModel(object):
+    
+    def __init__(self, name, file_path):
+        self.name = name # model name
+        self.file_path = file_path # path to root file
+        #self.proc_type = proc_type # s-channel/t-channel
+
+    def initialise_histos(self):
+        """
+        Initialise histograms for model. Each histogram's first argument (name) will be appended
+        to the saved pdf, and its second argument (title) will be the used as the x-axis title.
+        """
+        self.nJetHist = TH1F("nJet", "#it{n}_{jet}", 30, 0, 29)
+        self.allJetPtHist = TH1F("jetPT", "#it{p}_{T}^{jet}", 30, 0, 3000)
+        self.leadJetPtHist = TH1F("leadJetPT", "#it{p}_{T}^{j_{1}}", 30, 0, 3000)
+        self.metPtHist = TH1F("MET", "#it{E}_{T}^{miss}", 30, 0, 3000)
+        self.dPhiJJHist = TH1F("dPhiJJ", "#Delta#it{#phi}_{j_{1} j_{2}}", 20, -1*(pi+0.1), pi+0.1)
+
+    def write_legend_entry(self, name):
+        """
+        Write strings to be included in legend of plots
+        """
+        m_d = re.search("(?<=mDQ-)[0-9]*", name).group(0)
+        r_inv = re.search('(?<=rinv-)[0-9]*p[0-9]*',name).group(0).replace('p', '.')
+        if 'mZp' in name:
+            mZp = re.search("(?<=mZp-)[0-9]*", name).group(0)
+            self.legend = "#splitline{#it{s}-channel}"
+            self.legend += "{#it{m_{Z'}} = %s, " % mZp
+        elif 'mPhi' in name:
+            mPhi = re.search("(?<=mPhi-)[0-9]*", name).group(0)
+            self.legend = "#splitline{#it{t}-channel}"
+            self.legend += "{#it{m}_{#Phi} = %s, " % mPhi
+        self.legend += "#it{m_{d}} = %s, #it{r}_{inv.} = %s}" % (m_d, r_inv)
+
+    def get_hist_colour(self, list_position):
+        """
+        Use the global list 'rootColours' to assign a colour to the model's histograms
+        """
+        self.hist_colour = rootColours[list_position]
+        
+
+
 def addPlotTitle(canvas):
+    """
+    Add CMS-style plot header
+    """
     CMS_lumi.writeExtraText = True
     CMS_lumi.lumi_13TeV = ""
     CMS_lumi.lumi_sqrtS = "13 TeV"
     CMS_lumi.CMS_lumi(canvas, 4, 0)
 
 
-# Set plot aesthetics
-def setTheGoodStuff(histo, model, index, xTitle, legend):
-    legend.AddEntry(histo, legModelNames[index], 'l')
-    histo.SetLineColor( rootColours[index] )
-    histo.GetXaxis().SetTitle(xTitle)
+
+def setCommonPlottingAttrs(model, histo, legend_frame):
+    """
+    Set plot aesthetics
+    """
+    legend_frame.AddEntry(histo, model.legend, 'l')
+    histo.SetLineColor(model.hist_colour)
+    histo.GetXaxis().SetTitle( histo.GetTitle() )
     histo.GetXaxis().SetTitleOffset(1.15)
     histo.GetYaxis().SetTitle("entries / nEvents")
     histo.GetYaxis().SetTitleOffset(1.10)
-    legend.SetFillStyle(0)
-    legend.Draw()    
+    legend_frame.SetFillStyle(0)
+    legend_frame.Draw()
 
 
-# Plot histograms, then save
-def drawIndivHistos(model, histo, canvas, legend, xTitle, fileSuffix, index=0):
-    setTheGoodStuff(histo, model, index, xTitle, legend)
+
+def drawIndivHistos(model, histo, canvas, legend_frame):
+    """
+    Plot histograms, then save
+    """
+    setCommonPlottingAttrs(model, histo, legend_frame)
     histo.Draw("HIST")
     addPlotTitle(canvas)
-    canvas.SaveAs("./Plots/"+model+"_"+fileSuffix+".pdf")
-    legend.Clear()
+    canvas.SaveAs("./Plots/"+model.name+"_"+histo.GetName()+".pdf")
+    legend_frame.Clear()
 
 
-# Run over all the histograms in an array and plot together, then save
-def drawMultipleHistos(histoArray, canvas, legend, xTitle, fileSuffix, modelsArray=models):
-    for i, hist in enumerate(histoArray):
-        setTheGoodStuff(histoArray[i], modelsArray[i], i, xTitle, legend)
+
+def drawMultipleHistos(histo_array, canvas, legend_frame, models_list):
+    """
+    Run over all the histograms in an array and plot together, then save
+    """
+    for i, hist in enumerate(histo_array):
+        setCommonPlottingAttrs(models_list[i], hist, legend_frame)
         if i == 0:
-            histoArray[i].Draw("HIST")
+            hist.Draw("HIST")
         else:
-            histoArray[i].Draw("HIST SAME")
+            hist.Draw("HIST SAME")
     addPlotTitle(canvas)
-    canvas.SaveAs("./Plots/all_"+fileSuffix+".pdf")
-    legend.Clear()
+    canvas.SaveAs("./Plots/all_"+histo_array[0].GetName()+".pdf")
+    legend_frame.Clear()
+
 
 
 def main():
     """
-    Simply plot semi-visible jets histograms stored in nanoAOD files for a quick look at distributions
+    Simply plot semi-visible jets histograms stored in nanoAOD files for a quick look at distributions.
+    User specifies a list of the files they wish to be read in, and one file corresponds to one "model",
+    (i.e., a combination of semi-visible jet-specific parameters).
     """
 
     if not os.path.exists( os.path.join(os.getcwd(), 'Plots') ):
         os.mkdir('Plots')
+
+    # Build list of files from input argument
+    with open(args.file_list) as input_files:
+        input_file_list = input_files.readlines()
+
+    # Create list of models, each element in list contains object with all information about each model
+    models = []
+    for file in input_file_list:
+        if file.startswith('#'):
+            continue
+        file = file.replace('\n', '')
+        model_name = os.path.basename(file.replace('.root', '') )
+        models.append( SVJModel(name=model_name, file_path=file) )
+
+    # For each model, initialise histograms, set line colours and write legend entry
+    for i, model in enumerate(models):
+        model.initialise_histos()
+        model.get_hist_colour(i)
+        model.write_legend_entry(model.name)
 
     # Initialise the canvas and set aesthetics
     canv = TCanvas("canv", "canv", 800, 600)
@@ -112,82 +163,82 @@ def main():
 
     # Initialise legend and set colours
     leg_height = len(models) * 0.06 # make y-length of legend dependent on n_models
-    myLeg = TLegend(0.6, 0.9 - leg_height, 0.9, 0.9)
-    myLeg.SetTextSize(0.02)
+    legend_frame = TLegend(0.6, 0.9 - leg_height, 0.9, 0.9)
+    legend_frame.SetTextSize(0.02)
 
-    # Initialise histogram arrays
-    nJetHist = [None] * len(models)
-    jetPtHist = [None] * len(models)
-    leadJetPtHist = [None] * len(models)
-    metPtHist = [None] * len(models)
-    dPhiJJHist = [None] * len(models)
+    # Initialise histogram arrays for plotting multiple at once
+    nJetHistArr = []
+    allJetPtHistArr = []
+    leadJetPtHistArr = []
+    metPtHistArr = []
+    dPhiJJHistArr = []
 
-    # x-axis labels for plots
-    nJetLabel = "#it{n}_{jet}"
-    jetPtLabel = "#it{p}_{T}^{jet}"
-    leadJetPtLabel = "#it{p}_{T}^{j_{1}}"
-    metPtLabel = "#it{E}_{T}^{miss}"
-    dPhiJJLabel = "#Delta#it{#phi}_{j_{1} j_{2}}"
-
-    # Initialise histograms here so I can use them later
-    for i, model in enumerate(models):
-        nJetHist[i] = TH1F("nJet"+model, "nJet dist "+model, 30, 0, 29)
-        jetPtHist[i] = TH1F("jetPt"+model, "Jet pT dist "+model, 30, 0, 3000)
-        leadJetPtHist[i] = TH1F("leadJetPt"+model, "Lead jet pT dist "+model, 30, 0, 3000)
-        metPtHist[i] = TH1F("met"+model, "MET dist "+model, 30, 0, 3000)
-        dPhiJJHist[i] = TH1F("dPhijj"+model, "DPhi dist "+model, 20, -1*(pi+0.1), pi+0.1)
-    
 
     # Open root files, then draw individual histograms
     for i, model in enumerate(models):
-        print Fore.MAGENTA + "Running over model {0}/{1}.".format(i+1, len(models))
-        openFile = TFile(files[i])
+        print Fore.MAGENTA + "Running over model {0}/{1}".format(i+1, len(models))
+        openFile = TFile(model.file_path)
         tree = openFile.Get("Events")
-        nEntries = tree.GetEntries()
+        nEvents = tree.GetEntries()
 
         # Initialise progress bar
         widgets = [Percentage(), Bar('>'), ETA()]
-        pbar = ProgressBar(widgets = widgets, maxval = nEntries).start()    
+        pbar = ProgressBar(widgets = widgets, maxval = nEvents).start()
 
-        for entry in xrange(nEntries):
+        # To count the number of events with >=2 jets
+        nDiJetEvents = 0
+
+        # Fill all histograms
+        for entry in xrange(nEvents):
             treeEntry = tree.GetEntry(entry)
-            nJetHist[i].Fill(tree.nJet)
+            model.nJetHist.Fill(tree.nJet)
         
             for jet in xrange( len(tree.Jet_pt) ):
-                jetPtHist[i].Fill(tree.Jet_pt[jet])
+                model.allJetPtHist.Fill(tree.Jet_pt[jet])
 
-            if len(tree.Jet_pt) > 0: leadJetPtHist[i].Fill(tree.Jet_pt[0])
-            metPtHist[i].Fill(tree.MET_pt)
+            if len(tree.Jet_pt) > 0:
+                model.leadJetPtHist.Fill(tree.Jet_pt[0])
+            
+            model.metPtHist.Fill(tree.MET_pt)
 
             if len(tree.Jet_phi) >= 2:
+                nDiJetEvents += 1
                 deltaPhi = tree.Jet_phi[0] - tree.Jet_phi[1]
-                dPhiJJHist[i].Fill(deltaPhi)        
+                model.dPhiJJHist.Fill(deltaPhi)        
 
             pbar.update(entry+1)
         
         pbar.finish()
 
         # Normalise histograms
-        nJetHist[i].Scale(1./nEntries)
-        jetPtHist[i].Scale(1./nEntries)
-        leadJetPtHist[i].Scale(1./nEntries)
-        metPtHist[i].Scale(1./nEntries)
-        dPhiJJHist[i].Scale(1./nEntries)
+        model.nJetHist.Scale(1./nEvents)
+        model.allJetPtHist.Scale(1./nEvents)
+        model.leadJetPtHist.Scale(1./nEvents)
+        model.metPtHist.Scale(1./nEvents)
+        model.dPhiJJHist.Scale(1./nDiJetEvents)
 
         # Draw individual histograms and save
-        drawIndivHistos(model, nJetHist[i], canv, myLeg, nJetLabel, "nJet", index=i)
-        drawIndivHistos(model, jetPtHist[i], canv, myLeg, jetPtLabel, "jetPT", index=i)
-        drawIndivHistos(model, leadJetPtHist[i], canv, myLeg, leadJetPtLabel, "leadJetPT", index=i)
-        drawIndivHistos(model, metPtHist[i], canv, myLeg, metPtLabel, "MET", index=i)
-        drawIndivHistos(model, dPhiJJHist[i], canv, myLeg, dPhiJJLabel, "dPhi", index=i)
+        drawIndivHistos(model, model.nJetHist, canv, legend_frame)
+        drawIndivHistos(model, model.allJetPtHist, canv, legend_frame)
+        drawIndivHistos(model, model.leadJetPtHist, canv, legend_frame)
+        drawIndivHistos(model, model.metPtHist, canv, legend_frame)
+        drawIndivHistos(model, model.dPhiJJHist, canv, legend_frame)
+
+        # Add histograms to respective arrays
+        nJetHistArr.append(model.nJetHist)
+        allJetPtHistArr.append(model.allJetPtHist)
+        leadJetPtHistArr.append(model.leadJetPtHist)
+        metPtHistArr.append(model.metPtHist)
+        dPhiJJHistArr.append(model.dPhiJJHist)
     
 
-    # Draw histograms for different models overlaid
-    drawMultipleHistos(nJetHist, canv, myLeg, nJetLabel, "nJet")
-    drawMultipleHistos(jetPtHist, canv, myLeg, jetPtLabel, "jetPT")
-    drawMultipleHistos(leadJetPtHist, canv, myLeg, leadJetPtLabel, "leadJetPT")
-    drawMultipleHistos(metPtHist, canv, myLeg, metPtLabel, "MET")
-    drawMultipleHistos(dPhiJJHist, canv, myLeg, dPhiJJLabel, "dPhi")
+    # Draw histograms for each model overlaid and save
+    drawMultipleHistos(nJetHistArr, canv, legend_frame, models)
+    drawMultipleHistos(allJetPtHistArr, canv, legend_frame, models)
+    drawMultipleHistos(leadJetPtHistArr, canv, legend_frame, models)
+    drawMultipleHistos(metPtHistArr, canv, legend_frame, models)
+    drawMultipleHistos(dPhiJJHistArr, canv, legend_frame, models)
+    
 
 
 if __name__ == '__main__':

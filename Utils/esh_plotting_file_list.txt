@@ -1,0 +1,4 @@
+/eos/user/e/ebhal/Semi_visible_jets_Condor/v6/esh_samples_with_esh_gen_frag_settings/DMsimp_SVJ_s_spin1_mZp-1000_mDQ-10_rinv-0p3_nanoAOD_final.root
+/eos/user/e/ebhal/Semi_visible_jets_Condor/v6/esh_samples_with_esh_gen_frag_settings/DMsimp_SVJ_s_spin1_mZp-3000_mDQ-10_rinv-0p1_nanoAOD_final.root
+/eos/user/e/ebhal/Semi_visible_jets_Condor/v6/esh_samples_with_esh_gen_frag_settings/DMsimp_SVJ_s_spin1_mZp-3000_mDQ-25_rinv-0p3_nanoAOD_final.root
+/eos/user/e/ebhal/Semi_visible_jets_Condor/v6/esh_samples_with_esh_gen_frag_settings/DMsimp_SVJ_s_spin1_mZp-4000_mDQ-10_rinv-0p3_nanoAOD_final.root
