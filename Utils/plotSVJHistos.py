@@ -125,9 +125,9 @@ def drawMultipleHistos(histo_list, canvas, legend_frame):
         legend_frame.SetFillStyle(0)
         legend_frame.Draw()
         # Only keep this chunk for now -------------
-        if 'mPhi' in histo.GetTitle():
+        if 'Phi' in histo.GetTitle():
             histo.SetLineStyle(7)
-        elif 'mZp' in histo.GetTitle():
+        elif "Z'" in histo.GetTitle():
             histo.SetLineStyle(1)
         # ------------------------------------------
         if i == 0:
