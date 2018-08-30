@@ -9,10 +9,7 @@ from math import pi
 import os
 import argparse
 import sys
-try:
-    from progressbar import ProgressBar, Percentage, Bar, ETA
-except ImportError:
-    sys.exit('Please source the setup script first.')
+from progressbar import ProgressBar, Percentage, Bar, ETA
 import re
 from ROOT import TFile, TCanvas, gStyle, TLatex, TLegend, TH1F
 
@@ -27,8 +24,9 @@ args = parser.parse_args()
 
 
 # Define global variables
-rootColours = [4, 2, 3, 1, 6, 5, 7, 8, 9] # length needs to be >= len(models)
-
+#rootColours = [4, 2, 3, 1, 6, 5, 7, 8, 9] # length needs to be >= len(models)
+#rootColours = [4,4,2,2,3,3]
+rootColours = [4,2,3,4,2,3] # Change colours back to normal
 
 class SVJModel(object):
     
@@ -40,17 +38,26 @@ class SVJModel(object):
     def initialise_histos(self):
         """
         Initialise histograms for model. Each histogram's first argument (name) will be appended
-        to the saved pdf, and its second argument (title) will be the used as the x-axis title.
+        to the saved pdf. The second argument (title) is left blank in the declaration to be
+        filled later.
         """
-        self.nJetHist = TH1F("nJet", "#it{n}_{jet}", 30, 0, 29)
-        self.allJetPtHist = TH1F("jetPT", "#it{p}_{T}^{jet}", 30, 0, 3000)
-        self.leadJetPtHist = TH1F("leadJetPT", "#it{p}_{T}^{j_{1}}", 30, 0, 3000)
-        self.metPtHist = TH1F("MET", "#it{E}_{T}^{miss}", 30, 0, 3000)
-        self.dPhiJJHist = TH1F("dPhiJJ", "#Delta#it{#phi}_{j_{1} j_{2}}", 20, -1*(pi+0.1), pi+0.1)
+        self.nJetHist      = TH1F("nJet", "", 30, 0, 29)
+        self.allJetPtHist  = TH1F("jetPT", "", 30, 0, 3000)
+        self.leadJetPtHist = TH1F("leadJetPT", "", 30, 0, 3000)
+        self.metPtHist     = TH1F("MET", "", 40, 0, 4000)
+        self.dPhiJJHist    = TH1F("dPhiJJ", "", 20, -1*(pi+0.1), pi+0.1)
+        self.dPhiMetJHist  = TH1F("dPhiMetJ", "", 20, -1*(pi+0.1), pi+0.1)
+        self.nJetHist     .GetXaxis().SetTitle("#it{n}_{jet}") 
+        self.allJetPtHist .GetXaxis().SetTitle("#it{p}_{T}^{jet}")
+        self.leadJetPtHist.GetXaxis().SetTitle("#it{p}_{T}^{j_{1}}")
+        self.metPtHist    .GetXaxis().SetTitle("#it{E}_{T}^{miss}")
+        self.dPhiJJHist   .GetXaxis().SetTitle("#Delta#it{#phi}_{j_{1},j_{2}}")
+        self.dPhiMetJHist .GetXaxis().SetTitle("#Delta#it{#phi}_{j_{1},#it{E}_{T}^{miss}}")
+        self.hist_list = [self.nJetHist, self.allJetPtHist, self.leadJetPtHist, self.metPtHist, self.dPhiJJHist, self.dPhiMetJHist]
 
     def write_legend_entry(self, name):
         """
-        Write strings to be included in legend of plots
+        Write strings to be included in legend of plots and add to histogram titles
         """
         m_d = re.search("(?<=mDQ-)[0-9]*", name).group(0)
         r_inv = re.search('(?<=rinv-)[0-9]*p[0-9]*',name).group(0).replace('p', '.')
@@ -63,12 +70,16 @@ class SVJModel(object):
             self.legend = "#splitline{#it{t}-channel}"
             self.legend += "{#it{m}_{#Phi} = %s, " % mPhi
         self.legend += "#it{m_{d}} = %s, #it{r}_{inv.} = %s}" % (m_d, r_inv)
+        for hist in self.hist_list:
+            hist.SetTitle(self.legend)
 
     def get_hist_colour(self, list_position):
         """
         Use the global list 'rootColours' to assign a colour to the model's histograms
         """
         self.hist_colour = rootColours[list_position]
+        for hist in self.hist_list:
+            hist.SetLineColor(self.hist_colour)
         
 
 
@@ -83,45 +94,48 @@ def addPlotTitle(canvas):
 
 
 
-def setCommonPlottingAttrs(model, histo, legend_frame):
+def setCommonPlottingAttrs(histo):
     """
     Set plot aesthetics
     """
-    legend_frame.AddEntry(histo, model.legend, 'l')
-    histo.SetLineColor(model.hist_colour)
-    histo.GetXaxis().SetTitle( histo.GetTitle() )
     histo.GetXaxis().SetTitleOffset(1.15)
     histo.GetYaxis().SetTitle("entries / nEvents")
     histo.GetYaxis().SetTitleOffset(1.10)
-    legend_frame.SetFillStyle(0)
-    legend_frame.Draw()
 
 
 
-def drawIndivHistos(model, histo, canvas, legend_frame):
+def drawIndivHistos(model, histo, canvas):
     """
     Plot histograms, then save
     """
-    setCommonPlottingAttrs(model, histo, legend_frame)
+    setCommonPlottingAttrs(histo)
     histo.Draw("HIST")
     addPlotTitle(canvas)
     canvas.SaveAs("./Plots/"+model.name+"_"+histo.GetName()+".pdf")
-    legend_frame.Clear()
 
 
 
-def drawMultipleHistos(histo_array, canvas, legend_frame, models_list):
+def drawMultipleHistos(histo_list, canvas, legend_frame):
     """
     Run over all the histograms in an array and plot together, then save
     """
-    for i, hist in enumerate(histo_array):
-        setCommonPlottingAttrs(models_list[i], hist, legend_frame)
+    for i, histo in enumerate(histo_list):
+        setCommonPlottingAttrs(histo)
+        legend_frame.AddEntry(histo, histo.GetTitle(), 'l')
+        legend_frame.SetFillStyle(0)
+        legend_frame.Draw()
+        # Only keep this chunk for now -------------
+        if 'mPhi' in histo.GetTitle():
+            histo.SetLineStyle(7)
+        elif 'mZp' in histo.GetTitle():
+            histo.SetLineStyle(1)
+        # ------------------------------------------
         if i == 0:
-            hist.Draw("HIST")
+            histo.Draw("HIST")
         else:
-            hist.Draw("HIST SAME")
+            histo.Draw("HIST SAME")
     addPlotTitle(canvas)
-    canvas.SaveAs("./Plots/all_"+histo_array[0].GetName()+".pdf")
+    canvas.SaveAs("./Plots/all_"+histo_list[0].GetName()+".pdf")
     legend_frame.Clear()
 
 
@@ -143,7 +157,7 @@ def main():
     # Create list of models, each element in list contains object with all information about each model
     models = []
     for file in input_file_list:
-        if file.startswith('#'):
+        if file.startswith('#') or file.startswith('\n'):
             continue
         file = file.replace('\n', '')
         model_name = os.path.basename(file.replace('.root', '') )
@@ -165,13 +179,7 @@ def main():
     leg_height = len(models) * 0.06 # make y-length of legend dependent on n_models
     legend_frame = TLegend(0.6, 0.9 - leg_height, 0.9, 0.9)
     legend_frame.SetTextSize(0.02)
-
-    # Initialise histogram arrays for plotting multiple at once
-    nJetHistArr = []
-    allJetPtHistArr = []
-    leadJetPtHistArr = []
-    metPtHistArr = []
-    dPhiJJHistArr = []
+#    legend_frame.SetNColumns(2)
 
 
     # Open root files, then draw individual histograms
@@ -185,9 +193,6 @@ def main():
         widgets = [Percentage(), Bar('>'), ETA()]
         pbar = ProgressBar(widgets = widgets, maxval = nEvents).start()
 
-        # To count the number of events with >=2 jets
-        nDiJetEvents = 0
-
         # Fill all histograms
         for entry in xrange(nEvents):
             treeEntry = tree.GetEntry(entry)
@@ -198,11 +203,12 @@ def main():
 
             if len(tree.Jet_pt) > 0:
                 model.leadJetPtHist.Fill(tree.Jet_pt[0])
+                dPhiMetJ = tree.MET_phi - tree.Jet_phi[0]
+                model.dPhiMetJHist.Fill(dPhiMetJ)
             
             model.metPtHist.Fill(tree.MET_pt)
 
             if len(tree.Jet_phi) >= 2:
-                nDiJetEvents += 1
                 deltaPhi = tree.Jet_phi[0] - tree.Jet_phi[1]
                 model.dPhiJJHist.Fill(deltaPhi)        
 
@@ -210,34 +216,16 @@ def main():
         
         pbar.finish()
 
-        # Normalise histograms
-        model.nJetHist.Scale(1./nEvents)
-        model.allJetPtHist.Scale(1./nEvents)
-        model.leadJetPtHist.Scale(1./nEvents)
-        model.metPtHist.Scale(1./nEvents)
-        model.dPhiJJHist.Scale(1./nDiJetEvents)
+        # Normalise histograms, then draw and save
+        for hist in model.hist_list:
+            hist.Scale( 1./hist.GetEntries() )
+            drawIndivHistos(model, hist, canv)
 
-        # Draw individual histograms and save
-        drawIndivHistos(model, model.nJetHist, canv, legend_frame)
-        drawIndivHistos(model, model.allJetPtHist, canv, legend_frame)
-        drawIndivHistos(model, model.leadJetPtHist, canv, legend_frame)
-        drawIndivHistos(model, model.metPtHist, canv, legend_frame)
-        drawIndivHistos(model, model.dPhiJJHist, canv, legend_frame)
-
-        # Add histograms to respective arrays
-        nJetHistArr.append(model.nJetHist)
-        allJetPtHistArr.append(model.allJetPtHist)
-        leadJetPtHistArr.append(model.leadJetPtHist)
-        metPtHistArr.append(model.metPtHist)
-        dPhiJJHistArr.append(model.dPhiJJHist)
-    
 
     # Draw histograms for each model overlaid and save
-    drawMultipleHistos(nJetHistArr, canv, legend_frame, models)
-    drawMultipleHistos(allJetPtHistArr, canv, legend_frame, models)
-    drawMultipleHistos(leadJetPtHistArr, canv, legend_frame, models)
-    drawMultipleHistos(metPtHistArr, canv, legend_frame, models)
-    drawMultipleHistos(dPhiJJHistArr, canv, legend_frame, models)
+    n_hist_types = len(models[0].hist_list)
+    for hist in xrange(n_hist_types):
+        drawMultipleHistos([model.hist_list[hist] for model in models], canv, legend_frame)
     
 
 
