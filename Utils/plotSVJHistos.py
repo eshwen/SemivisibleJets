@@ -13,7 +13,7 @@ from progressbar import ProgressBar, Percentage, Bar, ETA
 import re
 from ROOT import TFile, TCanvas, gStyle, TLatex, TLegend, TH1F
 
-
+"""When plots for AEPSHEP are made, see if I can integrate the ability to use the same plotting colour if comparing s- and t-channel with same parameters, and if so, to plot s- with solid line and t- with dashed line, and move the legend to the centre for dPhi plots and use two columns"""
 # Reset terminal colours after print statement in which they've changed
 init(autoreset=True)
 
@@ -50,9 +50,9 @@ class SVJModel(object):
         self.nJetHist     .GetXaxis().SetTitle("#it{n}_{jet}") 
         self.allJetPtHist .GetXaxis().SetTitle("#it{p}_{T}^{jet}")
         self.leadJetPtHist.GetXaxis().SetTitle("#it{p}_{T}^{j_{1}}")
-        self.metPtHist    .GetXaxis().SetTitle("#it{E}_{T}^{miss}")
+        self.metPtHist    .GetXaxis().SetTitle("#it{p}_{T}^{miss}")
         self.dPhiJJHist   .GetXaxis().SetTitle("#Delta#it{#phi}_{j_{1},j_{2}}")
-        self.dPhiMetJHist .GetXaxis().SetTitle("#Delta#it{#phi}_{j_{1},#it{E}_{T}^{miss}}")
+        self.dPhiMetJHist .GetXaxis().SetTitle("#Delta#it{#phi}_{j_{1},#it{p}_{T}^{miss}}")
         self.hist_list = [self.nJetHist, self.allJetPtHist, self.leadJetPtHist, self.metPtHist, self.dPhiJJHist, self.dPhiMetJHist]
 
     def write_legend_entry(self, name):
@@ -144,7 +144,10 @@ def main():
     """
     Simply plot semi-visible jets histograms stored in nanoAOD files for a quick look at distributions.
     User specifies a list of the files they wish to be read in, and one file corresponds to one "model",
-    (i.e., a combination of semi-visible jet-specific parameters).
+    (i.e., a combination of semi-visible jet-specific parameters). The current collection of histograms
+    gives a quick look at the kinematics. If the user wishes to add more, the histogram must be
+    initialised in the SVJModel class with the others, added to hist_list, then filled in the big for()
+    loop in this function.
     """
 
     if not os.path.exists( os.path.join(os.getcwd(), 'Plots') ):
@@ -178,11 +181,13 @@ def main():
     # Initialise legend and set colours
     leg_height = len(models) * 0.06 # make y-length of legend dependent on n_models
     legend_frame = TLegend(0.6, 0.9 - leg_height, 0.9, 0.9)
+    #leg_height = len(models) * 0.03
+    #legend_frame = TLegend(0.2, 0.9 - leg_height, 0.8, 0.9)
+    #legend_frame.SetNColumns(2)
     legend_frame.SetTextSize(0.02)
-#    legend_frame.SetNColumns(2)
 
 
-    # Open root files, then draw individual histograms
+    # Open root files, then fill and draw individual histograms
     for i, model in enumerate(models):
         print Fore.MAGENTA + "Running over model {0}/{1}".format(i+1, len(models))
         openFile = TFile(model.file_path)
@@ -218,7 +223,7 @@ def main():
 
         # Normalise histograms, then draw and save
         for hist in model.hist_list:
-            hist.Scale( 1./hist.GetEntries() )
+            hist.Scale( 1./hist.GetEntries() ) # fine for most hists, but means allJetPt gets normalised by total n_jets
             drawIndivHistos(model, hist, canv)
 
 
