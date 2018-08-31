@@ -15,7 +15,7 @@ writeExtraText = True
 extraText   = "          Work in progress"
 extraTextFont = 52 
 
-lumiTextSize     = 0.6
+lumiTextSize     = 0.45
 lumiTextOffset   = 0.2
 
 cmsTextSize      = 0.6
