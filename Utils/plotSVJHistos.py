@@ -104,6 +104,19 @@ def setCommonPlottingAttrs(histo):
 
 
 
+def setRangeHistos(histo_list):
+    hist_minima = []
+    hist_maxima = []
+    for histo in histo_list:
+        hist_minima.append(histo.GetMinimum(0))
+        hist_maxima.append(histo.GetMaximum())
+    min_val = min(hist_minima)
+    max_val = max(hist_maxima)
+    for histo in histo_list:
+        histo.SetAxisRange(0.8*min_val, 1.2*max_val, "Y")
+
+
+
 def drawIndivHistos(model, histo, canvas):
     """
     Plot histograms, then save
@@ -119,6 +132,7 @@ def drawMultipleHistos(histo_list, canvas, legend_frame):
     """
     Run over all the histograms in an array and plot together, then save
     """
+    setRangeHistos(histo_list)
     for i, histo in enumerate(histo_list):
         setCommonPlottingAttrs(histo)
         legend_frame.AddEntry(histo, histo.GetTitle(), 'l')
