@@ -184,7 +184,7 @@ def main():
     #leg_height = len(models) * 0.03
     #legend_frame = TLegend(0.2, 0.9 - leg_height, 0.8, 0.9)
     #legend_frame.SetNColumns(2)
-    legend_frame.SetTextSize(0.02)
+    legend_frame.SetTextSize(0.022)
 
 
     # Open root files, then fill and draw individual histograms
