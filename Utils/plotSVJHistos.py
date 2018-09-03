@@ -48,9 +48,9 @@ class SVJModel(object):
         self.dPhiJJHist    = TH1F("dPhiJJ", "", 20, -1*(pi+0.1), pi+0.1)
         self.dPhiMetJHist  = TH1F("dPhiMetJ", "", 20, -1*(pi+0.1), pi+0.1)
         self.nJetHist     .GetXaxis().SetTitle("#it{n}_{jet}") 
-        self.allJetPtHist .GetXaxis().SetTitle("#it{p}_{T}^{jet}")
-        self.leadJetPtHist.GetXaxis().SetTitle("#it{p}_{T}^{j_{1}}")
-        self.metPtHist    .GetXaxis().SetTitle("#it{p}_{T}^{miss}")
+        self.allJetPtHist .GetXaxis().SetTitle("#it{p}_{T}^{jet} (GeV)")
+        self.leadJetPtHist.GetXaxis().SetTitle("#it{p}_{T}^{j_{1}} (GeV)")
+        self.metPtHist    .GetXaxis().SetTitle("#it{p}_{T}^{miss} (GeV)")
         self.dPhiJJHist   .GetXaxis().SetTitle("#Delta#it{#phi}_{j_{1},j_{2}}")
         self.dPhiMetJHist .GetXaxis().SetTitle("#Delta#it{#phi}_{j_{1},#it{p}_{T}^{miss}}")
         self.hist_list = [self.nJetHist, self.allJetPtHist, self.leadJetPtHist, self.metPtHist, self.dPhiJJHist, self.dPhiMetJHist]
