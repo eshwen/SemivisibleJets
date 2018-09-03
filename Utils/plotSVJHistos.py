@@ -51,8 +51,8 @@ class SVJModel(object):
         self.allJetPtHist .GetXaxis().SetTitle("#it{p}_{T}^{jet} (GeV)")
         self.leadJetPtHist.GetXaxis().SetTitle("#it{p}_{T}^{j_{1}} (GeV)")
         self.metPtHist    .GetXaxis().SetTitle("#it{p}_{T}^{miss} (GeV)")
-        self.dPhiJJHist   .GetXaxis().SetTitle("#Delta#it{#phi}_{j_{1},j_{2}}")
-        self.dPhiMetJHist .GetXaxis().SetTitle("#Delta#it{#phi}_{j_{1},#it{p}_{T}^{miss}}")
+        self.dPhiJJHist   .GetXaxis().SetTitle("#Delta#it{#phi}_{j_{1}, j_{2}}")
+        self.dPhiMetJHist .GetXaxis().SetTitle("#Delta#it{#phi}_{j_{1}, #it{p}_{T}^{miss}}")
         self.hist_list = [self.nJetHist, self.allJetPtHist, self.leadJetPtHist, self.metPtHist, self.dPhiJJHist, self.dPhiMetJHist]
 
     def write_legend_entry(self, name):
