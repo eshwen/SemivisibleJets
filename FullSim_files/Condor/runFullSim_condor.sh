@@ -28,7 +28,7 @@ fi
 # Write so CMSSW versions aren't hardcoded, but can take from dict in submitFullSim_condor.py or something
 cd CMSSW_7_1_30/src
 cmsenv
-scram b
+#scram b
 
 
 # Run the cmsDriver and cmsRun commands for each step in the chain
@@ -72,6 +72,7 @@ echo -e "\e[1;35m**** CREATED NANOAOD FILE ****\e[0m"
 mv ${model_name}_NANOAOD_${seed}.root $work_space/output/
 
 echo -e "\e[1;36m**** CLEANING UNNECESSARY FILES ****\e[0m"
-rm $work_space/CMSSW_*/src/${model_name}_{GEN_SIM,AOD_step1,AOD_step2,MINIAOD}_${seed}.{py,root}
+#rm $work_space/CMSSW_*/src/${model_name}_{GEN_SIM,AOD_step1,AOD_step2,MINIAOD}_${seed}.{py,root}
+rm $work_space/CMSSW_*/src/${model_name}_{GEN_SIM,AOD_step1,AOD_step2,MINIAOD}_${seed}.root
 
 exit
