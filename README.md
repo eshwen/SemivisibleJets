@@ -396,6 +396,17 @@ $work_space/resubmit_${model_name}.sh
 Some rudimentary plotting, for a quick look at distributions, can be done by running [Utils/plotSVJHistos.py](plotSVJHistos.py). You just need to specify the root files in the list `files`.
 
 
+## Converting Kevin's miniAODs to nanoAOD <a name="kevinsamples"></a>
+
+If I want to perform some studies with Kevin's signal samples, it's usually easier to analyse in nanoAOD. I can take Kevin's miniAODs stored on the FNAL server and convert them to nanoAOD. I just need to run
+
+```bash
+cd $SVJ_TOP_DIR/FullSim_files/Condor
+python submitFullSim_condor_Kevin_samples.py <YAML config>
+```
+
+A `year` option can be set, depending on whether the signal is emulating 2016 or 2017, then the corresponding CMSSW versions are sourced and everything is taken care of accordingly. The config supplied is slightly different to the standard one (namely that fewer arguments need to be specified). The directory [config/kevin_samples/] contains working versions that can be used as a starting point. If, for some reason, the script is being weird, there's a local version that can be used instead. The script `runNanoAOD_Kevin_samples_2016_local.sh`/`runNanoAOD_Kevin_samples_2017_local.sh` can be edited to run over the samples locally. Only the `work_space`, `ext_dir` and `model` variables need to be edited to suit the sample. These scripts can then be run without any arguments.
+
 ## Contact <a name="contact"></a>
 
 For questions or issues please contact:
