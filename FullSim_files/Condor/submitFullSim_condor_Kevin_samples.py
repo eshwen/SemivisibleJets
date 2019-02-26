@@ -17,7 +17,8 @@ import calcDarkParams as cDP
 init(autoreset=True)
 
 parser = argparse.ArgumentParser()
-parser.add_argument("-c", "--config", type = str, default = os.path.join(os.environ['SVJ_TOP_DIR'], "config", "model_params_s_spin1.yaml"), required = True, help = "Path to YAML config to parse")
+parser.add_argument("config", type=str, default=os.path.join(os.environ['SVJ_TOP_DIR'], "config", "model_params_s_spin1.yaml"), help="Path to YAML config to parse")
+parser.add_argument("-y", "--year", type=int, default=2016, help="Year samples are emulating. Default = 2016")
 args = parser.parse_args()
 
 
@@ -28,6 +29,9 @@ def main():
     This is a stripped down version of submitFullSim_condor.py, designed to process Kevin Pedro's miniAODs (stored at
     Fermilab) through to nanoAOD.
     """
+
+    if args.year != 2016 and args.year != 2017:
+        sys.exit("The --year option must be 2016 or 2017")
 
     submission_dir = os.getcwd()
 
@@ -60,7 +64,7 @@ def main():
 
     # Make a list of split LHE files to run over
     input_file_list = []
-    for seed in xrange(1,101):
+    for seed in xrange(1, n_jobs+1):
         inputFile = '{0}_part-{1}.root'.format(model_name, seed)
         input_file_list.append( os.path.join(lhe_file_path, inputFile) )
 
@@ -76,9 +80,11 @@ def main():
 
 
     # Dict for architectures corresponding to different CMSSW versions
-    cmssw_archs = {
-        'CMSSW_9_4_4' : 'slc6_amd64_gcc630',
-    }
+    if args.year == 2016:
+        cmssw_archs = {'CMSSW_9_4_4' : 'slc6_amd64_gcc630'}
+    elif args.year == 2017:
+        cmssw_archs = {'CMSSW_9_4_6_patch1' : 'slc6_amd64_gcc630'}
+        ver = '9_4_6_patch1'
 
     # Set up CMSSW environments
     for cmssw_ver, arch in cmssw_archs.iteritems():
@@ -103,7 +109,7 @@ def main():
 
     
     # Create scripts to hadd output files and resubmit failed jobs
-    call('python {0}/writers/write_combine_script.py -w {1} -m {2}'.format(submission_dir, work_space, model_name), shell=True)
+    call('python {0}/writers/write_combine_script.py -w {1} -m {2} {3}'.format(submission_dir, work_space, model_name, '-c {}'.format(ver) if args.year == 2017 else ''), shell=True)
     call('python {0}/writers/write_resubmitter_script.py -w {1} -m {2} -n {3}'.format(submission_dir, work_space, model_name, n_jobs), shell=True)
 
 
@@ -111,7 +117,7 @@ def main():
     for seed in xrange(n_jobs):
         input_file_for_job = input_file_list[seed]
 
-        job_path = write_submission_script(work_space, input_file_for_job, model_name, n_events, seed, submission_dir)
+        job_path = write_submission_script(work_space, input_file_for_job, model_name, n_events, seed, submission_dir, args.year)
         call('condor_submit {0}'.format(job_path), shell=True)
 
     # Run the rest of the chain
@@ -119,7 +125,7 @@ def main():
 
 
 
-def write_submission_script(work_space, input_file, model_name, n_events, seed, submission_dir):
+def write_submission_script(work_space, input_file, model_name, n_events, seed, submission_dir, year):
     """
     Write the HTCondor submission script for sample generation.
     """
@@ -131,7 +137,7 @@ def write_submission_script(work_space, input_file, model_name, n_events, seed, 
     job_file = open(job_path, 'w')
     job_file.write("""# HTCondor submission script
 Universe   = vanilla
-cmd        = {submission_dir}/runNanoAOD_Kevin_samples.sh 
+cmd        = {submission_dir}/runNanoAOD_Kevin_samples_{year}.sh 
 args       = {work_space} {input_file} {model} {n_events:.0f} {seed:.0f}
 Log        = {work_space}/logs/{model}/condor_job_{seed}.log
 Output     = {work_space}/logs/{model}/condor_job_{seed}.out
@@ -150,7 +156,7 @@ request_memory = 5000
 # Number of instances of job to run
 queue 1
 """.format(submission_dir=submission_dir, work_space=work_space, input_file=input_file, model=model_name,
-           n_events=n_events, seed=seed, disk_req=disk_req, runtime_req=runtime_req,
+           n_events=n_events, seed=seed, disk_req=disk_req, runtime_req=runtime_req, year=year,
            grid_proxy="use_x509userproxy = true" if 'soolin' in os.environ['HOSTNAME'] or 'root://' in input_file else '')
                    )
     job_file.close()

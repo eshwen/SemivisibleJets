@@ -24,8 +24,15 @@ if ! type cmsenv > /dev/null; then
     alias cmsenv='eval `scramv1 runtime -sh`'
 fi
 
-cd CMSSW_9_4_4/src
-cmsenv
+if [ -d "CMSSW_9_4_4/src" ]; then
+    cd CMSSW_9_4_4/src
+    cmsenv
+else
+    cmsrel CMSSW_9_4_4
+    cd CMSSW_9_4_4/src
+    cmsenv
+    scram b
+fi
 
 cmsDriver.py --filein file:${input_file_path} --fileout file:${model_name}_NANOAOD_${seed}.root --mc --eventcontent NANOAODSIM --datatier NANOAODSIM --conditions auto:run2_mc -s NANO --era Run2_2016,run2_miniAOD_80XLegacy --python_filename ${model_name}_NANOAOD_${seed}.py --no_exec -n $n_events
 

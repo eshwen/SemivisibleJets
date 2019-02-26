@@ -5,8 +5,9 @@ import os
 from subprocess import call
 
 parser = argparse.ArgumentParser()
-parser.add_argument("-w", "--work_space", type = str, required = True, help = "Work space containing CMSSW releases, input and output files")
-parser.add_argument("-m", "--model_name", type = str, required = True, help = "Identifying name of model")
+parser.add_argument("-w", "--work_space", type=str, required=True, help="Work space containing CMSSW releases, input and output files")
+parser.add_argument("-m", "--model_name", type=str, required=True, help="Identifying name of model")
+parser.add_argument("-c", "--cmssw_ver", type=str, default="9_4_4", help="CMSSW version to source when combining output. Default is 9_4_4")
 args = parser.parse_args()
 
 def main():
@@ -16,6 +17,7 @@ def main():
 
     work_space = args.work_space
     model_name = args.model_name
+    cmssw_ver = args.cmssw_ver
     svj_top_dir = os.environ['SVJ_TOP_DIR']
 
     filePath = os.path.join(work_space, "combineOutput_{0}.sh".format(model_name))
@@ -26,7 +28,7 @@ def main():
 echo -e "\e[1;33mWarning: May take a while to hadd if many files are present.\e[0m"
 shopt -s expand_aliases
 source /cvmfs/cms.cern.ch/cmsset_default.sh 
-cd {work_space}/CMSSW_9_4_4/src # Try to make this not hardcoded in case that version doesn't exist
+cd {work_space}/CMSSW_{cmssw_ver}/src # Try to make this not hardcoded in case that version doesn't exist
 cmsenv
 cd {work_space}
 
@@ -46,7 +48,7 @@ else
 fi
 
 exit
-    """.format(work_space=work_space, SVJ_top_dir=svj_top_dir, model=model_name)
+    """.format(work_space=work_space, SVJ_top_dir=svj_top_dir, model=model_name, cmssw_ver=cmssw_ver)
     )
     writeFile.close()
 
