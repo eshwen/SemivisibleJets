@@ -19,8 +19,8 @@ import yaml
 init(autoreset=True)
 
 parser = argparse.ArgumentParser()
-parser.add_argument("config", type = str, default = os.path.join(os.environ['SVJ_TOP_DIR'], 'config', 'model_params_s_spin1.yaml'), help = "Path to YAML config to parse")
-parser.add_argument('-r', '--resub', action = "store_true", help = "Retry if previous attempt failed")
+parser.add_argument("config", type=str, default=os.path.join(os.environ['SVJ_TOP_DIR'], 'config', 'model_params_s_spin1.yaml'), help="Path to YAML config to parse")
+parser.add_argument('-r', '--resub', action="store_true", help="Retry if previous attempt failed")
 args = parser.parse_args()
 
 
@@ -89,7 +89,7 @@ def main():
 
         # Strip model name and total events if they've changed since last use of config, and also blank lines
         for i in xrange( len(original_str) ):
-            if 'model_name:' in original_str[i] or 'total_events:' in original_str[i] or '\n' == original_str[i]:
+            if any(x in original_str[i] for x in ['model_name:', 'total_events:', '\n']):
                 continue
             else:
                 appended_config_file.write(original_str[i])
@@ -118,7 +118,7 @@ def main():
 
 
     # Write param_card text file
-    call('python {0}'.format( os.path.join(new_model_dir, 'write_param_card.py') ), shell=True)
+    call('python {}'.format( os.path.join(new_model_dir, 'write_param_card.py') ), shell=True)
     shutil.move( 'param_card.dat', os.path.join(new_model_dir, 'param_card.dat') )
 
 
