@@ -22,7 +22,7 @@ args = parser.parse_args()
 
 
 
-def write_submission_script(work_space, gen_frag_file, lhe_file, model_name, n_events, seed, submission_dir):
+def write_submission_script(work_space, gen_frag, lhe_file, model, n_events, seed, submission_dir):
     """
     Write the HTCondor submission script for sample generation.
     """
@@ -52,8 +52,9 @@ request_memory = 5000
 +MaxRuntime = {runtime_req}
 # Number of instances of job to run
 queue 1
-""".format(submission_dir=submission_dir, work_space=work_space, gen_fragment=gen_frag_file, lhe_file=lhe_file,
-           model=model_name, n_events=n_events, seed=seed, disk_req=disk_req, runtime_req=runtime_req,
+""".format(submission_dir=submission_dir, work_space=work_space, gen_fragment=gen_frag,
+           lhe_file=lhe_file, model=model, n_events=n_events,
+           seed=seed, disk_req=disk_req, runtime_req=runtime_req,
            grid_proxy="use_x509userproxy = true" if 'soolin' in os.environ['HOSTNAME'] or 'root://' in lhe_file else '')
                    )
     job_file.close()
@@ -167,7 +168,8 @@ def main():
     for seed in xrange(n_jobs):
         lhe_file_for_job = lhe_file_list[seed]
 
-        job_path = write_submission_script(work_space, gen_frag_file, lhe_file_for_job, model_name, n_events, seed, submission_dir)
+        args = (work_space, gen_frag_file, lhe_file_for_job, model_name, n_events, seed, submission_dir)
+        job_path = write_submission_script(*args) # Consider **kwargs instead
         print Fore.CYAN + "Submitting job {0}/{1}...".format(seed+1, n_jobs)
         call('condor_submit {}'.format(job_path), shell=True)
 
