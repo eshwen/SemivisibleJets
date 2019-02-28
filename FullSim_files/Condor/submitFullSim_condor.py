@@ -30,7 +30,7 @@ def write_submission_script(work_space, gen_frag, lhe_file, model, n_events, see
     disk_req = 50000 * n_events # kB
     runtime_req= 288 * n_events # seconds
 
-    job_path = os.path.join(work_space, 'submission_scripts', model_name, 'condor_submission_{0}.job'.format(seed))
+    job_path = os.path.join(work_space, 'submission_scripts', model, 'condor_submission_{}.job'.format(seed))
     job_file = open(job_path, 'w')
     job_file.write("""# HTCondor submission script
 Universe   = vanilla
@@ -168,8 +168,8 @@ def main():
     for seed in xrange(n_jobs):
         lhe_file_for_job = lhe_file_list[seed]
 
-        args = (work_space, gen_frag_file, lhe_file_for_job, model_name, n_events, seed, submission_dir)
-        job_path = write_submission_script(*args) # Consider **kwargs instead
+        sub_args = (work_space, gen_frag_file, lhe_file_for_job, model_name, n_events, seed, submission_dir)
+        job_path = write_submission_script(*sub_args) # Consider **kwargs instead
         print Fore.CYAN + "Submitting job {0}/{1}...".format(seed+1, n_jobs)
         call('condor_submit {}'.format(job_path), shell=True)
 
