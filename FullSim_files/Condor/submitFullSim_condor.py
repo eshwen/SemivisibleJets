@@ -101,20 +101,20 @@ def main():
     # Make a list of split LHE files to run over
     lhe_file_list = []
     for lheFile in os.listdir(lhe_file_path):
-        if '{0}_split'.format(model_name) in lheFile:
+        if '{}_split'.format(model_name) in lheFile:
             lhe_file_list.append( os.path.join(lhe_file_path, lheFile) )
 
     if n_jobs > len(lhe_file_list):
         sys.exit('Number of jobs exceeds number of LHE files in directory. Check and try again.')
 
     if not os.path.exists(work_space):
-        print "Work space doesn't exist. Creating it now.."
+        print "Work space doesn't exist. Creating it now..."
         os.makedirs(work_space)
 
     # Initialise proxy of grid certificate if required
     if 'root://' in lhe_file_path:
         grid_cert_path = '{0}/x509up_u{1}'.format(work_space, os.getuid())
-        call('voms-proxy-init --voms cms --valid 168:00 --out {0}'.format(grid_cert_path), shell=True)
+        call('voms-proxy-init --voms cms --valid 168:00 --out {}'.format(grid_cert_path), shell=True)
         os.environ['X509_USER_PROXY'] = grid_cert_path
 
 
@@ -145,9 +145,9 @@ def main():
 
     # Create directories for logs, submission scripts and GS fragments
     extra_fullsim_dirs = [
-        'logs/{0}'.format(model_name),
+        'logs/{}'.format(model_name),
         'output',
-        'submission_scripts/{0}'.format(model_name),
+        'submission_scripts/{}'.format(model_name),
     ]
 
     for dir in extra_fullsim_dirs:
@@ -169,7 +169,7 @@ def main():
 
         job_path = write_submission_script(work_space, gen_frag_file, lhe_file_for_job, model_name, n_events, seed, submission_dir)
         print Fore.CYAN + "Submitting job {0}/{1}...".format(seed+1, n_jobs)
-        call('condor_submit {0}'.format(job_path), shell=True)
+        call('condor_submit {}'.format(job_path), shell=True)
 
 
 
