@@ -1,3 +1,7 @@
+setuptools
 colorama
+flake8
+matplotlib
+pandas
 progressbar
 pyyaml

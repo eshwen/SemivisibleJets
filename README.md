@@ -15,8 +15,9 @@
         5. [MiniAOD to nanoAOD](#miniaodtonanoaod)
     - [FullSim chain using CRAB (Work-In-Progress)](#fullsimchaincrab)
 4. [Running the complete sample production with HTCondor (recommended)](#completesampleproduction)
-5. [Contact](#contact)
-6. [To do](#todo)
+5. [Miscellaneous](#misc)
+6. [Contact](#contact)
+7. [To do](#todo)
 
 # Introduction <a name="introduction"></a>
 
@@ -134,6 +135,7 @@ First, clone this repo somewhere with a lot of storage (the gridpacks end up in 
 git clone git@github.com:eshwen/SemivisibleJets.git
 cd SemivisibleJets
 source setup.sh
+pip install --user -r requirements.txt
 ```
 
 All the necessary files for spin1-s- and t-channel production are in [MG_input_files/](MG_input_files/), and a tutorial can be found at https://twiki.cern.ch/twiki/bin/view/CMS/QuickGuideMadGraph5aMCatNLO. More models can be added if needed, but it is cumbersome. The file names need to be specific, with the same prefix of `<model name>` and have the suffixes as shown in the existing models (e.g., `<model name>_proc_card.dat`). If adding models, use the existing files as templates. Usually, the model files also need to be zipped with
@@ -394,6 +396,15 @@ $work_space/resubmit_${model_name}.sh
 (note that all jobs must _finish running_ first). When happy, the component output files can be combined using [haddnano.py](Utils/haddnano.py). A script which does that step will be in `$work_space/combineOutput_${model_name}.sh`, which can be run without any arguments.
 
 Some rudimentary plotting, for a quick look at distributions, can be done by running [Utils/plotSVJHistos.py](plotSVJHistos.py). You just need to specify the root files in the list `files`.
+
+
+## Miscellaneous <a name="misc"></a>
+
+To upgrade the installed pip packages, run
+
+```bash
+pip install --user --upgrade -r requirements.txt
+```
 
 
 ## Contact <a name="contact"></a>

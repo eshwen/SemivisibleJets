@@ -16,13 +16,12 @@ SVJ_build_some_path(){
 }
 
 SVJ_build_sys_path(){
-    local Dirs=( "${SVJ_EXTERNALS_DIR}"/pip/bin )
-    Dirs+=( {"$SVJ_cvmfs_PythonDir","$SVJ_cvmfs_PipDir"}/bin)
+    local Dirs=( {"$SVJ_cvmfs_PythonDir","$SVJ_cvmfs_PipDir"}/bin )
     SVJ_build_some_path "$PATH" "${Dirs[@]}"
 }
 
 SVJ_build_python_path(){
-    local Dirs=( "${SVJ_TOP_DIR}"/{,Utils} "${SVJ_EXTERNALS_DIR}"/pip/lib/python2.7/site-packages )
+    local Dirs=( "${SVJ_TOP_DIR}"/{,Utils} )
     Dirs+=( {"$SVJ_cvmfs_PythonDir","$SVJ_cvmfs_PipDir"}/lib/python2.7/site-packages/ )
     SVJ_build_some_path "$PYTHONPATH" "${Dirs[@]}"
 }
@@ -43,10 +42,6 @@ export SVJ_MG_INPUT_DIR="$(SVJ_top_dir)/MG_input_files"
 export MG_GENPROD_DIR="${SVJ_TOP_DIR}/external/genproductions/bin/MadGraph5_aMCatNLO"
 export PYTHONPATH="$(SVJ_build_python_path)"
 export PATH="$(SVJ_build_sys_path)"
-
-# Install required Python packages
-python -m pip install --prefix "${SVJ_EXTERNALS_DIR}"/pip -U setuptools --ignore-installed
-python -m pip install --prefix "${SVJ_EXTERNALS_DIR}"/pip -r requirements.txt --ignore-installed
 
 unset SVJ_cvmfs_{PythonDir,PipDir,GCCSetup,RootSetup}
 
