@@ -27,8 +27,8 @@ SVJ_build_python_path(){
 }
 
 # Source Python, pip, gcc and ROOT from cvmfs
-SVJ_cvmfs_PythonDir=/cvmfs/sft.cern.ch/lcg/releases/Python/2.7.13-597a5/x86_64-slc6-gcc62-opt/
-SVJ_cvmfs_PipDir=/cvmfs/sft.cern.ch/lcg/releases/pip/8.1.2-c9f5a/x86_64-slc6-gcc62-opt/
+SVJ_cvmfs_PythonDir=/cvmfs/sft.cern.ch/lcg/releases/Python/2.7.15-c333c/x86_64-slc6-gcc62-opt
+SVJ_cvmfs_PipDir=/cvmfs/sft.cern.ch/lcg/releases/pip/9.0.1-e2f3e/x86_64-slc6-gcc62-opt
 SVJ_cvmfs_GCCSetup=/cvmfs/sft.cern.ch/lcg/contrib/gcc/6.2/x86_64-slc6/setup.sh
 SVJ_cvmfs_RootSetup=/cvmfs/sft.cern.ch/lcg/releases/LCG_88/ROOT/6.08.06/x86_64-slc6-gcc62-opt/bin/thisroot.sh
 source "${SVJ_cvmfs_GCCSetup}"
