@@ -1,7 +1,7 @@
 setuptools
 colorama
 flake8
-matplotlib
+matplotlib==2.2.4
 pandas
 progressbar
 pyyaml
