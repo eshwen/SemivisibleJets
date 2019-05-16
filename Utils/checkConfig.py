@@ -1,7 +1,7 @@
 #!/usr/bin/env python2 
 import argparse
 from colorama import Fore, Style
-from loadYamlConfig import loadYamlConfig
+from load_yaml_config import load_yaml_config
 import os
 import sys
 import yaml
@@ -64,7 +64,7 @@ if __name__ == '__main__':
 
     print Fore.MAGENTA + "Checking config file...", Style.RESET_ALL
 
-    configDict = loadYamlConfig(args.config)
+    configDict = load_yaml_config(args.config)
 
     if args.checkType == "basic":
         performBasicChecks(configDict)

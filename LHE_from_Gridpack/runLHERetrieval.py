@@ -6,7 +6,7 @@ except ImportError:
     sys.exit('Please source the setup script first.')
 from colorama import Fore, init
 import glob
-from loadYamlConfig import loadYamlConfig
+from load_yaml_config import load_yaml_config
 import os
 import random
 import re
@@ -31,7 +31,7 @@ def main():
     """
 
     # Load YAML config into a dictionary and assign values to variables for cleanliness
-    input_params = loadYamlConfig(args.config)
+    input_params = load_yaml_config(args.config)
 
     model_name = input_params['model_name']
     total_events = input_params['total_events']

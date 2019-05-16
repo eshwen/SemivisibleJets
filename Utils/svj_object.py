@@ -1,10 +1,10 @@
-from loadYamlConfig import loadYamlConfig
+from load_yaml_config import load_yaml_config
 
 
 class SVJObject(object):
     def __init__(self, config):
         self.config = config
-        self.in_params = loadYamlConfig(self.config)
+        self.in_params = load_yaml_config(self.config)
         self.n_jobs = in_params['n_jobs']
 
     def gridpack_stage(self):

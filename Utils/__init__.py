@@ -1,6 +1,6 @@
 import calcDarkParams
 from checkConfig import performBasicChecks, performThoroughChecks
 import CMS_lumi
-from loadYamlConfig import loadYamlConfig
+from load_yaml_config import load_yaml_config
 import plotSVJHistos
 from splitLHE import splitLHE

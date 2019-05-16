@@ -5,7 +5,7 @@ try:
 except ImportError:
     sys.exit('Please source the setup script first.')
 from colorama import Fore, init
-from loadYamlConfig import loadYamlConfig
+from load_yaml_config import load_yaml_config
 import os
 from subprocess import call
 from writers.write_GS_fragment import write_GS_fragment
@@ -72,7 +72,7 @@ def main():
     submission_dir = os.getcwd()
 
     # Load YAML config into a dictionary and assign values to variables for cleanliness
-    input_params = loadYamlConfig(args.config)
+    input_params = load_yaml_config(args.config)
 
     work_space = input_params['work_space']
     lhe_file_path = input_params['lhe_file_path']
