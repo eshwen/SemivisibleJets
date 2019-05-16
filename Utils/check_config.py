@@ -8,7 +8,7 @@ import sys
 import yaml
 
 
-def performBasicChecks(config_dict):
+def basic_checks(config_dict):
     """
     Performs basic checks of config file parameters that are required for all steps in sample production.
     """
@@ -33,12 +33,12 @@ def performBasicChecks(config_dict):
         print Fore.MAGENTA + "Basic config file check finished. All looks good!", Style.RESET_ALL
 
 
-def performThoroughChecks(config_dict):
+def thorough_checks(config_dict):
     """
     Performs thorough checks of config file that are required for running FullSim Condor chain.
     """
 
-    performBasicChecks(config_dict)
+    basic_checks(config_dict)
 
     lhe_file_path = config_dict['lhe_file_path']
     alpha_d = config_dict['alpha_d']
@@ -69,7 +69,7 @@ if __name__ == '__main__':
     config_dict = load_yaml_config(args.config)
 
     if args.basic:
-        performBasicChecks(config_dict)
+        basic_checks(config_dict)
     elif args.thorough:
-        performThoroughChecks(config_dict)
+        thorough_checks(config_dict)
     sys.exit("Completed")

@@ -1,7 +1,7 @@
 import argparse
 import sys
 try:
-    from checkConfig import performThoroughChecks
+    from check_config import thorough_checks
 except ImportError:
     sys.exit('Please source the setup script first.')
 from colorama import Fore, init
@@ -84,7 +84,7 @@ def main():
     n_f = input_params['n_f']
 
     # Check arguments in config file
-    performThoroughChecks(input_params)
+    thorough_checks(input_params)
 
 
     # Calculate Lambda_d (confinement scale)

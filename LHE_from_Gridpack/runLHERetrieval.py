@@ -1,7 +1,7 @@
 import argparse
 import sys
 try:
-    from checkConfig import performBasicChecks
+    from check_config import basic_checks
 except ImportError:
     sys.exit('Please source the setup script first.')
 from colorama import Fore, init
@@ -37,7 +37,7 @@ def main():
     out_split_lhe = input_params['lhe_file_path']
 
     # Check arguments in config file
-    performBasicChecks(input_params)
+    basic_checks(input_params)
 
     # Set up some path variables for use later
     svj_top_dir = os.environ['SVJ_TOP_DIR']

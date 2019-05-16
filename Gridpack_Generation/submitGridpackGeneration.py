@@ -1,7 +1,7 @@
 import argparse
 import sys
 try:
-    from checkConfig import performBasicChecks
+    from check_config import basic_checks
 except ImportError:
     sys.exit('Please source the setup script first.')
 from colorama import Fore, init
@@ -41,7 +41,7 @@ def main():
     r_inv = input_params['r_inv']
 
     # Check arguments in config file
-    performBasicChecks(input_params)
+    basic_checks(input_params)
 
     # Set process-specific variables
     if 's-channel' in process_type:
@@ -127,7 +127,7 @@ def main():
     for modelFile in glob.glob(os.path.join(input_cards_dir, '*.dat')):
         with open(modelFile, 'r+') as mg_card:
             old_params = mg_card.read()
-            # Make sure there are no curly braces in the input cards except those containing the placeholders
+            # Make sure there are no curly braces in the input cards except those containing the replacement fields
             new_params = old_params.format(modelName=model_name, totalEvents=str(total_events))
             mg_card.seek(0)
             mg_card.truncate()

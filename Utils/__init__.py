@@ -1,5 +1,5 @@
 import calcDarkParams
-from checkConfig import performBasicChecks, performThoroughChecks
+from check_config import basic_checks, thorough_checks
 import CMS_lumi
 from load_yaml_config import load_yaml_config
 import plotSVJHistos
