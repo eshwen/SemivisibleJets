@@ -29,8 +29,8 @@ if [[ "$PYTHIA8DATA" == "$work_space"* ]]; then
     echo -e "\e[1;35mThe new version of Pythia has already been installed. No need to do it again.\e[0m"
 else
     # For Pythia 8.230
-    cp $SVJ_TOP_DIR/Utils/installNewPythiaVer.sh .
-    ./installNewPythiaVer.sh
+    cp $SVJ_TOP_DIR/Utils/install_pythia8230.sh .
+    ./install_pythia8230.sh
     scram b
     cmsenv
     cd $CMSSW_BASE/src
