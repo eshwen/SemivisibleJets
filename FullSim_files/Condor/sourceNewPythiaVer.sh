@@ -5,7 +5,7 @@
 
 if [ -z $1 ]; then
     usr_msg="Usage ./sourceNewPythiaVer.sh WORK_SPACE CMSSW_VER CALL_DIR"
-    $SVJ_TOP_DIR/Utils/printBashScriptUsage.sh "$usr_msg"
+    $SVJ_TOP_DIR/Utils/print_bash_script_usage.sh "$usr_msg"
     exit
 fi
 

@@ -3,7 +3,7 @@
 
 if [ -z $1 ]; then
     usr_msg="Usage ./runFullSim_condor.sh WORKING_DIRECTORY GEN_FRAGMENT_BASENAME PATH_TO_LHE_FILES MODEL_NAME N_EVENTS SEED"
-    $SVJ_TOP_DIR/Utils/printBashScriptUsage.sh "$usr_msg"
+    $SVJ_TOP_DIR/Utils/print_bash_script_usage.sh "$usr_msg"
     exit
 fi
 
