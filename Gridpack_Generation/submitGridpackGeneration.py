@@ -69,29 +69,29 @@ def main():
                 print "Error: {0} - {1}.".format(e.filename, e.strerror)
 
     # If required, append config file with new parameters for simplicity in future steps
-    read_config_file = open(args.config, 'r')
-    config_orig_str = read_config_file.read()
-    read_config_file.close()
+    config_file = open(args.config, 'r')
+    config_orig_str = config_file.read()
+    config_file.close()
 
     if model_name+'\n' in config_orig_str and str(total_events)+'\n' in config_orig_str:
         print "No need to append config file with new parameters!"
     else:
         print Fore.CYAN + "Appending config file with new parameters..."
-        appended_config_file = open(args.config, 'r+')
-        original_str = appended_config_file.readlines()
+        new_config = open(args.config, 'r+')
+        original_str = new_config.readlines()
         # Delete contents of file and update
-        appended_config_file.seek(0)
-        appended_config_file.truncate()
+        new_config.seek(0)
+        new_config.truncate()
 
         # Strip model name and total events if they've changed since last use of config, and also blank lines
         for i in xrange(len(original_str)):
             if any(x in original_str[i] for x in ['model_name:', 'total_events:', '\n']):
                 continue
             else:
-                appended_config_file.write(original_str[i])
+                new_config.write(original_str[i])
         # Write new model name and total number of events
-        appended_config_file.write("\nmodel_name: {}\ntotal_events: {}\n".format(model_name, total_events))
-        appended_config_file.close()
+        new_config.write("\nmodel_name: {}\ntotal_events: {}\n".format(model_name, total_events))
+        new_config.close()
 
     new_model_dir = os.path.join(os.environ['SVJ_MODELS_DIR'], model_name)
     if os.path.exists(new_model_dir):
