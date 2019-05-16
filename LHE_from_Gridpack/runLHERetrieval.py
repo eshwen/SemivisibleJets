@@ -1,4 +1,7 @@
-import argparse
+#!/usr/bin/env python2
+""" Handle the input and parsing from a YAML config file.
+Run gridpack to retrieve LHE file, then split it and move output to directory specified by user. """
+from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 import sys
 try:
     from check_config import basic_checks
@@ -17,17 +20,12 @@ from subprocess import call
 # Reset text colours after colourful print statements
 init(autoreset=True)
 
-parser = argparse.ArgumentParser()
-parser.add_argument("config", type=str, help="Path to YAML config to parse")
+parser = ArgumentParser(description=__doc__, formatter_class=ArgumentDefaultsHelpFormatter)
+parser.add_argument("config", type=file, help="Path to YAML config to parse")
 args = parser.parse_args()
 
 
 def main():
-    """
-    Handle the input and parsing from a YAML config file.
-    Run gridpack to retrieve LHE file, then split it and move output to directory specified by user.
-    """
-
     # Load YAML config into a dictionary and assign values to variables for cleanliness
     input_params = load_yaml_config(args.config)
 

@@ -1,4 +1,7 @@
-import argparse
+#!/usr/bin/env python2
+""" Handle the input and parsing from a YAML config file, then submit jobs for running FullSim sample production chain """
+
+from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 import sys
 try:
     from check_config import thorough_checks
@@ -16,8 +19,8 @@ import calcDarkParams as cDP
 # Reset text colours after colourful print statements
 init(autoreset=True)
 
-parser = argparse.ArgumentParser()
-parser.add_argument("config", type=str, help="Path to YAML config to parse")
+parser = ArgumentParser(description=__doc__, formatter_class=ArgumentDefaultsHelpFormatter)
+parser.add_argument("config", type=file, help="Path to YAML config to parse")
 args = parser.parse_args()
 
 
@@ -65,10 +68,6 @@ queue 1
 
 
 def main():
-    """
-    Handle the input and parsing from a YAML config file, then submit jobs for running FullSim sample production chain.
-    """
-
     submission_dir = os.getcwd()
 
     # Load YAML config into a dictionary and assign values to variables for cleanliness

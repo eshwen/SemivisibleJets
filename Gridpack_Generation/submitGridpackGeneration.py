@@ -1,4 +1,7 @@
-import argparse
+#!/usr/bin/env python2
+""" Handle the input and parsing from a YAML config file for submitGridpackGeneration.sh.
+Copy the MadGraph model files to a new directory and change parameters according to the config. """
+from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 import sys
 try:
     from check_config import basic_checks
@@ -13,22 +16,16 @@ import shutil
 from string import Template
 from subprocess import call
 
-
 # Reset text colours after colourful print statements
 init(autoreset=True)
 
-parser = argparse.ArgumentParser()
-parser.add_argument("config", type=str, help="Path to YAML config to parse")
+parser = ArgumentParser(description=__doc__, formatter_class=ArgumentDefaultsHelpFormatter)
+parser.add_argument("config", type=file, help="Path to YAML config to parse")
 parser.add_argument('-r', '--resub', action="store_true", help="Retry if previous attempt failed")
 args = parser.parse_args()
 
 
 def main():
-    """
-    Handle the input and parsing from a YAML config file for submitGridpackGeneration.sh.
-    Copy the MadGraph model files to a new directory and change parameters according to the config.
-    """
-
     # Load YAML config into a dictionary and assign values to variables for cleanliness
     input_params = load_yaml_config(args.config)
 
