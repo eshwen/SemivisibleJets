@@ -3,11 +3,11 @@ import os
 import yaml
 import calc_dark_params as cdp
 
+
 def write_GS_fragment(config, Lambda_d, GS_dir):
     """
     Write GEN-SIM fragment for job and return its path.
     """
-
     # Load YAML config into a dictionary and assign values to variables for cleanliness
     input_params = yaml.load( open(config, 'r') )
 
@@ -25,10 +25,10 @@ def write_GS_fragment(config, Lambda_d, GS_dir):
     m_dark_meson = 2 * m_d
     m_dark_stable = m_d - 0.1
 
-    filePath = os.path.join(GS_dir, "{0}_GS_fragment.py".format(model_name))
-    writeFile = open(filePath, "w")
+    in_file = os.path.join(GS_dir, "{0}_GS_fragment.py".format(model_name))
+    f = open(in_file, "w")
     
-    writeFile.write("""import FWCore.ParameterSet.Config as cms
+    f.write("""import FWCore.ParameterSet.Config as cms
 from Configuration.Generator.Pythia8CommonSettings_cfi import *
 from Configuration.Generator.Pythia8CUEP8M1Settings_cfi import *
 from Configuration.Generator.Pythia8aMCatNLOSettings_cfi import *
@@ -58,13 +58,13 @@ generator = cms.EDFilter("Pythia8HadronizerFilter",
         processParameters = cms.vstring(""".format( cross_section=x_sec ) )
 
     if process_type == 's-channel':
-        writeFile.write("""
-            '4900023:m0 = {0}', # explicitly stating Z' mass in case it's not picked up properly by Pythia""".format(m_med))
+        f.write("""
+            '4900023:m0 = {}', # explicitly stating Z' mass in case it's not picked up properly by Pythia""".format(m_med))
     elif process_type == 't-channel':
-        writeFile.write("""
+        f.write("""
             # ADD SHIT HERE""")
 
-    writeFile.write("""
+    f.write("""
             '4900101:m0 = {m_dark_quark:.0f}', # explicitly stating dark quark mass in case it's not picked up properly by Pythia
             '4900111:m0 = {m_dark_meson:.0f}', # Dark meson mass. PDGID corresponds to pivDiag HV spin-0 meson that can decay into SM particles
             '4900211:m0 = {m_dark_stable:.1f}', # Stable dark particle mass. PDGID corresponds to pivUp off-diagonal HV spin-0 meson that's stable and invisible
@@ -92,6 +92,6 @@ generator = cms.EDFilter("Pythia8HadronizerFilter",
 """.format(m_dark_quark=m_d, m_dark_meson=m_dark_meson, m_dark_stable=m_dark_stable, r_inv=r_inv,
            remain_BR=1-r_inv, Lambda_dark=Lambda_d, nFlav=n_f, pTminFSR=1.1*Lambda_d)
     )                   
-    writeFile.close()
+    f.close()
 
-    return filePath
+    return in_file
