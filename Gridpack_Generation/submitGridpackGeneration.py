@@ -69,46 +69,37 @@ def main():
                 print "Error: {0} - {1}.".format(e.filename, e.strerror)
 
     # If required, append config file with new parameters for simplicity in future steps
-    config_file = open(args.config, 'r')
-    config_orig_str = config_file.read()
-    config_file.close()
-
-    if model_name+'\n' in config_orig_str and str(total_events)+'\n' in config_orig_str:
-        print "No need to append config file with new parameters!"
-    else:
-        print Fore.CYAN + "Appending config file with new parameters..."
-        new_config = open(args.config, 'r+')
-        original_str = new_config.readlines()
+    with open(args.config, 'r+') as f:
+        print Fore.CYAN + "Updating config file with new parameters..."
+        original_str = f.readlines()
         # Delete contents of file and update
-        new_config.seek(0)
-        new_config.truncate()
-
+        f.seek(0)
+        f.truncate()
         # Strip model name and total events if they've changed since last use of config, and also blank lines
         for i in xrange(len(original_str)):
             if any(x in original_str[i] for x in ['model_name:', 'total_events:', '\n']):
                 continue
             else:
-                new_config.write(original_str[i])
-        # Write new model name and total number of events
-        new_config.write("\nmodel_name: {}\ntotal_events: {}\n".format(model_name, total_events))
-        new_config.close()
+                f.write(original_str[i])
+        # Write new parameters at the end of the file
+        f.write("\nmodel_name: {}\ntotal_events: {}\n".format(model_name, total_events))
 
     new_model_dir = os.path.join(os.environ['SVJ_MODELS_DIR'], model_name)
     if os.path.exists(new_model_dir):
-        print "Model of type {} with parameters m_med = {}, m_d = {} already exists! No need to create it.".format(process_type, m_med, m_d)
+        print "Model of type {} with parameters m_med = {}, m_d = {} already exists!".format(process_type, m_med, m_d)
     else:
         # Copy model files to new directory and change relevant parameters according to config
         print Fore.CYAN + "Copying template model..."
         shutil.copytree(default_model_dir, new_model_dir)
         # Read the parameters file (containing the dark particle masses) in the new model directory
-        params_file = open(os.path.join(new_model_dir, 'parameters.py'), 'r+')
-        oldStr = Template(params_file.read())
-        # Replace placeholders with those chosen by use
-        newStr = oldStr.substitute(dark_quark_mass=str(m_d), mediator_mass=str(m_med))
-        params_file.seek(0)
-        params_file.truncate()
-        params_file.write(newStr)
-        params_file.close()
+        with open(os.path.join(new_model_dir, 'parameters.py'), 'r+') as f:
+            f = open(os.path.join(new_model_dir, 'parameters.py'), 'r+')
+            old_params = Template(f.read())
+            # Fill replacement fields with those chosen by user
+            new_params = old_params.substitute(dark_quark_mass=str(m_d), mediator_mass=str(m_med))
+            f.seek(0)
+            f.truncate()
+            f.write(new_params)
         print Fore.MAGENTA + "New parameters written in model files!"
 
     # Write param_card text file
@@ -122,26 +113,25 @@ def main():
     else:
         print "Directory containing MadGraph input cards exists! No need to create it."
         # Remove previous input cards in case, e.g., n_events has changed
-        for oldFile in glob.glob(os.path.join(input_cards_dir, '*.dat')):
-            os.remove(oldFile)
+        for old_file in glob.glob(os.path.join(input_cards_dir, '*.dat')):
+            os.remove(old_file)
 
     # Copy MadGraph input files from template card directory
     # Even if input_cards_dir existed before, copy the template files over in case parameters have changed
-    for inFile in glob.glob(os.path.join(os.environ['SVJ_MG_INPUT_DIR'], model_prefix+'_input_template/*.dat')):
+    for in_file in glob.glob(os.path.join(os.environ['SVJ_MG_INPUT_DIR'], model_prefix+'_input_template/*.dat')):
         # Get the suffix of the template card for specifying the basename in the dest. path
-        card_type = re.search("(?<={0})(\w+).dat".format(model_prefix), inFile).group(0)
-        shutil.copy(inFile, os.path.join(input_cards_dir, model_name+card_type))
+        card_type = re.search("(?<={0})(\w+).dat".format(model_prefix), in_file).group(0)
+        shutil.copy(in_file, os.path.join(input_cards_dir, model_name+card_type))
 
-    # In input files, replace placeholders with values chosen by user
+    # In input files, fill replacement fields with values chosen by user
     for modelFile in glob.glob(os.path.join(input_cards_dir, '*.dat')):
-        mg_card = open(modelFile, 'r+')
-        oldStr = mg_card.read()
-        # Make sure there are no curly braces in the input cards except those containing the placeholders
-        newStr = oldStr.format(modelName=model_name, totalEvents=str(total_events))
-        mg_card.seek(0)
-        mg_card.truncate()
-        mg_card.write(newStr)
-        mg_card.close()
+        with open(modelFile, 'r+') as mg_card:
+            old_params = mg_card.read()
+            # Make sure there are no curly braces in the input cards except those containing the placeholders
+            new_params = old_params.format(modelName=model_name, totalEvents=str(total_events))
+            mg_card.seek(0)
+            mg_card.truncate()
+            mg_card.write(new_params)
         print Fore.MAGENTA + "Parameters written for input card", os.path.basename(modelFile)
 
     # Zip up model directory, specifying basedir to zip enclosing folder, not just files
