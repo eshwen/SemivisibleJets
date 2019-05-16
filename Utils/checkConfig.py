@@ -1,5 +1,6 @@
-#!/usr/bin/env python2 
-import argparse
+#!/usr/bin/env python2
+""" Perform some checks for the YAML config files """
+from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 from colorama import Fore, Style
 from load_yaml_config import load_yaml_config
 import os
@@ -7,17 +8,16 @@ import sys
 import yaml
 
 
-def performBasicChecks(configDict):
+def performBasicChecks(config_dict):
     """
     Performs basic checks of config file parameters that are required for all steps in sample production.
     """
-
-    process_type = configDict['process_type']
-    m_med = configDict['m_med']
-    n_events = configDict['n_events']
-    n_jobs = configDict['n_jobs']
-    m_d = configDict['m_d']
-    r_inv = configDict['r_inv']
+    process_type = config_dict['process_type']
+    m_med = config_dict['m_med']
+    n_events = config_dict['n_events']
+    n_jobs = config_dict['n_jobs']
+    m_d = config_dict['m_d']
+    r_inv = config_dict['r_inv']
 
     if not all (type(i) is int for i in [n_events, n_jobs, m_med, m_d]):
         raise TypeError(Fore.GREEN + 'n_events, n_jobs, m_med and m_d are all required to be integers.')
@@ -33,17 +33,17 @@ def performBasicChecks(configDict):
         print Fore.MAGENTA + "Basic config file check finished. All looks good!", Style.RESET_ALL
 
 
-def performThoroughChecks(configDict):
+def performThoroughChecks(config_dict):
     """
     Performs thorough checks of config file that are required for running FullSim Condor chain.
     """
 
-    performBasicChecks(configDict)
+    performBasicChecks(config_dict)
 
-    lhe_file_path = configDict['lhe_file_path']
-    alpha_d = configDict['alpha_d']
-    n_f = configDict['n_f']
-    x_sec = configDict['x_sec']
+    lhe_file_path = config_dict['lhe_file_path']
+    alpha_d = config_dict['alpha_d']
+    n_f = config_dict['n_f']
+    x_sec = config_dict['x_sec']
 
     if 'root://' not in lhe_file_path and not os.path.exists(lhe_file_path):
         raise ValueError(Fore.GREEN + 'The LHE file path you have specified does not exist.')
@@ -56,23 +56,20 @@ def performThoroughChecks(configDict):
 
         
 if __name__ == '__main__':
-    
-    parser = argparse.ArgumentParser()
-    parser.add_argument('-c', '--config', type = str, default = os.path.join(os.environ['SVJ_TOP_DIR'], 'config', 'model_params_s_spin1.yaml'), help = "Path to YAML config to parse")
-    parser.add_argument('-t', '--checkType', type = str, default = 'basic', help = "Type of check to perform, either 'basic' or 'thorough'")
+    parser = ArgumentParser(description=__doc__, formatter_class=ArgumentDefaultsHelpFormatter)
+    parser.add_argument("config", type=file, help="Path to YAML config to parse")
+
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument('-b', '--basic', action="store_true", help="Perform basic config checks")
+    group.add_argument('-t', '--thorough', action="store_true", help="Perform thorough config checks")
+
     args = parser.parse_args()
 
     print Fore.MAGENTA + "Checking config file...", Style.RESET_ALL
+    config_dict = load_yaml_config(args.config)
 
-    configDict = load_yaml_config(args.config)
-
-    if args.checkType == "basic":
-        performBasicChecks(configDict)
-
-    elif args.checkType == 'thorough':
-        performThoroughChecks(configDict)
-    
-    else:
-        sys.exit("The --checkType option must be either 'basic' or 'thorough'.")
-
+    if args.basic:
+        performBasicChecks(config_dict)
+    elif args.thorough:
+        performThoroughChecks(config_dict)
     sys.exit("Completed")
