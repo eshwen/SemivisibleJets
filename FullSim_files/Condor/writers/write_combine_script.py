@@ -1,28 +1,26 @@
 #!/usr/bin/env python2
-import argparse
+""" Write bash script to hadd output nanoAOD files """
+from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 from colorama import Fore, Style
 import os
 from subprocess import call
 
-parser = argparse.ArgumentParser()
-parser.add_argument("-w", "--work_space", type = str, required = True, help = "Work space containing CMSSW releases, input and output files")
-parser.add_argument("-m", "--model_name", type = str, required = True, help = "Identifying name of model")
+parser = ArgumentParser(description=__doc__, formatter_class=ArgumentDefaultsHelpFormatter)
+parser.add_argument("-w", "--work_space", type=str, required=True, help="Work space containing CMSSW releases, input and output files")
+parser.add_argument("-m", "--model_name", type=str, required=True, help="Identifying name of model")
 args = parser.parse_args()
 
-def main():
-    """
-    Write bash script to hadd output nanoAOD files
-    """
 
+def main():
     work_space = args.work_space
     model_name = args.model_name
     svj_top_dir = os.environ['SVJ_TOP_DIR']
 
-    filePath = os.path.join(work_space, "combineOutput_{0}.sh".format(model_name))
-    writeFile = open(filePath, "w")
+    file_path = os.path.join(work_space, "combineOutput_{0}.sh".format(model_name))
+    f = open(file_path, "w")
 
     # Write bash combine script
-    writeFile.write("""#!/bin/bash
+    f.write("""#!/bin/bash
 echo -e "\e[1;33mWarning: May take a while to hadd if many files are present.\e[0m"
 shopt -s expand_aliases
 source /cvmfs/cms.cern.ch/cmsset_default.sh 
@@ -48,12 +46,11 @@ fi
 exit
     """.format(work_space=work_space, SVJ_top_dir=svj_top_dir, model=model_name)
                     )
-    writeFile.close()
+    f.close()
 
-    call("chmod +x {0}".format(filePath), shell = True)
+    call("chmod +x {0}".format(file_path), shell = True)
     print Fore.MAGENTA + "Hadding script written!", Style.RESET_ALL
 
 
 if __name__ == '__main__':
     main()
-

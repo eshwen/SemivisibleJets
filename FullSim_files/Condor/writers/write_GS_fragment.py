@@ -1,7 +1,5 @@
-import math
 import os
-import yaml
-import calc_dark_params as cdp
+from load_yaml_config import load_yaml_config
 
 
 def write_GS_fragment(config, Lambda_d, GS_dir):
@@ -9,7 +7,7 @@ def write_GS_fragment(config, Lambda_d, GS_dir):
     Write GEN-SIM fragment for job and return its path.
     """
     # Load YAML config into a dictionary and assign values to variables for cleanliness
-    input_params = yaml.load( open(config, 'r') )
+    input_params = load_yaml_config(config)
 
     model_name = input_params['model_name']
     m_med = input_params['m_med']
@@ -27,7 +25,7 @@ def write_GS_fragment(config, Lambda_d, GS_dir):
 
     in_file = os.path.join(GS_dir, "{0}_GS_fragment.py".format(model_name))
     f = open(in_file, "w")
-    
+
     f.write("""import FWCore.ParameterSet.Config as cms
 from Configuration.Generator.Pythia8CommonSettings_cfi import *
 from Configuration.Generator.Pythia8CUEP8M1Settings_cfi import *
@@ -46,7 +44,7 @@ generator = cms.EDFilter("Pythia8HadronizerFilter",
         JetMatchingParameters = cms.vstring(
             'JetMatching:setMad = off', # if 'on', merging parameters are set according to LHE file
             'JetMatching:scheme = 1', # 1 = scheme inspired by Madgraph matching code
-            'JetMatching:merge = on', # master switch to activate parton-jet matching. when off, all external events accepted 
+            'JetMatching:merge = on', # master switch to activate parton-jet matching. when off, all external events accepted
             'JetMatching:jetAlgorithm = 2', # 2 = SlowJet clustering
             'JetMatching:etaJetMax = 5.', # max eta of any jet
             'JetMatching:coneRadius = 1.0', # gives the jet R parameter
@@ -55,7 +53,7 @@ generator = cms.EDFilter("Pythia8HadronizerFilter",
             'JetMatching:nJetMax = 2', # number of partons in born matrix element for highest multiplicity
             'JetMatching:doShowerKt = off', # off for MLM matching, turn on for shower-kT matching
             ),
-        processParameters = cms.vstring(""".format( cross_section=x_sec ) )
+        processParameters = cms.vstring(""".format(cross_section=x_sec))
 
     if process_type == 's-channel':
         f.write("""
@@ -91,7 +89,7 @@ generator = cms.EDFilter("Pythia8HadronizerFilter",
 )
 """.format(m_dark_quark=m_d, m_dark_meson=m_dark_meson, m_dark_stable=m_dark_stable, r_inv=r_inv,
            remain_BR=1-r_inv, Lambda_dark=Lambda_d, nFlav=n_f, pTminFSR=1.1*Lambda_d)
-    )                   
+    )
     f.close()
 
     return in_file
