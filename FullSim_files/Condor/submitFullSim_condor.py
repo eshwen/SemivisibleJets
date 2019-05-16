@@ -1,6 +1,5 @@
 #!/usr/bin/env python2
 """ Handle the input and parsing from a YAML config file, then submit jobs for running FullSim sample production chain """
-
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 import sys
 try:
@@ -13,8 +12,7 @@ import os
 from subprocess import call
 from writers.write_GS_fragment import write_GS_fragment
 import yaml
-import calcDarkParams as cDP
-
+import calc_dark_params as cdp
 
 # Reset text colours after colourful print statements
 init(autoreset=True)
@@ -88,13 +86,13 @@ def main():
 
     # Calculate Lambda_d (confinement scale)
     n_c = 2
-    Lambda_d = cDP.calcLambdaD(n_c, n_f, alpha_d)
+    Lambda_d = cdp.calc_lambda_d(n_c, n_f, alpha_d)
     print Fore.MAGENTA + "Confinement scale Lambda_d =", Lambda_d
 
     # Rescale Lambda_d if too low (should be >= m_d), then recalc alpha_d
     #if Lambda_d < m_d:
     #    Lambda_d = 1.1 * m_d
-    #    alpha_d = cDP.calcAlphaD(n_c, n_f, Lambda_d)
+    #    alpha_d = cdp.calc_alpha_d(n_c, n_f, Lambda_d)
     #    print Fore.MAGENTA + "Recalculated alpha_d =", alpha_d
 
 

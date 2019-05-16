@@ -1,7 +1,7 @@
 import math
 import os
 import yaml
-import calcDarkParams as cDP
+import calc_dark_params as cdp
 
 def write_GS_fragment(config, Lambda_d, GS_dir):
     """
