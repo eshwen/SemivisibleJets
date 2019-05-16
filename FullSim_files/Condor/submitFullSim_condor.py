@@ -11,7 +11,6 @@ from load_yaml_config import load_yaml_config
 import os
 from subprocess import call
 from writers.write_GS_fragment import write_GS_fragment
-import yaml
 import calc_dark_params as cdp
 
 # Reset text colours after colourful print statements
@@ -22,14 +21,12 @@ parser.add_argument("config", type=file, help="Path to YAML config to parse")
 args = parser.parse_args()
 
 
-
 def write_submission_script(work_space, gen_frag, lhe_file, model, n_events, seed, submission_dir):
     """
     Write the HTCondor submission script for sample generation.
     """
-
-    disk_req = 50000 * n_events # kB
-    runtime_req= 288 * n_events # seconds
+    disk = 50000 * n_events  # kB
+    runtime = 288 * n_events  # seconds
 
     job_path = os.path.join(work_space, 'submission_scripts', model, 'condor_submission_{}.job'.format(seed))
     job_file = open(job_path, 'w')
@@ -47,22 +44,21 @@ when_to_transfer_output = ON_EXIT_OR_EVICT
 # Resource requests (disk storage in kB, memory in MB)
 request_cpus = 1
 # Disk request size determined by n_events
-request_disk = {disk_req}
+request_disk = {disk}
 request_memory = 5000
 # Max runtime (seconds) determined by n_events
-+MaxRuntime = {runtime_req}
++MaxRuntime = {runtime}
 # Number of instances of job to run
 queue 1
 """.format(submission_dir=submission_dir, work_space=work_space, gen_fragment=gen_frag,
            lhe_file=lhe_file, model=model, n_events=n_events,
-           seed=seed, disk_req=disk_req, runtime_req=runtime_req,
+           seed=seed, disk=disk, runtime=runtime,
            grid_proxy="use_x509userproxy = true" if 'soolin' in os.environ['HOSTNAME'] or 'root://' in lhe_file else '')
                    )
     job_file.close()
 
     call('chmod +x {0}'.format(job_path), shell=True)
     return job_path
-
 
 
 def main():
@@ -83,7 +79,6 @@ def main():
     # Check arguments in config file
     thorough_checks(input_params)
 
-
     # Calculate Lambda_d (confinement scale)
     n_c = 2
     Lambda_d = cdp.calc_lambda_d(n_c, n_f, alpha_d)
@@ -95,14 +90,13 @@ def main():
     #    alpha_d = cdp.calc_alpha_d(n_c, n_f, Lambda_d)
     #    print Fore.MAGENTA + "Recalculated alpha_d =", alpha_d
 
-
     # Make a list of split LHE files to run over
-    lhe_file_list = []
-    for lheFile in os.listdir(lhe_file_path):
-        if '{}_split'.format(model_name) in lheFile:
-            lhe_file_list.append( os.path.join(lhe_file_path, lheFile) )
+    lhe_files = []
+    for file in os.listdir(lhe_file_path):
+        if '{}_split'.format(model_name) in file:
+            lhe_files.append(os.path.join(lhe_file_path, file))
 
-    if n_jobs > len(lhe_file_list):
+    if n_jobs > len(lhe_files):
         sys.exit('Number of jobs exceeds number of LHE files in directory. Check and try again.')
 
     if not os.path.exists(work_space):
@@ -111,35 +105,34 @@ def main():
 
     # Initialise proxy of grid certificate if required
     if 'root://' in lhe_file_path:
-        grid_cert_path = '{0}/x509up_u{1}'.format(work_space, os.getuid())
+        grid_cert_path = '{}/x509up_u{}'.format(work_space, os.getuid())
         call('voms-proxy-init --voms cms --valid 168:00 --out {}'.format(grid_cert_path), shell=True)
         os.environ['X509_USER_PROXY'] = grid_cert_path
-
 
     # Dict for architectures corresponding to different CMSSW versions
     cmssw_archs = {
         'CMSSW_7_1_30': 'slc6_amd64_gcc481',
         'CMSSW_8_0_21': 'slc6_amd64_gcc530',
-        'CMSSW_9_4_4' : 'slc6_amd64_gcc630',
+        'CMSSW_9_4_4': 'slc6_amd64_gcc630',
     }
 
     # Set up CMSSW environments
-    for cmssw_ver, arch in cmssw_archs.iteritems():
-        if os.path.exists( os.path.join(work_space, cmssw_ver, 'src') ):
-            print "{0} release already exists!".format(cmssw_ver)
+    for version, arch in cmssw_archs.iteritems():
+        if os.path.exists(os.path.join(work_space, version, 'src')):
+            print "{} release already exists!".format(version)
         else:
-            call('./sourceCMSSW.sh {0} {1} {2}'.format(cmssw_ver, arch, work_space), shell=True)
+            call('./sourceCMSSW.sh {} {} {}'.format(version, arch, work_space), shell=True)
 
     if os.getcwd() != submission_dir:
         os.chdir(submission_dir)
 
     # Install new Pythia version if not already done so
-    call('./sourceNewPythiaVer.sh {0} {1} {2}'.format(work_space, 'CMSSW_7_1_30', submission_dir), shell=True)
+    call('./sourceNewPythiaVer.sh {} {} {}'.format(work_space, 'CMSSW_7_1_30', submission_dir), shell=True)
 
     # Create directories for gen fragments to occupy
-    gen_fragment_dir = os.path.join(work_space, 'CMSSW_7_1_30', 'src', 'Configuration', 'GenProduction', 'python')
-    if not os.path.exists(gen_fragment_dir):
-        os.makedirs(gen_fragment_dir)
+    gen_frag_dir = os.path.join(work_space, 'CMSSW_7_1_30', 'src', 'Configuration', 'GenProduction', 'python')
+    if not os.path.exists(gen_frag_dir):
+        os.makedirs(gen_frag_dir)
 
     # Create directories for logs, submission scripts and GS fragments
     extra_fullsim_dirs = [
@@ -149,27 +142,23 @@ def main():
     ]
 
     for dir in extra_fullsim_dirs:
-        if not os.path.exists( os.path.join(work_space, dir) ):
-            os.makedirs( os.path.join(work_space, dir) )
-    
+        if not os.path.exists(os.path.join(work_space, dir)):
+            os.makedirs(os.path.join(work_space, dir))
 
     # Create the gen fragment
-    gen_frag_file = os.path.basename( write_GS_fragment(args.config, Lambda_d, gen_fragment_dir) )
+    gen_frag = os.path.basename(write_GS_fragment(args.config, Lambda_d, gen_frag_dir))
 
     # Create scripts to hadd output files and resubmit failed jobs
-    call('python {0}/writers/write_combine_script.py -w {1} -m {2}'.format(submission_dir, work_space, model_name), shell=True)
-    call('python {0}/writers/write_resubmitter_script.py -w {1} -m {2} -n {3}'.format(submission_dir, work_space, model_name, n_jobs), shell=True)
-
+    call('python {}/writers/write_combine_script.py -w {} -m {}'.format(submission_dir, work_space, model_name), shell=True)
+    call('python {}/writers/write_resubmitter_script.py -w {} -m {} -n {}'.format(submission_dir, work_space, model_name, n_jobs), shell=True)
 
     # Write Condor submission file for each job and execute
     for seed in xrange(n_jobs):
-        lhe_file_for_job = lhe_file_list[seed]
-
-        sub_args = (work_space, gen_frag_file, lhe_file_for_job, model_name, n_events, seed, submission_dir)
-        job_path = write_submission_script(*sub_args) # Consider **kwargs instead
-        print Fore.CYAN + "Submitting job {0}/{1}...".format(seed+1, n_jobs)
+        job_lhe = lhe_files[seed]
+        sub_args = (work_space, gen_frag, job_lhe, model_name, n_events, seed, submission_dir)
+        job_path = write_submission_script(*sub_args)  # Consider **kwargs instead
+        print Fore.CYAN + "Submitting job {}/{}...".format(seed+1, n_jobs)
         call('condor_submit {}'.format(job_path), shell=True)
-
 
 
 if __name__ == '__main__':
