@@ -47,9 +47,9 @@ else
     voms-proxy-init --voms cms --valid ${proxy_length_hr}:00
 fi
 
-nohup ./submit_cmsconnect_gridpack_generation.sh $model_name $input_cards_dir $n_cores "$mem_req" > ${model_name}.debug 2>&1 &
+echo nohup ./submit_cmsconnect_gridpack_generation.sh $model_name $input_cards_dir $n_cores "$mem_req" > ${model_name}.debug 2>&1 &
 echo "Job submitted. Check on it with \"condor_q $USER\""
-
+# ^^^ FIX THE JOB SUBMISSION
 
 #exit
 
