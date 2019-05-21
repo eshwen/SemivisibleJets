@@ -21,7 +21,7 @@ from subprocess import call
 init(autoreset=True)
 
 parser = ArgumentParser(description=__doc__, formatter_class=ArgumentDefaultsHelpFormatter)
-parser.add_argument("config", type=file, help="Path to YAML config to parse")
+parser.add_argument("config", type=str, help="Path to YAML config to parse")
 args = parser.parse_args()
 
 
