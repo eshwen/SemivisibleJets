@@ -138,7 +138,7 @@ source setup.sh
 pip install --user -r requirements.txt
 ```
 
-All the necessary files for spin1-s- and t-channel production are in [input_files_mg/](input_files_mg/), and a tutorial can be found at https://twiki.cern.ch/twiki/bin/view/CMS/QuickGuideMadGraph5aMCatNLO. More models can be added if needed, but it is cumbersome. The file names need to be specific, with the same prefix of `<model name>` and have the suffixes as shown in the existing models (e.g., `<model name>_proc_card.dat`). If adding models, use the existing files as templates. Usually, the model files also need to be zipped with
+All the necessary files for spin1-s- and t-channel production are in [madgraph/input_files/](madgraph/input_files/), and a tutorial can be found at https://twiki.cern.ch/twiki/bin/view/CMS/QuickGuideMadGraph5aMCatNLO. More models can be added if needed, but it is cumbersome. The file names need to be specific, with the same prefix of `<model name>` and have the suffixes as shown in the existing models (e.g., `<model name>_proc_card.dat`). If adding models, use the existing files as templates. Usually, the model files also need to be zipped with
 
 ```bash
 tar -cf <output file name>.tar <input file(s)>
