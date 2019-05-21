@@ -26,18 +26,18 @@
 This repository contains model files necessary for generation of semi-visible jet Monte Carlo signal events in `MadGraph`. It also includes instructions of how to generate gridpacks for production with these models, and how to run them through the FullSim CMSSW chain to create nanoAOD files for analysis. Please see [1707.05326](https://arxiv.org/abs/1707.05326) and [1503.00009](https://arxiv.org/abs/1503.00009) for
 for further details about the models. Please note that a recent version of `PYTHIA` (> 8.226) including the Hidden Valley module and running of the dark coupling is required when implementing the subsequent dark hadronization.
 
-UFO files associated with two UV completions are provided (under [MG_models/](MG_models/)):
+UFO files associated with two UV completions are provided (under [madgraph/models/](madgraph/models/)):
 
 
 ### s-channel model <a name="schannelmodel"></a>
 
-An s-channel production ([DMsimp_SVJ_s_spin1](MG_models/DMsimp_SVJ_s_spin1)) mediated through a new heavy Z'. The model provided is a modified version of the spin-1 `DMsimp` model (http://feynrules.irmp.ucl.ac.be/wiki/DMsimp) 
+An s-channel production ([DMsimp_SVJ_s_spin1](madgraph/models/DMsimp_SVJ_s_spin1)) mediated through a new heavy Z'. The model provided is a modified version of the spin-1 `DMsimp` model (http://feynrules.irmp.ucl.ac.be/wiki/DMsimp) 
 implemented through `FeynRules`.
 
 
 ### t-channel model <a name="tchannelmodel"></a>
 
-A t-channel production ([DMsimp_SVJ_t](MG_models/DMsimp_SVJ_t)) where the dark and visible sectors interact through a new scalar bi-fundamental.
+A t-channel production ([DMsimp_SVJ_t](madgraph/models/DMsimp_SVJ_t)) where the dark and visible sectors interact through a new scalar bi-fundamental.
 
 The bi-fundamentals are denoted with `su11, su12, su21, su22...`, where `u` etc explicitly specifies the QCD flavour index 
 and the numbers are the explicit dark non-Abelian group indices. Similarly, the dark quarks are labeled as `qv11, qv12, qv21, qv22`.
@@ -45,7 +45,7 @@ and the numbers are the explicit dark non-Abelian group indices. Similarly, the 
 Please note that a modified version of `MadGraph` using the patch included [here](https://bugs.launchpad.net/mg5amcnlo/+bug/1702712) 
 is required to ensure a stable cross section for event generation using this model.
 
-A `FeynRules` model file ([DMsimp_tchannel.fr](MG_models/DMsimp_SVJ_t/DMsimp_tchannel.fr)) as well as the `Mathematica` notebook ([DMsimp_tchannel.nb](MG_models/DMsimp_SVJ_t/DMsimp_tchannel.nb)) used to generated the UFO output 
+A `FeynRules` model file ([DMsimp_tchannel.fr](madgraph/models/DMsimp_SVJ_t/DMsimp_tchannel.fr)) as well as the `Mathematica` notebook ([DMsimp_tchannel.nb](madgraph/models/DMsimp_SVJ_t/DMsimp_tchannel.nb)) used to generated the UFO output 
 are also provided.
 
 
@@ -71,10 +71,10 @@ Unzip the tar ball with
 tar -xvzf MG5_aMC_v2.6.1.tar.gz
 ```
 
-In the folder created, the run command is `./bin/mg5_aMC`. Copy the model files from [here](SemivisibleJets/MG_models/) into `models/` with
+In the folder created, the run command is `./bin/mg5_aMC`. Copy the model files from [here](SemivisibleJets/madgraph/models/) into `models/` with
 
 ```bash
-cp -r ../SemivisibleJets/MG_models/DMsimp_* ./models/
+cp -r ../SemivisibleJets/madgraph/models/DMsimp_* ./models/
 ```
 
 The input cards for the s- and t-channel processes are specified in [MG_input/](MG_input/). In these files, the number of events, output directory, as well as other parameters, can be changed.
