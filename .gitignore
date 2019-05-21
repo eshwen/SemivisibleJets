@@ -13,5 +13,5 @@ external/pip
 Plots/
 MG_models/DMsimp_SVJ_s_spin1_mZp*
 MG_models/DMsimp_SVJ_t_mPhi*
-MG_input_files/DMsimp_SVJ_s_spin1_mZp*
-MG_input_files/DMsimp_SVJ_t_mPhi*
+input_files_mg/DMsimp_SVJ_s_spin1_mZp*
+input_files_mg/DMsimp_SVJ_t_mPhi*

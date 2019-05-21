@@ -138,7 +138,7 @@ source setup.sh
 pip install --user -r requirements.txt
 ```
 
-All the necessary files for spin1-s- and t-channel production are in [MG_input_files/](MG_input_files/), and a tutorial can be found at https://twiki.cern.ch/twiki/bin/view/CMS/QuickGuideMadGraph5aMCatNLO. More models can be added if needed, but it is cumbersome. The file names need to be specific, with the same prefix of `<model name>` and have the suffixes as shown in the existing models (e.g., `<model name>_proc_card.dat`). If adding models, use the existing files as templates. Usually, the model files also need to be zipped with
+All the necessary files for spin1-s- and t-channel production are in [input_files_mg/](input_files_mg/), and a tutorial can be found at https://twiki.cern.ch/twiki/bin/view/CMS/QuickGuideMadGraph5aMCatNLO. More models can be added if needed, but it is cumbersome. The file names need to be specific, with the same prefix of `<model name>` and have the suffixes as shown in the existing models (e.g., `<model name>_proc_card.dat`). If adding models, use the existing files as templates. Usually, the model files also need to be zipped with
 
 ```bash
 tar -cf <output file name>.tar <input file(s)>
@@ -365,7 +365,7 @@ source setup.sh
 then run the gridpack generation according to the parameters in your config file with
 
 ```bash
-cd Gridpack_Generation
+cd gridpack_generation_mg
 python submitGridpackGeneration.py <path to YAML config>
 ```
 
@@ -374,7 +374,7 @@ If the parameters are okay (and there are no bugs in the code), the MadGraph mod
 If you plan to run the rest of the sample production via CRAB or by some means that requires a gridpack, you're done! However, if you want to continue here and follow the rest of my steps, great! Now that you have the gridpack, the next stage is to get the LHE file out, apply the PDGID renumbering for the dark particles, and split the LHE file for running the FullSim jobs easily. This is taken care of with
 
 ```bash
-cd $SVJ_TOP_DIR/LHE_from_Gridpack
+cd $SVJ_TOP_DIR/gridpack_to_lhe
 python runLHERetrieval.py <path to YAML config>
 ```
 
