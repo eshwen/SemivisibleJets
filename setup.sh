@@ -36,9 +36,10 @@ source "${SVJ_cvmfs_RootSetup}"
 
 # Set environment variables
 export SVJ_TOP_DIR="$(SVJ_top_dir)"
-export SVJ_EXTERNALS_DIR="$(SVJ_top_dir)/external"
-export SVJ_MODELS_DIR="$(SVJ_top_dir)/madgraph/models"
-export SVJ_MG_INPUT_DIR="$(SVJ_top_dir)/madgraph/input_files"
+export SVJ_EXTERNALS_DIR="${SVJ_TOP_DIR}/external"
+export SVJ_MG_FILES_DIR="${SVJ_TOP_DIR}/madgraph"
+export SVJ_MODELS_DIR="${SVJ_MG_FILES_DIR}/models"
+export SVJ_MG_INPUT_DIR="${SVJ_MG_FILES_DIR}/input_files"
 export MG_GENPROD_DIR="${SVJ_TOP_DIR}/external/genproductions/bin/MadGraph5_aMCatNLO"
 export PYTHONPATH="$(SVJ_build_python_path)"
 export PATH="$(SVJ_build_sys_path)"

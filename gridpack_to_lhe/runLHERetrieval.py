@@ -38,10 +38,10 @@ def main():
     basic_checks(input_params)
 
     # Set up some path variables for use later
-    svj_top_dir = os.environ['SVJ_TOP_DIR']
     genprod_dir = os.environ['MG_GENPROD_DIR']
     default_gridpack_dir = os.path.join(genprod_dir, model_name)
     lhe_gen_dir = os.path.join(default_gridpack_dir, model_name+'_gridpack', 'work', 'gridpack')
+    gridpack_outdir = os.path.join(os.environ['SVJ_MG_FILES_DIR'], 'gridpacks')
 
     # Get cross section from gridpack generation log file
     with open(os.path.join(lhe_gen_dir, 'gridpack_generation.log'), 'r') as f:
@@ -67,7 +67,6 @@ def main():
             f.write("x_sec: {0}\n".format(x_sec))
 
     # Copy gridpack tarball to new directory
-    gridpack_outdir = os.path.join(svj_top_dir, 'gridpacks')
     for tarball in glob.glob(os.path.join(genprod_dir, model_name+'*.xz')):
         print Fore.CYAN + "Copying {} to {}/".format(os.path.basename(tarball), gridpack_outdir)
         shutil.copyfile(tarball, os.path.join(gridpack_outdir, os.path.basename(tarball)))
