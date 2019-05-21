@@ -20,7 +20,7 @@ from subprocess import call
 init(autoreset=True)
 
 parser = ArgumentParser(description=__doc__, formatter_class=ArgumentDefaultsHelpFormatter)
-parser.add_argument("config", type=file, help="Path to YAML config to parse")
+parser.add_argument("config", type=str, help="Path to YAML config to parse")
 parser.add_argument('-r', '--resub', action="store_true", help="Retry if previous attempt failed")
 args = parser.parse_args()
 
@@ -73,11 +73,11 @@ def main():
         f.seek(0)
         f.truncate()
         # Strip model name and total events if they've changed since last use of config, and also blank lines
-        for i in xrange(len(original_str)):
-            if any(x in original_str[i] for x in ['model_name:', 'total_events:', '\n']):
+        for line in original_str:
+            if any(line.startswith(x) for x in ['model_name:', 'total_events:', '\n']):
                 continue
             else:
-                f.write(original_str[i])
+                f.write(line)
         # Write new parameters at the end of the file
         f.write("\nmodel_name: {}\ntotal_events: {}\n".format(model_name, total_events))
 
@@ -139,7 +139,7 @@ def main():
     rel_cards_dir = os.path.relpath(input_cards_dir, os.environ['MG_GENPROD_DIR'])
 
     # Run the gridpack generation
-    call("./runGridpackGeneration.sh {} {}".format(model_name, rel_cards_dir), shell=True)
+    call("{}/runGridpackGeneration.sh {} {}".format(os.path.dirname(os.path.realpath(__file__)), model_name, rel_cards_dir), shell=True)
 
 
 if __name__ == '__main__':
