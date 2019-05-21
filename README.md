@@ -351,6 +351,7 @@ Fork this repository, then clone it somewhere with the genproductions repo as a 
 git clone git@github.com:<your fork>/SemivisibleJets.git
 cd SemivisibleJets
 source setup.sh
+pip install --user -r requirements.txt
 git submodule add -b mg26x git@github.com:eshwen/genproductions.git external/genproductions/
 git submodule init
 git submodule update
@@ -362,7 +363,7 @@ In each new session, you must set up the environment with
 source setup.sh
 ```
 
-then run the gridpack generation according to the parameters in your config file with
+Now you can run the gridpack generation according to the parameters in your config file with
 
 ```bash
 cd gridpack_generation_mg
