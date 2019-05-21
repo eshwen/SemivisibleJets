@@ -5,7 +5,7 @@
 
 if [ -z $1 ]; then
     usr_msg="Usage ./sourceNewPythiaVer.sh WORK_SPACE CMSSW_VER CALL_DIR"
-    $SVJ_TOP_DIR/Utils/print_bash_script_usage.sh "$usr_msg"
+    $SVJ_TOP_DIR/utils/print_bash_script_usage.sh "$usr_msg"
     exit
 fi
 
@@ -29,7 +29,7 @@ if [[ "$PYTHIA8DATA" == "$work_space"* ]]; then
     echo -e "\e[1;35mThe new version of Pythia has already been installed. No need to do it again.\e[0m"
 else
     # For Pythia 8.230
-    cp $SVJ_TOP_DIR/Utils/install_pythia8230.sh .
+    cp $SVJ_TOP_DIR/utils/install_pythia8230.sh .
     ./install_pythia8230.sh
     scram b
     cmsenv

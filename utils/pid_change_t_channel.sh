@@ -2,7 +2,7 @@
 
 if [ -z $1 ]; then
     usr_msg="Usage: ./pid_change_t_channel.sh <path to LHE file>"
-    $SVJ_TOP_DIR/Utils/print_bash_script_usage.sh "$usr_msg"
+    $SVJ_TOP_DIR/utils/print_bash_script_usage.sh "$usr_msg"
     exit
 fi
 

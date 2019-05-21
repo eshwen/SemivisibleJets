@@ -2,7 +2,7 @@
 
 if [ -z $1 ]; then
     usr_msg="Usage ./sourceCMSSW.sh CMSSW_VER ARCH TOP_DIR"
-    $SVJ_TOP_DIR/Utils/print_bash_script_usage.sh "$usr_msg"
+    $SVJ_TOP_DIR/utils/print_bash_script_usage.sh "$usr_msg"
     exit
 fi
 

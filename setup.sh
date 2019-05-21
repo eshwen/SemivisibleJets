@@ -21,7 +21,7 @@ SVJ_build_sys_path(){
 }
 
 SVJ_build_python_path(){
-    local Dirs=( "${SVJ_TOP_DIR}"/{,Utils} )
+    local Dirs=( "${SVJ_TOP_DIR}"/{,utils} )
     Dirs+=( {"$SVJ_cvmfs_PythonDir","$SVJ_cvmfs_PipDir"}/lib/python2.7/site-packages/ )
     SVJ_build_some_path "$PYTHONPATH" "${Dirs[@]}"
 }
@@ -48,5 +48,5 @@ unset SVJ_cvmfs_{PythonDir,PipDir,GCCSetup,RootSetup}
 
 # Display splash page if terminal is wide enough (otherwise it looks shit)
 if (( $COLUMNS >= 159 )); then
-    echo -e "\e[1;36m$(cat Utils/splash_page.txt)\e[0m"
+    echo -e "\e[1;36m$(cat utils/splash_page.txt)\e[0m"
 fi

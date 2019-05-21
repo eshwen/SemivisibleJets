@@ -31,7 +31,7 @@ cd {work_space}
 # Capture output of hadding command in file to check for errors
 temp_file=$(mktemp)
 
-{SVJ_top_dir}/Utils/haddnano.py {work_space}/output/{model}_nanoAOD_final.root {work_space}/output/{model}*NANOAOD*.root 2>&1 | tee $temp_file
+{SVJ_top_dir}/utils/haddnano.py {work_space}/output/{model}_nanoAOD_final.root {work_space}/output/{model}*NANOAOD*.root 2>&1 | tee $temp_file
 
 if [ ! -d {work_space}/output/components ]; then
     mkdir {work_space}/output/components

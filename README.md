@@ -115,7 +115,7 @@ sed -i 's/49001013/4900101/g' <LHE filename>
 sed -i 's/49001014/4900101/g' <LHE filename>	
 ```
 
-For either of these processes, there are scripts in [Utils/](Utils/) to do this:
+For either of these processes, there are scripts in [utils/](utils/) to do this:
 ```bash
 ./pid_change_{s,t}_channel.sh <LHE filename>
 ```
@@ -394,9 +394,9 @@ which should take care of everything. Hadronisation is performed in `PYTHIA 8.23
 $work_space/resubmit_${model_name}.sh
 ```
 
-(note that all jobs must _finish running_ first). When happy, the component output files can be combined using [haddnano.py](Utils/haddnano.py). A script which does that step will be in `$work_space/combineOutput_${model_name}.sh`, which can be run without any arguments.
+(note that all jobs must _finish running_ first). When happy, the component output files can be combined using [haddnano.py](utils/haddnano.py). A script which does that step will be in `$work_space/combineOutput_${model_name}.sh`, which can be run without any arguments.
 
-Some rudimentary plotting, for a quick look at distributions, can be done by running [Utils/plotSVJHistos.py](plotSVJHistos.py). You just need to specify the root files in the list `files`.
+Some rudimentary plotting, for a quick look at distributions, can be done by running [utils/plotSVJHistos.py](plotSVJHistos.py). You just need to specify the root files in the list `files`.
 
 
 ## Miscellaneous <a name="misc"></a>
