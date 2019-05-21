@@ -11,7 +11,7 @@ ebhal.cc
 *.root
 external/pip
 Plots/
-MG_models/DMsimp_SVJ_s_spin1_mZp*
-MG_models/DMsimp_SVJ_t_mPhi*
-input_files_mg/DMsimp_SVJ_s_spin1_mZp*
-input_files_mg/DMsimp_SVJ_t_mPhi*
+madgraph/models/DMsimp_SVJ_s_spin1_mZp*
+madgraph/models/DMsimp_SVJ_t_mPhi*
+madgraph/input_files/DMsimp_SVJ_s_spin1_mZp*
+madgraph/input_files/DMsimp_SVJ_t_mPhi*
