@@ -1,10 +1,10 @@
 #!/usr/bin/env python2
-import argparse
+""" This script can be run either standalone with `python splitLHE.py [args]` or within another script by importing the file and calling the function `splitLHE(args) """
+from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 import re
 import sys
 from progressbar import ProgressBar, Percentage, Bar, ETA
 
-# This script can be run either standalone with `python splitLHE.py [args]` or within another script by importing the file and calling the function `splitLHE(args)`
 
 def splitLHE(inputFile, outFileNameBase, numFiles):
     """
@@ -96,10 +96,10 @@ def splitLHE(inputFile, outFileNameBase, numFiles):
 
 if __name__ == '__main__':
 
-    parser = argparse.ArgumentParser()
-    parser.add_argument("-i", "--inputFile", default = "unweighted_events.lhe", type = str, help = "Input LHE file")
-    parser.add_argument("-o", "--outFileNameBase", default = "outputFile", type = str, help = "Base name for output files")
-    parser.add_argument("-n", "--numFiles", default = 100, type = int, help = "Number of files to split input file in to") 
+    parser = ArgumentParser(description=__doc__, formatter_class=ArgumentDefaultsHelpFormatter)
+    parser.add_argument("-i", "--inputFile", default="unweighted_events.lhe", type=str, help="Input LHE file")
+    parser.add_argument("-o", "--outFileNameBase", default="outputFile", type=str, help="Base name for output files")
+    parser.add_argument("-n", "--numFiles", default=100, type=int, help="Number of files to split input file in to") 
     args = parser.parse_args()
 
     splitLHE(inputFile=args.inputFile, outFileNameBase=args.outFileNameBase, numFiles=args.numFiles)
