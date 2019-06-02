@@ -429,5 +429,6 @@ For questions or issues please contact:
 - Optimise `runLHERetrieval.py`. Changing PDGIDs and splitting LHE file take a while
 - For s-channel, switch to using yaml file in `utils/` for xsec (will need to round Zprime mass to nearest 100 GeV). Figure out values for t-channel
 - Make Condor submission quicker. See if I can submit all jobs in one go rather than one-by-one
+- Rewrite plotting script to do in 2 stages. Run fast-carpenter with a config file of important variables, etc., to make a summary dataframe for each model. Then run fast-plotter with a plotting config to make matplotlib plots
 
 - Whenever I change/update things, remember to update the README as well
