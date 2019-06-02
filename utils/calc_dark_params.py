@@ -16,3 +16,6 @@ def calc_lambda_d(n_c, n_f, alpha_d):
 def calc_b_param(n_c, n_f):
     b_param = (11/3)*n_c - (2/3)*n_f
     return b_param
+
+
+# FNAL Lambda_d^peak = 3.2(m_dark_hadron)^0.8
