@@ -19,3 +19,4 @@ def calc_b_param(n_c, n_f):
 
 
 # FNAL Lambda_d^peak = 3.2(m_dark_hadron)^0.8
+# aDarkLow = 0.5*aDarkPeak, aDarkHigh = 1.5*aDarkPeak
