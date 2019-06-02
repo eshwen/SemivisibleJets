@@ -427,5 +427,6 @@ For questions or issues please contact:
 - See if I still need to do the confinement scale rescaling
 - Add n_c to config file? How would changing value affect things physically/kinematically?
 - Optimise `runLHERetrieval.py`. Changing PDGIDs and splitting LHE file take a while
+- For s-channel, switch to using yaml file in `utils/` for xsec (will need to round Zprime mass to nearest 100 GeV). Figure out values for t-channel
 
 - Whenever I change/update things, remember to update the README as well
