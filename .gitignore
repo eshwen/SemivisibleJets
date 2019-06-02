@@ -1,7 +1,7 @@
 # Specify which files/folders to ignore in commits
 
-*py~
-*pyc
+*.py~
+*.pyc
 *~
 *\#
 ._*
@@ -9,7 +9,6 @@
 CMSSW*
 ebhal.cc
 *.root
-external/pip
 Plots/
 madgraph/models/DMsimp_SVJ_s_spin1_mZp*
 madgraph/models/DMsimp_SVJ_t_mPhi*
