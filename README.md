@@ -428,5 +428,6 @@ For questions or issues please contact:
 - Add n_c to config file? How would changing value affect things physically/kinematically?
 - Optimise `runLHERetrieval.py`. Changing PDGIDs and splitting LHE file take a while
 - For s-channel, switch to using yaml file in `utils/` for xsec (will need to round Zprime mass to nearest 100 GeV). Figure out values for t-channel
+- Make Condor submission quicker. See if I can submit all jobs in one go rather than one-by-one
 
 - Whenever I change/update things, remember to update the README as well
