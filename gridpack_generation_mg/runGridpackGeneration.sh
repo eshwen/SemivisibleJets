@@ -25,16 +25,10 @@ unset CXX
 printf "\e[1;33mSometimes gridpack generation can fail.
 MadGraph is quite temperamental and so can fail when running subprocess for a model.
 When running on batch, disk quotas can also be exceeded.
-If the creation fails at any point, simply remove the directory created in $MG_GENPROD_DIR and retry.\n\e[0m"
+If the creation fails at any point, rerun with the '-r' option.
+The master job will be run locally, and the individual channels will be run on HTCondor.\n\e[0m"
 
 sleep 15
-
-# For running on the grid, but get monitoring as if it's interactive
-#./gridpack_generation.sh $model_name $input_cards_dir 1nd
-
-# For running on the grid with CMSConnect
-n_cores=1
-mem_req="4 Gb"
 
 # Initialise proxy of grid cert to /afs/ so Condor jobs can pick it up
 export X509_USER_PROXY=/afs/cern.ch/user/${USER:0:1}/$USER/x509up_u${UID}
@@ -47,10 +41,7 @@ else
     voms-proxy-init --voms cms --valid ${proxy_length_hr}:00
 fi
 
-echo nohup ./submit_cmsconnect_gridpack_generation.sh $model_name $input_cards_dir $n_cores "$mem_req" > ${model_name}.debug 2>&1 &
-echo "Job submitted. Check on it with \"condor_q $USER\""
-# ^^^ FIX THE JOB SUBMISSION
-
-#exit
+echo "Submitting. Check on jobs with \"condor_q $USER\""
+./submit_condor_gridpack_generation.sh $model_name $input_cards_dir
 
 # IF RUNNING PRIVATE PRODUCTION, I COULD JUST CUT OUT THE ACTUAL GRIDPACK STAGE AND JUST DOWNLOAD A COPY OF MADGRAPH, PLACE THE MODEL DIRECTORY IN THERE AND RUN. BUT WOULD HAVE TO MAKE SURE MY RUN CARD IS USED AND WOULD NEED TO INCLUDE THE "launch" LINE IN THE PROC CARDS
