@@ -1,8 +1,10 @@
+import calc_dark_params as cdp
+from colorama import Fore, init
 import os
 from load_yaml_config import load_yaml_config
 
 
-def write_GS_fragment(config, Lambda_d, GS_dir, m_dark_meson=None):
+def write_GS_fragment(config, GS_dir):
     """
     Write GEN-SIM fragment for job and return its path.
     """
@@ -15,16 +17,32 @@ def write_GS_fragment(config, Lambda_d, GS_dir, m_dark_meson=None):
     n_f = input_params['n_f']
     r_inv = input_params['r_inv']
     x_sec = input_params['x_sec']
+    alpha_d = input_params['alpha_d']
     process_type = input_params['process_type']
 
-    Lambda_d = round(Lambda_d, 2)
+    # Reset text colours after colourful print statements
+    init(autoreset=True)
 
-    # Calculate masses of dark mesons and stable dark matter particles
-    if m_dark_meson is None:
-        m_dark_meson = 2 * m_d
+    # Calculate Lambda_d (confinement scale)
+    n_c = 2
+    m_dark_meson = 2 * m_d
+    if isinstance(alpha_d, str):
+        Lambda_d = cdp.calc_lambda_d_from_str(n_c, n_f, alpha_d, m_dark_meson)
+    else:
+        Lambda_d = cdp.calc_lambda_d(n_c, n_f, alpha_d)
+    Lambda_d = round(Lambda_d, 2)
+    print Fore.MAGENTA + "Confinement scale Lambda_d =", Lambda_d
+
+    # Rescale Lambda_d if too low (should be >= m_d), then recalc alpha_d
+    #if Lambda_d < m_d:
+    #    Lambda_d = 1.1 * m_d
+    #    alpha_d = cdp.calc_alpha_d(n_c, n_f, Lambda_d)
+    #    print Fore.MAGENTA + "Recalculated alpha_d =", alpha_d
+
+    # Calculate mass of stable dark matter particles
     m_dark_stable = m_d - 0.1
 
-    in_file = os.path.join(GS_dir, "{0}_GS_fragment.py".format(model_name))
+    in_file = os.path.join(GS_dir, "{}_GS_fragment.py".format(model_name))
     f = open(in_file, "w")
 
     f.write("""import FWCore.ParameterSet.Config as cms

@@ -6,7 +6,6 @@ try:
     from check_config import thorough_checks
 except ImportError:
     sys.exit('Please source the setup script first.')
-import calc_dark_params as cdp
 from colorama import Fore, init
 from load_yaml_config import load_yaml_config
 import os
@@ -72,27 +71,9 @@ def main():
     n_events = input_params['n_events']
     n_jobs = input_params['n_jobs']
     model_name = input_params['model_name']
-    alpha_d = input_params['alpha_d']
-    m_d = input_params['m_d']
-    n_f = input_params['n_f']
 
     # Check arguments in config file
     thorough_checks(input_params)
-
-    # Calculate Lambda_d (confinement scale)
-    n_c = 2
-    m_dark_meson = 2 * m_d
-    if isinstance(alpha_d, str):
-        Lambda_d = cdp.calc_lambda_d_from_str(n_c, n_f, alpha_d, m_dark_meson)
-    else:
-        Lambda_d = cdp.calc_lambda_d(n_c, n_f, alpha_d)
-    print Fore.MAGENTA + "Confinement scale Lambda_d =", Lambda_d
-
-    # Rescale Lambda_d if too low (should be >= m_d), then recalc alpha_d
-    #if Lambda_d < m_d:
-    #    Lambda_d = 1.1 * m_d
-    #    alpha_d = cdp.calc_alpha_d(n_c, n_f, Lambda_d)
-    #    print Fore.MAGENTA + "Recalculated alpha_d =", alpha_d
 
     # Make a list of split LHE files to run over
     lhe_files = []
@@ -150,7 +131,7 @@ def main():
             os.makedirs(os.path.join(work_space, dir))
 
     # Create the gen fragment
-    gen_frag = os.path.basename(write_GS_fragment(args.config, Lambda_d, gen_frag_dir, m_dark_meson=m_dark_meson))
+    gen_frag = os.path.basename(write_GS_fragment(args.config, gen_frag_dir))
 
     # Create scripts to hadd output files and resubmit failed jobs
     call('python {}/writers/write_combine_script.py -w {} -m {}'.format(submission_dir, work_space, model_name), shell=True)
