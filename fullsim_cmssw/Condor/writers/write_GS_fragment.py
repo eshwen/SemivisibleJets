@@ -2,7 +2,7 @@ import os
 from load_yaml_config import load_yaml_config
 
 
-def write_GS_fragment(config, Lambda_d, GS_dir):
+def write_GS_fragment(config, Lambda_d, GS_dir, m_dark_meson=None):
     """
     Write GEN-SIM fragment for job and return its path.
     """
@@ -20,7 +20,8 @@ def write_GS_fragment(config, Lambda_d, GS_dir):
     Lambda_d = round(Lambda_d, 2)
 
     # Calculate masses of dark mesons and stable dark matter particles
-    m_dark_meson = 2 * m_d
+    if m_dark_meson is None:
+        m_dark_meson = 2 * m_d
     m_dark_stable = m_d - 0.1
 
     in_file = os.path.join(GS_dir, "{0}_GS_fragment.py".format(model_name))
