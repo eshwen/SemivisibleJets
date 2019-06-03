@@ -12,11 +12,10 @@ def splitLHE(inputFile, outFileNameBase, numFiles):
     For numFiles > 1000, the number of open IO files in python will cause the program to exit with an error.
     """
 
-    fin = ""
     try:
         fin = open(inputFile)
     except:
-        print( "Error: Input file: {0} could not be opened, exiting.".format(inputFile) )
+        print "Error: Input file: {} could not be opened, exiting.".format(inputFile)
         sys.exit(1)
 
     print "Opened input file", inputFile
@@ -25,6 +24,8 @@ def splitLHE(inputFile, outFileNameBase, numFiles):
     init = False
     inFooter = False
     footLines = []
+    total_lines = fin.readlines()
+    fin.seek(0)
 
     for line in fin:
         if re.match(r"[^#]*</LesHouchesEvents>",line):
@@ -41,10 +42,6 @@ def splitLHE(inputFile, outFileNameBase, numFiles):
     eventsTotal = eventNum
     print "Total number of events: {0}".format(eventsTotal)
 
-    # Initialise progress bar                                                                                                                                                       
-    widgets = [Percentage(), Bar('>'), ETA()]
-    pbar = ProgressBar(widgets = widgets, maxval = numFiles).start()
-
     files = []
     maxEventsFile = []
 
@@ -58,9 +55,7 @@ def splitLHE(inputFile, outFileNameBase, numFiles):
         tmp = open(splitFileName + "_" + str(i) + ".lhe", 'w')
         files.append(tmp)
         maxEventsFile.append(eventsTotal / numFiles)
-        pbar.update(i + 1)
 
-    pbar.finish()
     maxEventsFile[len(maxEventsFile) - 1] += eventsTotal % numFiles
 
     eventNum = 0
@@ -69,6 +64,10 @@ def splitLHE(inputFile, outFileNameBase, numFiles):
     headLines = []
     iFile = 0
     fin.seek(0)
+
+    # Initialise progress bar
+    widgets = [Percentage(), Bar('>'), ETA()]
+    pbar = ProgressBar(widgets=widgets, maxval=total_lines).start()
 
     for line in fin:
         if init:  
@@ -89,6 +88,9 @@ def splitLHE(inputFile, outFileNameBase, numFiles):
             files[iFile].writelines(headLines)
         else:
             headLines.append(line)
+        pbar.update(i + 1)
+
+    pbar.finish()
 
     for f in files:
         f.close()
