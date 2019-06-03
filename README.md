@@ -1,10 +1,9 @@
 # Table of contents
+
 1. [Introduction](#introduction)
     - [s-channel model](#schannelmodel)
     - [t-channel model](#tchannelmodel)
-2. [Interactive running](#interactiverunning)
-    - [LHE production with `MadGraph` (interactive)](#lhemadgraphinteractive)
-    - [Hadronisation with `PYTHIA` and detector simulation with `Delphes` (interactive)](#pythiadelphesinteractive)
+2. [Running the complete sample production with HTCondor (recommended)](#completesampleproduction)
 3. [Running the CMSSW FullSim chain with gridpacks](#fullsimchaingridpacks)
     - [Generating `MadGraph` gridpacks](#generatinggridpacks)
     - [Running the FullSim CMSSW chain for hadronisation with `PYTHIA` and detector simulation with `GEANT4` (local)](#fullsimchainlocal)
@@ -14,17 +13,21 @@
         4. [AOD (step 2) to miniAOD](#aodstep2tominiaod)
         5. [MiniAOD to nanoAOD](#miniaodtonanoaod)
     - [FullSim chain using CRAB (Work-In-Progress)](#fullsimchaincrab)
-4. [Running the complete sample production with HTCondor (recommended)](#completesampleproduction)
+4. [Interactive running](#interactiverunning)
+    - [LHE production with `MadGraph` (interactive)](#lhemadgraphinteractive)
+    - [Hadronisation with `PYTHIA` and detector simulation with `Delphes` (interactive)](#pythiadelphesinteractive)
 5. [Miscellaneous](#misc)
 6. [Contact](#contact)
 7. [To do](#todo)
+
+
 
 # Introduction <a name="introduction"></a>
 
 [![arXiv](https://img.shields.io/badge/arXiv-1707.05326%20-green.svg)](https://arxiv.org/abs/1707.05326)
 
 This repository contains model files necessary for generation of semi-visible jet Monte Carlo signal events in `MadGraph`. It also includes instructions of how to generate gridpacks for production with these models, and how to run them through the FullSim CMSSW chain to create nanoAOD files for analysis. Please see [1707.05326](https://arxiv.org/abs/1707.05326) and [1503.00009](https://arxiv.org/abs/1503.00009) for
-for further details about the models. Please note that a recent version of `PYTHIA` (> 8.226) including the Hidden Valley module and running of the dark coupling is required when implementing the subsequent dark hadronization.
+for further details about the models. Please note that a recent version of `PYTHIA` (> 8.230) including the Hidden Valley module and running of the dark coupling is required when implementing the subsequent dark hadronization.
 
 UFO files associated with two UV completions are provided (under [madgraph/models/](madgraph/models/)):
 
@@ -47,6 +50,64 @@ is required to ensure a stable cross section for event generation using this mod
 
 A `FeynRules` model file ([DMsimp_tchannel.fr](madgraph/models/DMsimp_SVJ_t/DMsimp_tchannel.fr)) as well as the `Mathematica` notebook ([DMsimp_tchannel.nb](madgraph/models/DMsimp_SVJ_t/DMsimp_tchannel.nb)) used to generated the UFO output 
 are also provided.
+
+
+
+## Running the complete sample production with HTCondor (recommended) <a name="completesampleproduction"></a>
+
+There are scripts included to run the entire sample production using a single config file. You specify the input arguments in a YAML file (see [model_params_demo.yaml](config/model_params_demo.yaml) for descriptions or the other files in that directory for complete examples).
+
+Fork this repository, then clone it somewhere with the genproductions repo as a submodule:
+
+```bash
+git clone git@github.com:<your fork>/SemivisibleJets.git
+cd SemivisibleJets
+source setup.sh
+pip install --user -r requirements.txt
+git submodule add -b mg26x git@github.com:eshwen/genproductions.git external/genproductions/
+git submodule init
+git submodule update
+```
+
+In each new session, you must set up the environment with
+
+```bash
+source setup.sh
+```
+
+Now you can run the gridpack generation according to the parameters in your config file with
+
+```bash
+cd gridpack_generation_mg
+python submitGridpackGeneration.py <path to YAML config>
+```
+
+If the parameters are okay (and there are no bugs in the code), the MadGraph model files and input cards from the template directories I have should be copied into model-specific directories, and the specified parameters will be added. Then, the gridpack will be created in [external/genproductions/bin/MadGraph5_aMCatNLO/](external/genproductions/bin/MadGraph5_aMCatNLO/).
+
+If you plan to run the rest of the sample production via CRAB or by some means that requires a gridpack, you're done! However, if you want to continue here and follow the rest of my steps, great! Now that you have the gridpack, the next stage is to get the LHE file out, apply the PDGID renumbering for the dark particles, and split the LHE file for running the FullSim jobs easily. This is taken care of with
+
+```bash
+cd $SVJ_TOP_DIR/gridpack_to_lhe
+python runLHERetrieval.py <path to YAML config>
+```
+
+The location of the split LHE files will be printed in the terminal, which will be the path specified by the config parameter `lhe_file_path`.
+
+Now, the final step is to run the full CMSSW chain on these split LHE files and get nanoAODs out. The cmsDriver commands are written to emulate 2016 MC with 2017 re-processing. If you would like to change that, edit [fullsim_cmssw/Condor/runFullSim_condor.sh](runFullSim_condor.sh). And if you would like to change some more specific aspects of the model or hadronisation, either edit your config (as some parameters are detailed there) or [fullsim_cmssw/Condor/writers/write_GS_fragment.py](write_GS_fragment.py). The batch system used for running the jobs is HTCondor, configured to run at lxplus (it _may_ run out of the box on other T2/T3 systems, but may need to be modified if specific requirements need to be met). Now, just run
+
+```bash
+cd $SVJ_TOP_DIR/fullsim_cmssw/Condor
+python submitFullSim_condor.py <YAML config>
+```
+
+which should take care of everything. Hadronisation is performed in `PYTHIA 8.230` -- integrated in an unconventional manner as the default architecture that ships with CMSSW_7_1_30 doesn't include that version -- because some LHE files tended to hang with 8.226 (presumably the new module contains patches and bug fixes). The output nanoAOD files will be located in `$work_space/output/`. If some jobs fail, they can be resubmitted by running
+
+```bash
+$work_space/resubmit_${model_name}.sh
+```
+
+(note that all jobs must _finish running_ first). When happy, the component output files can be combined using [haddnano.py](utils/haddnano.py). A script which does that step will be in `$work_space/combineOutput_${model_name}.sh`, which can be run without any arguments.
+
 
 
 ## Interactive running <a name="interactiverunning"></a>
@@ -77,12 +138,12 @@ In the folder created, the run command is `./bin/mg5_aMC`. Copy the model files 
 cp -r ../SemivisibleJets/madgraph/models/DMsimp_* ./models/
 ```
 
-The input cards for the s- and t-channel processes are specified in [MG_input/](MG_input/). In these files, the number of events, output directory, as well as other parameters, can be changed.
+The input cards for the s- and t-channel processes are specified in [madgraph/input_files/](madgraph/input_files/). In these files, the number of events, output directory, as well as other parameters, can be changed.
 
 Run one of the configs with
 
 ```bash
-./bin/mg5_aMC ../SemivisibleJets/MG_input/<file>
+./bin/mg5_aMC ../SemivisibleJets/madgraph/input_files/<file>
 ```
 
 This will create lots of output files in the directory specified by the config. The LHE file will be zipped in `<Output dir>/Events/run_01/`, which you can unzip with
@@ -98,7 +159,7 @@ _N.B._: MadGraph can be a bit erratic and sometimes fail at the "Working on SubP
 
 ### Hadronisation with `PYTHIA` and detector simulation with `Delphes` (interactive) <a name="pythiadelphesinteractive"></a>
 
-As noted above, a recent version of `PYTHIA` (> 8.226) including the Hidden Valley (HV) module and running of the dark coupling is required when implementing the subsequent dark hadronisation.
+As noted above, a recent version of `PYTHIA` (> 8.230) including the Hidden Valley (HV) module and running of the dark coupling is required when implementing the subsequent dark hadronisation.
 
 In order to be able to use the HV module, the PDG IDs of the dark particles must be changed in the LHE files for `PYTHIA` to be able to recognize and shower these properly (see http://home.thep.lu.se/Pythia/pythia82html/HiddenValleyProcesses.html). This can be done as follows:
 
@@ -123,11 +184,12 @@ For either of these processes, there are scripts in [utils/](utils/) to do this:
 Once the PIDs have been changed, it is possible to run `PYTHIA` and `Delphes` concurrently on the LHE file. See the README in https://github.com/eshwen/mc-production/tree/master/run_delphes for the installation commands and how to run everything. On subsequent sessions, you can just `source delphes_pythia8_setup.sh` in that directory to set up the environment.
 
 
+
 ## Running the CMSSW FullSim chain with gridpacks <a name="fullsimchaingridpacks"></a>
 
 ### Generating `MadGraph` gridpacks <a name="generatinggridpacks"></a>
 
-For central production, gridpacks will be needed as external LHE generators don't cooperate with CMSSW. These gridpacks are set up locally, with each channel run as an LSF job.
+For central production, gridpacks will be needed as external LHE generators don't cooperate with CMSSW. These gridpacks are set up with the master job locally, and each channel run as an HTCondor job.
 
 First, clone this repo somewhere with a lot of storage (the gridpacks end up in directories within the repository, and so its size can grow considerably) with
 
@@ -190,9 +252,10 @@ Once completed, the gridpack (in a .tar.xz file) will be located in the current 
 
 ### Running the FullSim CMSSW chain for hadronisation with `PYTHIA` and detector simulation with `GEANT4` (local) <a name="fullsimchainlocal"></a>
 
-The PID change, as noted above, is only necessary when running on interactively-generated LHE files from MadGraph. When generating the gridpacks, I have already included a fix so that once the LHEs are created from the gridpack in CMSSW, the PIDs are changed before hadronisation with Pythia.
+The PID change, as noted [here](#pythiadelphesinteractive), is only necessary when running on interactively-generated LHE files from MadGraph. When generating the gridpacks, I have already included a fix so that once the LHEs are created from the gridpack in CMSSW, the PIDs are changed before hadronisation with Pythia.
 
-Now, to run the full chain, one has to first specify a "GEN fragment", telling CMSSW about the external generator we have used and how to hadronise the particles. The GEN fragment I used can be found in [SVJ_MadGraph_NNPDF30_13TeV_s_spin1_LHE_GS_frag.py](fullsim_cmssw/SVJ_MadGraph_NNPDF30_13TeV_s_spin1_LHE_GS_frag.py). As `MadGraph` was used as the external generator, the `externalLHEProducer` information needs to be included, telling CMSSW where the gridpack is located as well as how many events are in there and the output LHE file (which _should not_ be changed). All the code in the fragment and commands below are specific to emulating 2016 data taking, and `cmsDriver` commands can be changed depending on the context in which you would like to generate samples. Note that you may also have to regenerate the gridpacks with different Parton Distribution Functions to simulate different years. It should be detailed in the quick start guide linked above.
+Now, to run the full chain, one has to first specify a "GEN fragment", telling CMSSW about the external generator we have used and how to hadronise the particles. The GEN fragment I used can be found in [SVJ_MadGraph_NNPDF30_13TeV_s_spin1_LHE_GS_frag.py](fullsim_cmssw/fragments_deprecated/SVJ_MadGraph_NNPDF30_13TeV_s_spin1_LHE_GS_frag.py). As `MadGraph` was used as the external generator, the `externalLHEProducer` information needs to be included, telling CMSSW where the gridpack is located as well as how many events are in there and the output LHE file (which _should not_ be changed). All the code in the fragment and commands below are specific to emulating 2016 data taking, and `cmsDriver` commands can be changed depending on the context in which you would like to generate samples. Note that you may also have to regenerate the gridpacks with different Parton Distribution Functions to simulate different years. It should be detailed in the quick start guide linked above.
+
 
 #### Gridpack to LHE-GEN-SIM <a name="gridpacktolhegensim"></a>
 
@@ -224,6 +287,7 @@ cmsRun SVJ_s_LHE_GEN_SIM.py -n <no. threads>
 
 This should give an output root file, which is needed for the next step.
 
+
 #### GEN-SIM to AOD (step 1) <a name="gensimtoaodstep1"></a>
 
 This requires a different CMSSW version as the GEN-SIM files are being emulated for the 2016 year of data taking.
@@ -252,6 +316,7 @@ and run with
 cmsRun SVJ_s_AOD_step1.py -n 8
 ```
 
+
 #### AOD (step 1) to AOD (step 2) <a name="aodstep1toaodstep2"></a>
 
 This is done with the same CMSSW and in the same environment as the previous step. The config is created with
@@ -279,6 +344,7 @@ and run with
 ```bash
 cmsRun SVJ_s_MINIAOD.py
 ```
+
 
 #### miniAOD to nanoAOD <a name="miniaodtonanoaod"></a>
 
@@ -341,63 +407,6 @@ For the other steps in the FullSim chain, the procedure is the same as described
 _FINISH_
 
 
-## Running the complete sample production with HTCondor (recommended) <a name="completesampleproduction"></a>
-
-There are scripts included to run the entire sample production using a single config file. You specify the input arguments in a YAML file (see [model_params_demo.yaml](config/model_params_demo.yaml) for descriptions or the other files in that directory for complete examples).
-
-Fork this repository, then clone it somewhere with the genproductions repo as a submodule:
-
-```bash
-git clone git@github.com:<your fork>/SemivisibleJets.git
-cd SemivisibleJets
-source setup.sh
-pip install --user -r requirements.txt
-git submodule add -b mg26x git@github.com:eshwen/genproductions.git external/genproductions/
-git submodule init
-git submodule update
-```
-
-In each new session, you must set up the environment with
-
-```bash
-source setup.sh
-```
-
-Now you can run the gridpack generation according to the parameters in your config file with
-
-```bash
-cd gridpack_generation_mg
-python submitGridpackGeneration.py <path to YAML config>
-```
-
-If the parameters are okay (and there are no bugs in the code), the MadGraph model files and input cards from the template directories I have should be copied into model-specific directories, and the specified parameters will be added. Then, the gridpack will be created in [external/genproductions/bin/MadGraph5_aMCatNLO/](external/genproductions/bin/MadGraph5_aMCatNLO/).
-
-If you plan to run the rest of the sample production via CRAB or by some means that requires a gridpack, you're done! However, if you want to continue here and follow the rest of my steps, great! Now that you have the gridpack, the next stage is to get the LHE file out, apply the PDGID renumbering for the dark particles, and split the LHE file for running the FullSim jobs easily. This is taken care of with
-
-```bash
-cd $SVJ_TOP_DIR/gridpack_to_lhe
-python runLHERetrieval.py <path to YAML config>
-```
-
-The location of the split LHE files will be printed in the terminal, which will be the path specified by the config parameter `lhe_file_path`.
-
-Now, the final step is to run the full CMSSW chain on these split LHE files and get nanoAODs out. The cmsDriver commands are written to emulate 2016 MC with 2017 re-processing. If you would like to change that, edit [fullsim_cmssw/Condor/runFullSim_condor.sh](runFullSim_condor.sh). And if you would like to change some more specific aspects of the model or hadronisation, either edit your config (as some parameters are detailed there) or [fullsim_cmssw/Condor/writers/write_GS_fragment.py](write_GS_fragment.py). The batch system used for running the jobs is HTCondor, configured to run at lxplus (it _may_ run out of the box on other T2/T3 systems, but may need to be modified if specific requirements need to be met). Now, just run
-
-```bash
-cd $SVJ_TOP_DIR/fullsim_cmssw/Condor
-python submitFullSim_condor.py <YAML config>
-```
-
-which should take care of everything. Hadronisation is performed in `PYTHIA 8.230` -- integrated in an unconventional manner as the default architecture that ships with CMSSW_7_1_30 doesn't include that version -- because some LHE files tended to hang with 8.226 (presumably the new module contains patches and bug fixes). The output nanoAOD files will be located in `$work_space/output/`. If some jobs fail, they can be resubmitted by running
-
-```bash
-$work_space/resubmit_${model_name}.sh
-```
-
-(note that all jobs must _finish running_ first). When happy, the component output files can be combined using [haddnano.py](utils/haddnano.py). A script which does that step will be in `$work_space/combineOutput_${model_name}.sh`, which can be run without any arguments.
-
-Some rudimentary plotting, for a quick look at distributions, can be done by running [utils/plotSVJHistos.py](plotSVJHistos.py). You just need to specify the root files in the list `files`.
-
 
 ## Miscellaneous <a name="misc"></a>
 
@@ -406,6 +415,9 @@ To upgrade the installed pip packages, run
 ```bash
 pip install --user --upgrade -r requirements.txt
 ```
+
+Some rudimentary plotting, for a quick look at distributions, can be done by running [utils/plotSVJHistos.py](plotSVJHistos.py). You just need to specify the root files in the list `files`.
+
 
 
 ## Contact <a name="contact"></a>
@@ -417,10 +429,11 @@ For questions or issues please contact:
 -  Eshwen Bhal (for implementation, not theory); eshwen.bhal@cern.ch
 
 
+
 ## To do <a name="todo"></a>
 
 - When running FullSim Condor step, consider copying `runFullSimCondor.sh` to `work_space` with some sort of identifier (date+time stamp?), so that running is more self contained (i.e., if I ran some jobs, edited that script, then wanted to resubmit). Then make sure the correct `runFullSim` script is called when submitting/resubmitting.
-- Add alpha_d/Lambda_d to `model_name`. Also allow specifying "peak", "high" and "low" in accordance to FNAL instead of specifying number
+- Add alpha_d to `model_name`
 - Change gen fragment such that the dark meson can decay into more than just d quarks. Would need to figure out how to distribute remaining branching fraction (1-r_inv) amongst the decays.
 - Change gen fragment such that there's hadronisation to two dark mesons (so n_f = 2 physical makes sense), with one species decaying invisibly and one to SM quarks. But would need to figure out how to implement r_inv such that the proportion of invisibly decaying dark mesons = r_inv.
 - Consider changing dark quarks to spin-1/2 in MadGraph model files (would have to change `spin` attribute in particles.py to '2'). Find out if that will affect decays or anything. Would also need to consider the spin of the dark hadron (see HV documentation in Pythia for PDGIDs).
