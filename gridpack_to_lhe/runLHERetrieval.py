@@ -33,6 +33,7 @@ def main():
     total_events = input_params['total_events']
     n_jobs = input_params['n_jobs']
     out_split_lhe = input_params['lhe_file_path']
+    process_type = input_params['process_type']
 
     # Check arguments in config file
     basic_checks(input_params)
@@ -75,13 +76,15 @@ def main():
     # Run the script produced with the gridpack to get the LHE file out and copy to gridpacks dir
     random_seed = random.randint(0, 1000000)
     call("cd {}; ./runcmsgrid.sh {} {}".format(lhe_gen_dir, total_events, random_seed), shell=True)
-
     out_lhe = os.path.join(gridpack_outdir, model_name+'_LHE.lhe')
     shutil.copyfile(os.path.join(lhe_gen_dir, 'cmsgrid_final.lhe'), out_lhe)
 
     # Delete untarred gridpack as it takes up unnecessary space
     shutil.rmtree(default_gridpack_dir)
     print Fore.MAGENTA + "Removed untarred version of gridpack!"
+
+    # Change PDGIDs for dark particles in preparation for hadronisation
+    call('{}/utils/pid_change_{}.sh {}'.format(os.environ['SVJ_TOP_DIR'], process_type.replace('-', '_'), out_lhe), shell=True)
 
     # Split the LHE file, the output files being stored in the current directory
     print Fore.CYAN + "Splitting LHE file..."
