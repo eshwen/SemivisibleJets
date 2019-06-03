@@ -440,7 +440,9 @@ For questions or issues please contact:
 - Optimise `runLHERetrieval.py`. Changing PDGIDs and splitting LHE file take a while
 - For s-channel, switch to using yaml file in `utils/` for xsec (will need to round Zprime mass to nearest 100 GeV). Figure out values for t-channel
 - Make Condor submission quicker. See if I can submit all jobs in one go rather than one-by-one
-- Rewrite plotting script to do in 2 stages. Run fast-carpenter with a config file of important variables, etc., to make a summary dataframe for each model. Then run fast-plotter with a plotting config to make matplotlib plots
+- Rewrite plotting script to do in 2 stages. Run fast-carpenter with a config file of important variables, etc., to make a summary dataframe for each model. Then run fast-plotter with a plotting config to make matplotlib plots. Move everything to a new directory: `$SVJ_TOP_DIR/plotting/`
 - Replace my `m_d` with `m_dq` so as not to confuse with FNAL's m_d = m_dark_hadron
+- Add support for running 2017 and 2018 production. Would need to make sure the right MadGraph version(s), PDF, CMSSW versions, Pythia version(s), and `cmsRun` options are used. For user, could just add a new option in config file (like `year: 2017`). For myself, would need to structure code and directories so everything is laid out well. Might also need to append year to `model_name`.
+- For s-channel, use yaml cross section dictionary instead of MadGraph one. Could potentially store MadGraph xs in config file, just for info, calling it `xsec_mg` or something
 
 - Whenever I change/update things, remember to update the README as well
