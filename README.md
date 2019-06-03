@@ -410,13 +410,11 @@ _FINISH_
 
 ## Miscellaneous <a name="misc"></a>
 
-To upgrade the installed pip packages, run
-
+- To upgrade the installed pip packages, run
 ```bash
 pip install --user --upgrade -r requirements.txt
 ```
-
-Some rudimentary plotting, for a quick look at distributions, can be done by running [utils/plotSVJHistos.py](plotSVJHistos.py). You just need to specify the root files in the list `files`.
+- Some rudimentary plotting, for a quick look at distributions, can be done by running [utils/plotSVJHistos.py](plotSVJHistos.py). You just need to specify the root files in the list `files`.
 
 
 
