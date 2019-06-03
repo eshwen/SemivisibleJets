@@ -90,9 +90,8 @@ def main():
         shutil.copytree(default_model_dir, new_model_dir)
         # Read the parameters file (containing the dark particle masses) in the new model directory
         with open(os.path.join(new_model_dir, 'parameters.py'), 'r+') as f:
-            f = open(os.path.join(new_model_dir, 'parameters.py'), 'r+')
             old_params = Template(f.read())
-            # Fill replacement fields with those chosen by user
+            # Fill placeholders with values chosen by user
             new_params = old_params.substitute(dark_quark_mass=str(m_d), mediator_mass=str(m_med))
             f.seek(0)
             f.truncate()
@@ -101,7 +100,6 @@ def main():
 
     # Write param_card text file
     call('python {}'.format(os.path.join(new_model_dir, 'write_param_card.py')), shell=True)
-    shutil.move('param_card.dat', os.path.join(new_model_dir, 'param_card.dat'))
 
     input_cards_dir = os.path.join(os.environ['SVJ_MG_INPUT_DIR'], model_name+"_input")
     # Create directory to store input cards and model files for MadGraph
