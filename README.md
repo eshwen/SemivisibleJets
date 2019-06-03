@@ -430,6 +430,7 @@ For questions or issues please contact:
 
 ## To do <a name="todo"></a>
 
+- Fix bug in FullSim Condor step, where CMSSW_7_1_30 (maybe other ones as well, but I haven't checked) won't compile on SLC7 machines due to architecture. See http://cms-sw.github.io/singularity.html. Try to make it a non-issue for end user (i.e., make it work easily with both SLC6 an SLC7 so they don't have to think about what machine they need to use)
 - When running FullSim Condor step, consider copying `runFullSimCondor.sh` to `work_space` with some sort of identifier (date+time stamp?), so that running is more self contained (i.e., if I ran some jobs, edited that script, then wanted to resubmit). Then make sure the correct `runFullSim` script is called when submitting/resubmitting.
 - Add alpha_d to `model_name`
 - Change gen fragment such that the dark meson can decay into more than just d quarks. Would need to figure out how to distribute remaining branching fraction (1-r_inv) amongst the decays.
