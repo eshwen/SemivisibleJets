@@ -18,5 +18,20 @@ def calc_b_param(n_c, n_f):
     return b_param
 
 
-# FNAL Lambda_d^peak = 3.2(m_dark_hadron)^0.8
-# aDarkLow = 0.5*aDarkPeak, aDarkHigh = 1.5*aDarkPeak
+def calc_lambda_d_from_str(n_c, n_f, alpha_d, m_dh):
+    if not isinstance(alpha_d, str):
+        raise TypeError("alpha_d must be a string")
+    elif not any(alpha_d == x for x in ['peak', 'low', 'high']):
+        raise ValueError("alpha_d must equal 'peak', 'low', or 'high'")
+    else:
+        Lambda_d_peak = 3.2 * math.pow(m_dh, 0.8)
+        if alpha_d == "peak":
+            Lambda_d = Lambda_d_peak
+        else:
+            alpha_d_peak = calc_alpha_d(n_c, n_f, Lambda_d_peak)
+            if alpha_d == "low":
+                a_d = 0.5 * alpha_d_peak
+            elif alpha_d == "high":
+                a_d = 1.5 * alpha_d_peak
+            Lambda_d = calc_lambda_d(n_c, n_f, a_d)
+        return Lambda_d
