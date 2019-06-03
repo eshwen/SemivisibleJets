@@ -14,7 +14,7 @@ n_events: 100
 # Number of jobs to run (FullSim)
 n_jobs: 500
 
-# Running dark coupling at 1 TeV
+# Running dark coupling at 1 TeV. A numerical value can be specified, as well the strings 'low', 'peak' and 'high'
 alpha_d: 0.23
 
 # Process type (s-channel or t-channel)
