@@ -420,7 +420,7 @@ For questions or issues please contact:
 ## To do <a name="todo"></a>
 
 - When running FullSim Condor step, consider copying `runFullSimCondor.sh` to `work_space` with some sort of identifier (date+time stamp?), so that running is more self contained (i.e., if I ran some jobs, edited that script, then wanted to resubmit). Then make sure the correct `runFullSim` script is called when submitting/resubmitting.
-- Add alpha_d/Lambda_d to `model_name`
+- Add alpha_d/Lambda_d to `model_name`. Also allow specifying "peak", "high" and "low" in accordance to FNAL instead of specifying number
 - Change gen fragment such that the dark meson can decay into more than just d quarks. Would need to figure out how to distribute remaining branching fraction (1-r_inv) amongst the decays.
 - Change gen fragment such that there's hadronisation to two dark mesons (so n_f = 2 physical makes sense), with one species decaying invisibly and one to SM quarks. But would need to figure out how to implement r_inv such that the proportion of invisibly decaying dark mesons = r_inv.
 - Consider changing dark quarks to spin-1/2 in MadGraph model files (would have to change `spin` attribute in particles.py to '2'). Find out if that will affect decays or anything. Would also need to consider the spin of the dark hadron (see HV documentation in Pythia for PDGIDs).
@@ -430,5 +430,6 @@ For questions or issues please contact:
 - For s-channel, switch to using yaml file in `utils/` for xsec (will need to round Zprime mass to nearest 100 GeV). Figure out values for t-channel
 - Make Condor submission quicker. See if I can submit all jobs in one go rather than one-by-one
 - Rewrite plotting script to do in 2 stages. Run fast-carpenter with a config file of important variables, etc., to make a summary dataframe for each model. Then run fast-plotter with a plotting config to make matplotlib plots
+- Replace my `m_d` with `m_dq` so as not to confuse with FNAL's m_d = m_dark_hadron
 
 - Whenever I change/update things, remember to update the README as well
