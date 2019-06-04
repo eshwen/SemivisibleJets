@@ -3,20 +3,21 @@ import pprint
 import yaml
 
 
-def load_yaml_config(config_file):
+def load_yaml_config(config_file, quiet=False):
     """
     Parse YAML config file and load into a dictionary.
     """
     # Resets colour env. so config dict can be coloured
     deinit()
 
-    print "Using config file", config_file
-    configDict = yaml.full_load(open(config_file, 'r'))
+    config_dict = yaml.full_load(open(config_file, 'r'))
 
-    print Style.RESET_ALL, Fore.CYAN + "The arguments you have set are the following:\n", pprint.pprint(configDict)
+    if not quiet:
+        print "Using config file", config_file
+        print Style.RESET_ALL, Fore.CYAN + "The arguments you have set are the following:\n", pprint.pprint(config_dict)
 
     # Reset colourful after print statement
     init(autoreset=True)
     print Style.RESET_ALL
 
-    return configDict
+    return config_dict
