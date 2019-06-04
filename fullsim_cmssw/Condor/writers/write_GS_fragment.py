@@ -2,6 +2,7 @@ import calc_dark_params as cdp
 from colorama import Fore, init
 import os
 from load_yaml_config import load_yaml_config
+from xsec_from_dict import xsec_from_dict
 
 
 def write_GS_fragment(config, GS_dir):
@@ -16,7 +17,7 @@ def write_GS_fragment(config, GS_dir):
     m_d = input_params['m_d']
     n_f = input_params['n_f']
     r_inv = input_params['r_inv']
-    x_sec = input_params['x_sec']
+    x_sec_mg = input_params['x_sec_mg']
     alpha_d = input_params['alpha_d']
     process_type = input_params['process_type']
 
@@ -41,6 +42,11 @@ def write_GS_fragment(config, GS_dir):
 
     # Calculate mass of stable dark matter particles
     m_dark_stable = m_d - 0.1
+
+    if process_type == 's-channel':
+        x_sec = xsec_from_dict(os.path.join(os.environ['SVJ_TOP_DIR'], 'utils/xsecs_{}.yaml'.format(process_type)), m_med)
+    else:
+        x_sec = x_sec_mg
 
     in_file = os.path.join(GS_dir, "{}_GS_fragment.py".format(model_name))
     f = open(in_file, "w")
