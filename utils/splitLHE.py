@@ -3,7 +3,6 @@
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 import re
 import sys
-from progressbar import ProgressBar, Percentage, Bar, ETA
 
 
 def splitLHE(inputFile, outFileNameBase, numFiles):
@@ -24,8 +23,6 @@ def splitLHE(inputFile, outFileNameBase, numFiles):
     init = False
     inFooter = False
     footLines = []
-    total_lines = fin.readlines()
-    fin.seek(0)
 
     for line in fin:
         if re.match(r"[^#]*</LesHouchesEvents>",line):
@@ -65,10 +62,6 @@ def splitLHE(inputFile, outFileNameBase, numFiles):
     iFile = 0
     fin.seek(0)
 
-    # Initialise progress bar
-    widgets = [Percentage(), Bar('>'), ETA()]
-    pbar = ProgressBar(widgets=widgets, maxval=total_lines).start()
-
     for line in fin:
         if init:  
             files[iFile].write(line)
@@ -88,9 +81,6 @@ def splitLHE(inputFile, outFileNameBase, numFiles):
             files[iFile].writelines(headLines)
         else:
             headLines.append(line)
-        pbar.update(i + 1)
-
-    pbar.finish()
 
     for f in files:
         f.close()
@@ -99,7 +89,7 @@ def splitLHE(inputFile, outFileNameBase, numFiles):
 if __name__ == '__main__':
 
     parser = ArgumentParser(description=__doc__, formatter_class=ArgumentDefaultsHelpFormatter)
-    parser.add_argument("-i", "--inputFile", default="unweighted_events.lhe", type=str, help="Input LHE file")
+    parser.add_argument("inputFile", type=str, help="Input LHE file")
     parser.add_argument("-o", "--outFileNameBase", default="outputFile", type=str, help="Base name for output files")
     parser.add_argument("-n", "--numFiles", default=100, type=int, help="Number of files to split input file in to") 
     args = parser.parse_args()
