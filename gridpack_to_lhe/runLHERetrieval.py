@@ -61,11 +61,11 @@ def main():
             f.seek(0)
             f.truncate()
             for i in xrange(len(config_lines)):
-                if 'x_sec' in config_lines[i]:
+                if 'x_sec_mg' in config_lines[i]:
                     continue
                 else:
                     f.write(config_lines[i])
-            f.write("x_sec: {0}\n".format(x_sec))
+            f.write("x_sec_mg: {}\n".format(x_sec_mg))
 
     # Copy gridpack tarball to new directory
     for tarball in glob.glob(os.path.join(genprod_dir, model_name+'*.xz')):
@@ -98,8 +98,6 @@ def main():
         shutil.copy(split_file, out_split_lhe)
         os.remove(split_file)
     print Fore.MAGENTA + "Split LHE files copied to", Fore.MAGENTA + out_split_lhe
-
-    print "In case you forgot, your config file is", os.path.abspath(args.config)
 
 
 if __name__ == '__main__':
