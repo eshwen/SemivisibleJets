@@ -273,6 +273,8 @@ scram b
 cmsenv
 ```
 
+** Update this to use Pythia 8.230 **
+
 and then the `cmsDriver` command is
 
 ```bash
@@ -307,7 +309,7 @@ voms-proxy-init --voms cms --valid 168:00 # for querying PU dataset
 From this point, the only input needed by `cmsDriver` is the output root file from the previous step. For the first AOD step, pileup mixing is performed and is required for accurate replication of the conditions for the year of data taking being emulated. However, querying the entire dataset below is unfeasible (as it's 500 TB and 125k files large), so I only specified a text file containing some of the root files. In practice, this, or a smaller dataset are usually fine. One thing to note is, past this point, if your files contain very few events (< 10), specifying a specific number of threads in `cmsRun` can cause failures so it's usually best to leave that option blank. The config for this stage can be made with
 
 ```bash
-cmsDriver.py step1 --filein file:SVJ_s_LHE_GEN_SIM.root --fileout file:SVJ_s_AOD_step1.root --pileup_input filelist:/afs/cern.ch/user/e/ebhal/Semi-visible_jets/SemivisibleJets/pileup_filelist.txt --mc --eventcontent PREMIXRAW --datatier GEN-SIM-RAW --conditions 80X_mcRun2_asymptotic_2016_TrancheIV_v6 --step DIGIPREMIX_S2,DATAMIX,L1,DIGI2RAW,HLT:@frozen2016 --datamix PreMix --era Run2_2016 --python_filename SVJ_s_AOD_step1.py --no_exec --customise Configuration/DataProcessing/Utils.addMonitoring -n 250
+cmsDriver.py step1 --filein file:SVJ_s_LHE_GEN_SIM.root --fileout file:SVJ_s_AOD_step1.root --pileup_input filelist:/afs/cern.ch/user/e/ebhal/Semi-visible_jets/SemivisibleJets/pileup_filelist_2016.txt --mc --eventcontent PREMIXRAW --datatier GEN-SIM-RAW --conditions 80X_mcRun2_asymptotic_2016_TrancheIV_v6 --step DIGIPREMIX_S2,DATAMIX,L1,DIGI2RAW,HLT:@frozen2016 --datamix PreMix --era Run2_2016 --python_filename SVJ_s_AOD_step1.py --no_exec --customise Configuration/DataProcessing/Utils.addMonitoring -n 250
 ```
 
 and run with
@@ -439,11 +441,10 @@ For questions or issues please contact:
 - See if I still need to do the confinement scale rescaling
 - Add n_c to config file? How would changing value affect things physically/kinematically?
 - Optimise `runLHERetrieval.py`. Changing PDGIDs and splitting LHE file take a while
-- For s-channel, switch to using yaml file in `utils/` for xsec (will need to round Zprime mass to nearest 100 GeV). Figure out values for t-channel
+- Figure out correct xsec values for t-channel as has been done for s-channel. Update scripts accordingly
 - Make Condor submission quicker. See if I can submit all jobs in one go rather than one-by-one
 - Rewrite plotting script to do in 2 stages. Run fast-carpenter with a config file of important variables, etc., to make a summary dataframe for each model. Then run fast-plotter with a plotting config to make matplotlib plots. Move everything to a new directory: `$SVJ_TOP_DIR/plotting/`
 - Replace my `m_d` with `m_dq` so as not to confuse with FNAL's m_d = m_dark_hadron
 - Add support for running 2017 and 2018 production. Would need to make sure the right MadGraph version(s), PDF, CMSSW versions, Pythia version(s), and `cmsRun` options are used. For user, could just add a new option in config file (like `year: 2017`). For myself, would need to structure code and directories so everything is laid out well. Might also need to append year to `model_name`.
-- For s-channel, use yaml cross section dictionary instead of MadGraph one. Could potentially store MadGraph xs in config file, just for info, calling it `xsec_mg` or something
 
 - Whenever I change/update things, remember to update the README as well
