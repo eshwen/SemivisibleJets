@@ -41,7 +41,7 @@ else
     voms-proxy-init --voms cms --valid ${proxy_length_hr}:00
 fi
 
-echo "Submitting. Check on jobs with \"condor_q $USER\""
+printf "Submitting. Check on jobs with \e[1mcondor_q $USER\n\e[0m"
 ./submit_condor_gridpack_generation.sh $model_name $input_cards_dir
 
 # IF RUNNING PRIVATE PRODUCTION, I COULD JUST CUT OUT THE ACTUAL GRIDPACK STAGE AND JUST DOWNLOAD A COPY OF MADGRAPH, PLACE THE MODEL DIRECTORY IN THERE AND RUN. BUT WOULD HAVE TO MAKE SURE MY RUN CARD IS USED AND WOULD NEED TO INCLUDE THE "launch" LINE IN THE PROC CARDS
