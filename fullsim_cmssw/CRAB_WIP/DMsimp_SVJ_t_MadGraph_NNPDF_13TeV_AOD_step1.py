@@ -2,7 +2,7 @@
 # using: 
 # Revision: 1.19 
 # Source: /local/reps/CMSSW/CMSSW/Configuration/Applications/python/ConfigBuilder.py,v 
-# with command line options: step1 --filein file:DMsimp_SVJ_t_MadGraph_NNPDF30_13TeV_GS.root --fileout file:DMsimp_SVJ_t_MadGraph_NNPDF30_13TeV_AOD_step1.root --pileup_input /afs/cern.ch/user/e/ebhal/Semi-visible_jets/SVJ_production/global/pileup_filelist.txt --mc --eventcontent PREMIXRAW --datatier GEN-SIM-RAW --conditions 80X_mcRun2_asymptotic_2016_TrancheIV_v6 --step DIGIPREMIX_S2,DATAMIX,L1,DIGI2RAW,HLT:@frozen2016 --datamix PreMix --era Run2_2016 --python_filename DMsimp_SVJ_t_MadGraph_NNPDF_13TeV_AOD_step1.py --no_exec --customise Configuration/DataProcessing/Utils.addMonitoring -n 50000
+# with command line options: step1 --filein file:DMsimp_SVJ_t_MadGraph_NNPDF30_13TeV_GS.root --fileout file:DMsimp_SVJ_t_MadGraph_NNPDF30_13TeV_AOD_step1.root --pileup_input /afs/cern.ch/user/e/ebhal/Semi-visible_jets/SVJ_production/global/pileup_filelist_2016.txt --mc --eventcontent PREMIXRAW --datatier GEN-SIM-RAW --conditions 80X_mcRun2_asymptotic_2016_TrancheIV_v6 --step DIGIPREMIX_S2,DATAMIX,L1,DIGI2RAW,HLT:@frozen2016 --datamix PreMix --era Run2_2016 --python_filename DMsimp_SVJ_t_MadGraph_NNPDF_13TeV_AOD_step1.py --no_exec --customise Configuration/DataProcessing/Utils.addMonitoring -n 50000
 import FWCore.ParameterSet.Config as cms
 
 from Configuration.StandardSequences.Eras import eras
@@ -64,7 +64,7 @@ process.PREMIXRAWoutput = cms.OutputModule("PoolOutputModule",
 
 # Other statements
 process.mix.digitizers = cms.PSet(process.theDigitizersMixPreMix)
-process.mixData.input.fileNames = cms.untracked.vstring(['/afs/cern.ch/user/e/ebhal/Semi-visible_jets/SVJ_production/global/pileup_filelist.txt'])
+process.mixData.input.fileNames = cms.untracked.vstring(['/afs/cern.ch/user/e/ebhal/Semi-visible_jets/SVJ_production/global/pileup_filelist_2016.txt'])
 from Configuration.AlCa.GlobalTag import GlobalTag
 process.GlobalTag = GlobalTag(process.GlobalTag, '80X_mcRun2_asymptotic_2016_TrancheIV_v6', '')
 
