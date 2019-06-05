@@ -1,7 +1,6 @@
 #!/bin/bash
 
-# This script allows a new version of Pythia not present in the architecutre for a given CMSSW version
-# to be downloaded and linked to CMSSW.
+# This script allows a new version of Pythia not present in the architecutre for a given CMSSW version to be downloaded and linked to CMSSW.
 
 if [ -z $1 ]; then
     usr_msg="Usage ./sourceNewPythiaVer.sh WORK_SPACE CMSSW_VER CALL_DIR"
@@ -25,7 +24,7 @@ source /cvmfs/cms.cern.ch/cmsset_default.sh
 cd $work_space/$cmssw_ver
 cmsenv
 
-if [[ "$PYTHIA8DATA" == "$work_space"* ]]; then
+if [[ "$PYTHIA8DATA" == "${work_space}/${cmssw_ver}/"* ]]; then
     echo -e "\e[1;35mThe new version of Pythia has already been installed. No need to do it again.\e[0m"
 else
     # For Pythia 8.230
