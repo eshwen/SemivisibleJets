@@ -20,26 +20,24 @@ parser.add_argument("config", type=str, help="Path to YAML config to parse")
 args = parser.parse_args()
 
 
-def write_submission_script(work_space, gen_frag, lhe_file, model, n_events, seed, submission_dir, queue=1):
+def write_submission_script(work_space, gen_frag, lhe_base, model, n_events, submission_dir, queue=1, seed=None):
     """
     Write the HTCondor submission script for sample generation.
     """
     disk = 50000 * n_events  # kB
     runtime = 288 * n_events  # seconds
-    if 'soolin' in os.environ['HOSTNAME'] or 'root://' in lhe_file:
+    if 'soolin' in os.environ['HOSTNAME'] or lhe_base.startswith('root://'):
         grid_proxy = "use_x509userproxy = true"
     else:
         grid_proxy = ""
 
-    job_path = os.path.join(work_space, 'submission_scripts', model, 'condor_submission_{}.job'.format(seed))
-    job_file = open(job_path, 'w')
-    job_file.write("""# HTCondor submission script
+    body = """# HTCondor submission script
 Universe   = vanilla
 cmd        = {submission_dir}/runFullSim_condor.sh
-args       = {work_space} {gen_fragment} {lhe_file} {model} {n_events:.0f} {seed:.0f}
-Log        = {work_space}/logs/{model}/condor_job_{seed}.log
-Output     = {work_space}/logs/{model}/condor_job_{seed}.out
-Error      = {work_space}/logs/{model}/condor_job_{seed}.error
+args       = {work_space} {gen_frag} {lhe_base}_$(Process).lhe {model} {n_events:.0f} $(Process)
+Log        = {work_space}/logs/{model}/condor_job_$(Process).log
+Output     = {work_space}/logs/{model}/condor_job_$(Process).out
+Error      = {work_space}/logs/{model}/condor_job_$(Process).error
 getenv     = True
 should_transfer_files   = YES
 when_to_transfer_output = ON_EXIT_OR_EVICT
@@ -53,14 +51,21 @@ request_memory = 5000
 +MaxRuntime = {runtime}
 # Number of instances of job to run
 queue {queue}
-""".format(submission_dir=submission_dir, work_space=work_space, gen_fragment=gen_frag,
-           lhe_file=lhe_file, model=model, n_events=n_events, seed=seed, disk=disk,
+""".format(submission_dir=submission_dir, work_space=work_space, gen_frag=gen_frag,
+           lhe_base=lhe_base, model=model, n_events=n_events, disk=disk,
            runtime=runtime, grid_proxy=grid_proxy, queue=queue)
-    )
-    job_file.close()
 
-    call('chmod +x {0}'.format(job_path), shell=True)
-    return job_path
+    job_file = os.path.join(work_space, 'submission_scripts', model, 'condor_submission_all.job')
+    # Edit submission script file name and body if writing individual files
+    if seed is not None:
+        job_file = job_file.replace('all.job', '{}.job'.format(seed))
+        body = body.replace('$(Process)', str(seed))
+
+    with open(job_file, 'w') as f:
+        f.write(body)
+
+    call('chmod +x {}'.format(job_file), shell=True)
+    return job_file
 
 
 def main():
@@ -78,10 +83,10 @@ def main():
     # Check arguments in config file
     thorough_checks(input_params)
 
-    # Make a list of split LHE files to run over
+    # Make a list of split LHE files for checks
     lhe_files = []
     for file in os.listdir(lhe_file_path):
-        if '{}_split'.format(model_name) in file:
+        if '{}_split'.format(model_name) in file and file.endswith('.lhe'):
             lhe_files.append(os.path.join(lhe_file_path, file))
 
     if n_jobs > len(lhe_files):
@@ -140,14 +145,18 @@ def main():
     call('python {}/writers/write_combine_script.py -w {} -m {}'.format(submission_dir, work_space, model_name), shell=True)
     call('python {}/writers/write_resubmitter_script.py -w {} -m {} -n {}'.format(submission_dir, work_space, model_name, n_jobs), shell=True)
 
-    # Write Condor submission file for each job and execute
+    lhe_base = os.path.join(lhe_file_path, '{}_split'.format(model_name))
+    sub_args = (work_space, gen_frag, lhe_base, model_name, n_events, submission_dir)
+    # Write a single job file to submit everything at once
+    job_main = write_submission_script(*sub_args, queue=n_jobs)
+    call('condor_submit -batch-name {} {}'.format(model_name, job_main), shell=True)
+    print Fore.MAGENTA + "Jobs submitted. Monitor them with 'condor_q $USER'"
+
+    print Fore.CYAN + "Writing individual job files to make resubmitting failed jobs easier..."
     for seed in xrange(n_jobs):
-        job_lhe = lhe_files[seed]
-        sub_args = (work_space, gen_frag, job_lhe, model_name, n_events, seed, submission_dir)
-        job_path = write_submission_script(*sub_args)  # Consider **kwargs instead
-        print Fore.CYAN + "Submitting job {}/{}...".format(seed+1, n_jobs)
-        call('condor_submit -batch-name {} {}'.format(model_name, job_path), shell=True)
+        job_path = write_submission_script(*sub_args, seed=seed)  # Consider **kwargs instead
 
 
 if __name__ == '__main__':
     main()
+    sys.exit("Done")
