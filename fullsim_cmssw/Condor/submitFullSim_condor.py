@@ -20,12 +20,16 @@ parser.add_argument("config", type=str, help="Path to YAML config to parse")
 args = parser.parse_args()
 
 
-def write_submission_script(work_space, gen_frag, lhe_file, model, n_events, seed, submission_dir):
+def write_submission_script(work_space, gen_frag, lhe_file, model, n_events, seed, submission_dir, queue=1):
     """
     Write the HTCondor submission script for sample generation.
     """
     disk = 50000 * n_events  # kB
     runtime = 288 * n_events  # seconds
+    if 'soolin' in os.environ['HOSTNAME'] or 'root://' in lhe_file:
+        grid_proxy = "use_x509userproxy = true"
+    else:
+        grid_proxy = ""
 
     job_path = os.path.join(work_space, 'submission_scripts', model, 'condor_submission_{}.job'.format(seed))
     job_file = open(job_path, 'w')
@@ -48,12 +52,11 @@ request_memory = 5000
 # Max runtime (seconds) determined by n_events
 +MaxRuntime = {runtime}
 # Number of instances of job to run
-queue 1
+queue {queue}
 """.format(submission_dir=submission_dir, work_space=work_space, gen_fragment=gen_frag,
-           lhe_file=lhe_file, model=model, n_events=n_events,
-           seed=seed, disk=disk, runtime=runtime,
-           grid_proxy="use_x509userproxy = true" if 'soolin' in os.environ['HOSTNAME'] or 'root://' in lhe_file else '')
-                   )
+           lhe_file=lhe_file, model=model, n_events=n_events, seed=seed, disk=disk,
+           runtime=runtime, grid_proxy=grid_proxy, queue=queue)
+    )
     job_file.close()
 
     call('chmod +x {0}'.format(job_path), shell=True)
@@ -143,7 +146,7 @@ def main():
         sub_args = (work_space, gen_frag, job_lhe, model_name, n_events, seed, submission_dir)
         job_path = write_submission_script(*sub_args)  # Consider **kwargs instead
         print Fore.CYAN + "Submitting job {}/{}...".format(seed+1, n_jobs)
-        call('condor_submit {}'.format(job_path), shell=True)
+        call('condor_submit -batch-name {} {}'.format(model_name, job_path), shell=True)
 
 
 if __name__ == '__main__':
