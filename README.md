@@ -300,7 +300,7 @@ cmsRun SVJ_s_AOD_step1.py -n 8
 ```
 </details>
 
-<detaila>
+<details>
 <summary>AOD (step 1) to AOD (step 2)</summary>
 
 This is done with the same CMSSW and in the same environment as the previous step. The config is created with
