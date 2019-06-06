@@ -169,8 +169,7 @@ Once the PIDs have been changed, it is possible to run `PYTHIA` and `Delphes` co
 
 ### Generating `MadGraph` gridpacks <a name="generatinggridpacks"></a>
 
-For central production, gridpacks will be needed as external LHE generators don't cooperate with CMSSW. These gridpacks are set up with the master job locally, and each channel run as an HTCondor job. First, clone the relevant repositories as done in (#completesampleproduction).
-
+For central production, gridpacks will be needed as external LHE generators don't cooperate with CMSSW. These gridpacks are set up with the master job locally, and each channel run as an HTCondor job. First, clone the relevant repositories as done [here](#completesampleproduction).
 
 All the necessary files for s- and t-channel production are in [madgraph/input_files/](madgraph/input_files/), and a tutorial can be found at https://twiki.cern.ch/twiki/bin/view/CMS/QuickGuideMadGraph5aMCatNLO. More models can be added if needed, but it is cumbersome. The file names need to be specific, with the same prefix of `<model name>` and have the suffixes as shown in the existing models (e.g., `<model name>_proc_card.dat`). If adding models, use the existing files as templates. Usually, the model files also need to be zipped with
 
