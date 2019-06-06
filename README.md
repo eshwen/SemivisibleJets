@@ -169,34 +169,16 @@ Once the PIDs have been changed, it is possible to run `PYTHIA` and `Delphes` co
 
 ### Generating `MadGraph` gridpacks <a name="generatinggridpacks"></a>
 
-For central production, gridpacks will be needed as external LHE generators don't cooperate with CMSSW. These gridpacks are set up with the master job locally, and each channel run as an HTCondor job.
+For central production, gridpacks will be needed as external LHE generators don't cooperate with CMSSW. These gridpacks are set up with the master job locally, and each channel run as an HTCondor job. First, clone the relevant repositories as done in (#completesampleproduction).
 
-First, clone this repo somewhere with a lot of storage (the gridpacks end up in directories within the repository, and so its size can grow considerably) with
 
-```bash
-git clone git@github.com:eshwen/SemivisibleJets.git
-cd SemivisibleJets
-source setup.sh
-pip install --user -r requirements.txt
-```
-
-All the necessary files for spin1-s- and t-channel production are in [madgraph/input_files/](madgraph/input_files/), and a tutorial can be found at https://twiki.cern.ch/twiki/bin/view/CMS/QuickGuideMadGraph5aMCatNLO. More models can be added if needed, but it is cumbersome. The file names need to be specific, with the same prefix of `<model name>` and have the suffixes as shown in the existing models (e.g., `<model name>_proc_card.dat`). If adding models, use the existing files as templates. Usually, the model files also need to be zipped with
+All the necessary files for s- and t-channel production are in [madgraph/input_files/](madgraph/input_files/), and a tutorial can be found at https://twiki.cern.ch/twiki/bin/view/CMS/QuickGuideMadGraph5aMCatNLO. More models can be added if needed, but it is cumbersome. The file names need to be specific, with the same prefix of `<model name>` and have the suffixes as shown in the existing models (e.g., `<model name>_proc_card.dat`). If adding models, use the existing files as templates. Usually, the model files also need to be zipped with
 
 ```bash
 tar -cf <output file name>.tar <input file(s)>
 ```
 
 and be copied to the generator web repository on `/afs/cern.ch/cms/generators/www/`. Note that you will need to contact Cms.Computing@cern.ch and cms.generators@cern.ch to request write access to the directory. Though, you will have read access by default. In my branch, I hacked the [gridpack_generation.sh](external/genproductions/bin/MadGraph5_aMCatNLO/gridpack_generation.sh) script and changed L193 (below the "Loading extra model" line) to the same path as the input card directory and specify the model files there.
-
-Once the models are in place and the input cards have been written, clone my fork of the `genproductions` repo (which includes some minor fixes for bugs I was receiving) as a submodule with
-
-```bash
-git submodule add -b mg26x git@github.com:eshwen/genproductions.git external/genproductions/
-git submodule init
-git submodule update
-```
-
-The branch specified above is necessary to run MadGraph version 2.6.x, with some slight bug fixes present in the fork.
 
 Validate the input cards you have with
 
@@ -238,8 +220,7 @@ Now, to run the full chain, one has to first specify a "GEN fragment", telling C
 
 <details>
 <summary>Gridpack to LHE-GEN-SIM</summary>
-
-This requires CMSSW\_7\_1\_30 as it contains `PYTHIA` 8.226, which contains the Hidden Valley module. It can be initialised with
+This requires CMSSW\_7\_1\_30 as it contains `PYTHIA` 8.226 with the Hidden Valley module. It can be initialised with
 
 ```bash
 source /cvmfs/cms.cern.ch/cmsset_default.sh
@@ -248,7 +229,7 @@ cmsrel CMSSW_7_1_30
 cd CMSSW_7_1_30/src
 cmsenv
 mkdir -p Configuration/GenProduction/python
-cp <path>/SemivisibleJets/fullsim_cmssw/SVJ_MadGraph_NNPDF30_13TeV_s_spin1_LHE_GS_frag.py Configuration/GenProduction/python/
+cp $SVJ_TOP_DIR/fullsim_cmssw/SVJ_MadGraph_NNPDF30_13TeV_s_spin1_LHE_GS_frag.py Configuration/GenProduction/python/
 scram b
 cmsenv
 ```
@@ -272,7 +253,6 @@ This should give an output root file, which is needed for the next step.
 
 <details>
 <summary>GEN-SIM to AOD (step 1)</summary>
-
 This requires a different CMSSW version as the GEN-SIM files are being emulated for the 2016 year of data taking.
 
 ```bash
@@ -302,7 +282,6 @@ cmsRun SVJ_s_AOD_step1.py -n 8
 
 <details>
 <summary>AOD (step 1) to AOD (step 2)</summary>
-
 This is done with the same CMSSW and in the same environment as the previous step. The config is created with
 
 ```bash
@@ -318,7 +297,6 @@ cmsRun SVJ_s_AOD_step2.py -n 8
 
 <details>
 <summary>AOD (step 2) to miniAOD</summary>
-
 This is done with the same CMSSW and in the same environment as the previous step. The config is created with
 
 ```bash
@@ -334,7 +312,6 @@ cmsRun SVJ_s_MINIAOD.py
 
 <details>
 <summary>miniAOD to nanoAOD</summary>
-
 This is a relatively new step in the CMSSW chain. NanoAODs are supposed to resemble Heppy flat trees, which makes them easy to read, and only require an extra command from `cmsDriver.py` and `cmsRun`. But as backward and forward compatibility between CMSSW releases can be an issue, a newer version that supports nanoAOD creation is needed:
 
 ```bash
@@ -366,9 +343,9 @@ A nanoAOD file should be produced, and inspection should reveal several trees. T
 
 ### FullSim chain using CRAB (Work-In-Progress) <a name="fullsimchaincrab"></a>
 
-If running over a significant number of events, the GEN-SIM step in the FullSim chain takes awhile. So using CRAB (CMS Remote Analysis Builder) becomes a necessity, and is required for central production. The steps are similar to running the chain locally, but now the CMSSW config generated by `cmsDriver.py` is given to a CRAB config file, which is uploaded to the CERN grid and executed.
+If running over a significant number of events, the GEN-SIM step in the FullSim chain takes awhile. So using CRAB (CMS Remote Analysis Builder) becomes appealing, and is required for central production. The steps are similar to running the chain locally, but now the CMSSW config generated by `cmsDriver.py` is given to a CRAB config file, which is uploaded to the CERN grid and executed.
 
-An example CRAB config for the gridpack to LHE step is located in [crab_LHE_s.py](fullsim_cmssw/CRAB/crab_LHE_s.py), with an accompanying gen fragment. The comments should be detailed enough, with the CMSSW config being specified by `config.JobType.psetName` and being created as it would be when running locally.
+An example config for the gridpack to LHE step is located in [crab_LHE_s.py](fullsim_cmssw/CRAB/crab_LHE_s.py), with an accompanying gen fragment. The comments should be detailed enough, with the CMSSW config being specified by `config.JobType.psetName` and being created as it would be when running locally.
 
 The main thing to notice about the gen fragment is the path to the gridpack. For private production, you can't put a gridpack on `/cvmfs`, which is normally the standard procedure. The workaround is to specify the gridpack path as `../<basename of gridpack>` in the gen fragment. Then, in the CRAB config, specify the absolute path to the gridpack in `config.JobType.inputFiles`, making sure the gridpack is in a publicly-accessible directory. On lxplus, directory permissions can be changed for `/afs` with
 
@@ -382,7 +359,7 @@ which gives any user read permissions. This is important as the CRAB server (or 
 source /cvmfs/cms.cern.ch/crab3/crab.sh
 ```
 
-Then, to submit, just type
+and submit with
 
 ```bash
 crab submit -c <CRAB config>
