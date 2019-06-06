@@ -7,11 +7,6 @@
 3. [Running the CMSSW FullSim chain with gridpacks](#fullsimchaingridpacks)
     - [Generating `MadGraph` gridpacks](#generatinggridpacks)
     - [Running the FullSim CMSSW chain for hadronisation with `PYTHIA` and detector simulation with `GEANT4` (local)](#fullsimchainlocal)
-        1. [Gridpack to LHE-GEN-SIM](#gridpacktolhegensim)
-        2. [GEN-SIM to AOD (step 1)](#gensimtoaodstep1)
-        3. [AOD (step 1) to AOD (step 2)](#aodstep1toaodstep2)
-        4. [AOD (step 2) to miniAOD](#aodstep2tominiaod)
-        5. [MiniAOD to nanoAOD](#miniaodtonanoaod)
     - [FullSim chain using CRAB (Work-In-Progress)](#fullsimchaincrab)
 4. [Interactive running](#interactiverunning)
     - [LHE production with `MadGraph` (interactive)](#lhemadgraphinteractive)
@@ -161,22 +156,7 @@ _N.B._: MadGraph can be a bit erratic and sometimes fail at the "Working on SubP
 
 As noted above, a recent version of `PYTHIA` (> 8.230) including the Hidden Valley (HV) module and running of the dark coupling is required when implementing the subsequent dark hadronisation.
 
-In order to be able to use the HV module, the PDG IDs of the dark particles must be changed in the LHE files for `PYTHIA` to be able to recognize and shower these properly (see http://home.thep.lu.se/Pythia/pythia82html/HiddenValleyProcesses.html). This can be done as follows:
-
-- For the s-channel model
-```bash
-sed -i 's/5000521/4900101/g' <LHE filename>
-```
-- For the t-channel model
-```bash
-sed -i 's/49001010/4900101/g' <LHE filename>	
-sed -i 's/49001011/4900101/g' <LHE filename>	
-sed -i 's/49001012/4900101/g' <LHE filename>	
-sed -i 's/49001013/4900101/g' <LHE filename>	
-sed -i 's/49001014/4900101/g' <LHE filename>	
-```
-
-For either of these processes, there are scripts in [utils/](utils/) to do this:
+In order to be able to use the HV module, the PDG IDs of the dark particles must be changed in the LHE files for `PYTHIA` to be able to recognize and shower these properly (see http://home.thep.lu.se/Pythia/pythia82html/HiddenValleyProcesses.html). For both s- and t-channel, there are scripts in [utils/](utils/) to do this:
 ```bash
 ./pid_change_{s,t}_channel.sh <LHE filename>
 ```
@@ -256,13 +236,13 @@ The PID change, as noted [here](#pythiadelphesinteractive), is only necessary wh
 
 Now, to run the full chain, one has to first specify a "GEN fragment", telling CMSSW about the external generator we have used and how to hadronise the particles. The GEN fragment I used can be found in [SVJ_MadGraph_NNPDF30_13TeV_s_spin1_LHE_GS_frag.py](fullsim_cmssw/fragments_deprecated/SVJ_MadGraph_NNPDF30_13TeV_s_spin1_LHE_GS_frag.py). As `MadGraph` was used as the external generator, the `externalLHEProducer` information needs to be included, telling CMSSW where the gridpack is located as well as how many events are in there and the output LHE file (which _should not_ be changed). All the code in the fragment and commands below are specific to emulating 2016 data taking, and `cmsDriver` commands can be changed depending on the context in which you would like to generate samples. Note that you may also have to regenerate the gridpacks with different Parton Distribution Functions to simulate different years. It should be detailed in the quick start guide linked above.
 
-
-#### Gridpack to LHE-GEN-SIM <a name="gridpacktolhegensim"></a>
+<details>
+<summary>Gridpack to LHE-GEN-SIM</summary>
 
 This requires CMSSW\_7\_1\_30 as it contains `PYTHIA` 8.226, which contains the Hidden Valley module. It can be initialised with
 
 ```bash
-ource /cvmfs/cms.cern.ch/cmsset_default.sh
+source /cvmfs/cms.cern.ch/cmsset_default.sh
 export SCRAM_ARCH=slc6_amd64_gcc481
 cmsrel CMSSW_7_1_30
 cd CMSSW_7_1_30/src
@@ -288,9 +268,10 @@ cmsRun SVJ_s_LHE_GEN_SIM.py -n <no. threads>
 ```
 
 This should give an output root file, which is needed for the next step.
+</details>
 
-
-#### GEN-SIM to AOD (step 1) <a name="gensimtoaodstep1"></a>
+<details>
+<summary>GEN-SIM to AOD (step 1)</summary>
 
 This requires a different CMSSW version as the GEN-SIM files are being emulated for the 2016 year of data taking.
 
@@ -317,9 +298,10 @@ and run with
 ```bash
 cmsRun SVJ_s_AOD_step1.py -n 8
 ```
+</details>
 
-
-#### AOD (step 1) to AOD (step 2) <a name="aodstep1toaodstep2"></a>
+<detaila>
+<summary>AOD (step 1) to AOD (step 2)</summary>
 
 This is done with the same CMSSW and in the same environment as the previous step. The config is created with
 
@@ -332,8 +314,10 @@ and run with
 ```bash
 cmsRun SVJ_s_AOD_step2.py -n 8
 ```
+</details>
 
-#### AOD (step 2) to miniAOD <a name="aodstep2tominiaod"></a>
+<details>
+<summary>AOD (step 2) to miniAOD</summary>
 
 This is done with the same CMSSW and in the same environment as the previous step. The config is created with
 
@@ -346,9 +330,10 @@ and run with
 ```bash
 cmsRun SVJ_s_MINIAOD.py
 ```
+</details>
 
-
-#### miniAOD to nanoAOD <a name="miniaodtonanoaod"></a>
+<details>
+<summary>miniAOD to nanoAOD</summary>
 
 This is a relatively new step in the CMSSW chain. NanoAODs are supposed to resemble Heppy flat trees, which makes them easy to read, and only require an extra command from `cmsDriver.py` and `cmsRun`. But as backward and forward compatibility between CMSSW releases can be an issue, a newer version that supports nanoAOD creation is needed:
 
@@ -376,6 +361,7 @@ cmsRun SVJ_s_NANOAOD.py -n 8
 ```
 
 A nanoAOD file should be produced, and inspection should reveal several trees. The only interesting one is called "Events", which should contain easy-to-read branches. This, in turn, makes it an easier object to analyse.
+</details>
 
 
 ### FullSim chain using CRAB (Work-In-Progress) <a name="fullsimchaincrab"></a>
