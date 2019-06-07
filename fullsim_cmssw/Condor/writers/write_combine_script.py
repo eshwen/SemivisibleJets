@@ -5,25 +5,17 @@ from colorama import Fore, Style
 import os
 from subprocess import call
 
-parser = ArgumentParser(description=__doc__, formatter_class=ArgumentDefaultsHelpFormatter)
-parser.add_argument("-w", "--work_space", type=str, required=True, help="Work space containing CMSSW releases, input and output files")
-parser.add_argument("-m", "--model_name", type=str, required=True, help="Identifying name of model")
-args = parser.parse_args()
 
-
-def main():
-    work_space = args.work_space
-    model_name = args.model_name
+def write_combine_script(work_space, model_name):
     svj_top_dir = os.environ['SVJ_TOP_DIR']
 
-    file_path = os.path.join(work_space, "combineOutput_{0}.sh".format(model_name))
-    f = open(file_path, "w")
-
-    # Write bash combine script
-    f.write("""#!/bin/bash
+    file_path = os.path.join(work_space, "combineOutput_{}.sh".format(model_name))
+    with open(file_path, "w") as f:
+        # Write bash combine script
+        f.write("""#!/bin/bash
 echo -e "\e[1;33mWarning: May take a while to hadd if many files are present.\e[0m"
 shopt -s expand_aliases
-source /cvmfs/cms.cern.ch/cmsset_default.sh 
+source /cvmfs/cms.cern.ch/cmsset_default.sh
 cd {work_space}/CMSSW_9_4_4/src # Try to make this not hardcoded in case that version doesn't exist
 cmsenv
 cd {work_space}
@@ -44,13 +36,17 @@ else
 fi
 
 exit
-    """.format(work_space=work_space, SVJ_top_dir=svj_top_dir, model=model_name)
-                    )
-    f.close()
+""".format(work_space=work_space, SVJ_top_dir=svj_top_dir, model=model_name)
+        )
 
-    call("chmod +x {0}".format(file_path), shell = True)
+    call("chmod +x {}".format(file_path), shell=True)
     print Fore.MAGENTA + "Hadding script written!", Style.RESET_ALL
 
 
 if __name__ == '__main__':
-    main()
+    parser = ArgumentParser(description=__doc__, formatter_class=ArgumentDefaultsHelpFormatter)
+    parser.add_argument("work_space", type=str, help="Work space containing CMSSW releases, input and output files")
+    parser.add_argument("model_name", type=str, help="Identifying name of model")
+    args = parser.parse_args()
+
+    write_combine_script(*args)
