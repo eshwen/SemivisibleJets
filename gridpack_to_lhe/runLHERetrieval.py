@@ -56,11 +56,11 @@ def main(args):
             config_lines = f.readlines()
             f.seek(0)
             f.truncate()
-            for i in xrange(len(config_lines)):
-                if 'x_sec_mg' in config_lines[i]:
+            for i in config_lines:
+                if i.startswith('x_sec_mg'):
                     continue
                 else:
-                    f.write(config_lines[i])
+                    f.write(i)
             f.write("x_sec_mg: {}\n".format(x_sec_mg))
 
     # Copy gridpack tarball to new directory
