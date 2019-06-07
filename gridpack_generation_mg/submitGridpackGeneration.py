@@ -19,13 +19,8 @@ from subprocess import call
 # Reset text colours after colourful print statements
 init(autoreset=True)
 
-parser = ArgumentParser(description=__doc__, formatter_class=ArgumentDefaultsHelpFormatter)
-parser.add_argument("config", type=str, help="Path to YAML config to parse")
-parser.add_argument('-r', '--resub', action="store_true", help="Retry if previous attempt failed")
-args = parser.parse_args()
 
-
-def main():
+def main(args):
     # Load YAML config into a dictionary and assign values to variables for cleanliness
     input_params = load_yaml_config(args.config)
 
@@ -36,6 +31,7 @@ def main():
     n_jobs = input_params['n_jobs']
     m_d = input_params['m_d']
     r_inv = input_params['r_inv']
+    alpha_d = input_params['alpha_d']
 
     # Check arguments in config file
     basic_checks(input_params)
@@ -43,14 +39,15 @@ def main():
     # Set process-specific variables
     if 's-channel' in process_type:
         med_type = 'Zp'
-        model_prefix = 'DMsimp_SVJ_s_spin1'
-        default_model_dir = os.path.join(os.environ['SVJ_MODELS_DIR'], 'DMsimp_SVJ_s_spin1_editTemplate')
+        model_prefix = 'SVJ_s'
+        template_prefix = 'DMsimp_SVJ_s_spin1'
     elif 't-channel' in process_type:
         med_type = 'Phi'
-        model_prefix = 'DMsimp_SVJ_t'
-        default_model_dir = os.path.join(os.environ['SVJ_MODELS_DIR'], 'DMsimp_SVJ_t_editTemplate')
+        model_prefix = 'SVJ_t'
+        template_prefix = 'DMsimp_SVJ_t'
 
-    model_name = model_prefix + '_m' + med_type + '-' + str(m_med) + '_mDQ-' + str(m_d) + '_rinv-' + str(r_inv).replace('.', 'p')
+    default_model_dir = os.path.join(os.environ['SVJ_MODELS_DIR'], template_prefix+'_editTemplate')
+    model_name = model_prefix + '_m' + med_type + '-' + str(m_med) + '_mDQ-' + str(m_d) + '_rinv-' + str(r_inv).replace('.', 'p') + '_aD-' + str(alpha_d).replace('.', 'p')
     total_events = n_events * n_jobs
 
     # Remove failed gridpack for model if resubmitted
@@ -113,9 +110,9 @@ def main():
 
     # Copy MadGraph input files from template card directory
     # Even if input_cards_dir existed before, copy the template files over in case parameters have changed
-    for in_file in glob.glob(os.path.join(os.environ['SVJ_MG_INPUT_DIR'], model_prefix+'_input_template/*.dat')):
+    for in_file in glob.glob(os.path.join(os.environ['SVJ_MG_INPUT_DIR'], template_prefix+'_input_template/*.dat')):
         # Get the suffix of the template card for specifying the basename in the dest. path
-        card_type = re.search("(?<={0})(\w+).dat".format(model_prefix), in_file).group(0)
+        card_type = re.search("(?<={0})(\w+).dat".format(template_prefix), in_file).group(0)
         shutil.copy(in_file, os.path.join(input_cards_dir, model_name+card_type))
 
     # In input files, fill replacement fields with values chosen by user
@@ -141,4 +138,10 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    parser = ArgumentParser(description=__doc__, formatter_class=ArgumentDefaultsHelpFormatter)
+    parser.add_argument("config", type=str, help="Path to YAML config to parse")
+    parser.add_argument('-r', '--resub', action="store_true", help="Retry if previous attempt failed")
+    args = parser.parse_args()
+
+    main(args)
+    sys.exit("Done")
