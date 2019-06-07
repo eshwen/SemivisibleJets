@@ -21,30 +21,25 @@
 
 [![arXiv](https://img.shields.io/badge/arXiv-1707.05326%20-green.svg)](https://arxiv.org/abs/1707.05326)
 
-This repository contains model files necessary for generation of semi-visible jet Monte Carlo signal events in `MadGraph`. It also includes instructions of how to generate gridpacks for production with these models, and how to run them through the FullSim CMSSW chain to create nanoAOD files for analysis. Please see [1707.05326](https://arxiv.org/abs/1707.05326) and [1503.00009](https://arxiv.org/abs/1503.00009) for
-for further details about the models. Please note that a recent version of `PYTHIA` (> 8.230) including the Hidden Valley module and running of the dark coupling is required when implementing the subsequent dark hadronization.
+This repository contains model files necessary for generation of semi-visible jet Monte Carlo signal events in `MadGraph`. It also includes instructions of how to generate gridpacks for production with these models, and how to run them through the FullSim CMSSW chain to create nanoAOD files for analysis. Please see [1707.05326](https://arxiv.org/abs/1707.05326) and [1503.00009](https://arxiv.org/abs/1503.00009) for further details about the models. Please note that a recent version of `PYTHIA` (> 8.230) including the Hidden Valley module and running of the dark coupling is required when implementing the subsequent dark hadronization.
 
 UFO files associated with two UV completions are provided (under [madgraph/models/](madgraph/models/)):
 
 
 ### s-channel model <a name="schannelmodel"></a>
 
-An s-channel production ([DMsimp_SVJ_s_spin1](madgraph/models/DMsimp_SVJ_s_spin1)) mediated through a new heavy Z'. The model provided is a modified version of the spin-1 `DMsimp` model (http://feynrules.irmp.ucl.ac.be/wiki/DMsimp) 
-implemented through `FeynRules`.
+An s-channel production ([DMsimp_SVJ_s_spin1](madgraph/models/DMsimp_SVJ_s_spin1)) mediated through a new heavy Z'. The model provided is a modified version of the spin-1 `DMsimp` model (http://feynrules.irmp.ucl.ac.be/wiki/DMsimp) implemented through `FeynRules`.
 
 
 ### t-channel model <a name="tchannelmodel"></a>
 
 A t-channel production ([DMsimp_SVJ_t](madgraph/models/DMsimp_SVJ_t)) where the dark and visible sectors interact through a new scalar bi-fundamental.
 
-The bi-fundamentals are denoted with `su11, su12, su21, su22...`, where `u` etc explicitly specifies the QCD flavour index 
-and the numbers are the explicit dark non-Abelian group indices. Similarly, the dark quarks are labeled as `qv11, qv12, qv21, qv22`.
+The bi-fundamentals are denoted with `su11, su12, su21, su22...`, where `u` etc explicitly specifies the QCD flavour index and the numbers are the explicit dark non-Abelian group indices. Similarly, the dark quarks are labeled as `qv11, qv12, qv21, qv22`.
 
-Please note that a modified version of `MadGraph` using the patch included [here](https://bugs.launchpad.net/mg5amcnlo/+bug/1702712) 
-is required to ensure a stable cross section for event generation using this model.
+Please note that a modified version of `MadGraph` using the patch included [here](https://bugs.launchpad.net/mg5amcnlo/+bug/1702712) is required to ensure a stable cross section for event generation using this model.
 
-A `FeynRules` model file ([DMsimp_tchannel.fr](madgraph/models/DMsimp_SVJ_t/DMsimp_tchannel.fr)) as well as the `Mathematica` notebook ([DMsimp_tchannel.nb](madgraph/models/DMsimp_SVJ_t/DMsimp_tchannel.nb)) used to generated the UFO output 
-are also provided.
+A `FeynRules` model file ([DMsimp_tchannel.fr](madgraph/models/DMsimp_SVJ_t/DMsimp_tchannel.fr)) as well as the `Mathematica` notebook ([DMsimp_tchannel.nb](madgraph/models/DMsimp_SVJ_t/DMsimp_tchannel.nb)) used to generated the UFO output are also provided.
 
 
 
@@ -101,7 +96,7 @@ which should take care of everything. Hadronisation is performed in `PYTHIA 8.23
 $work_space/resubmit_${model_name}.sh
 ```
 
-(note that all jobs must _finish running_ first). When happy, the component output files can be combined using [haddnano.py](utils/haddnano.py). A script which does that step will be in `$work_space/combineOutput_${model_name}.sh`, which can be run without any arguments.
+(note that all jobs must _finish running_ first). When happy, the component output files can be combined using [haddnano.py](utils/haddnano.py). A script which does that step will be in `$work_space/combine_components_${model_name}.sh`, which can be run without any arguments.
 
 
 
@@ -395,8 +390,6 @@ For questions or issues please contact:
 ## To do <a name="todo"></a>
 
 - Fix bug in FullSim Condor step, where CMSSW_7_1_30 (maybe other ones as well, but I haven't checked) won't compile on SLC7 machines due to architecture. See http://cms-sw.github.io/singularity.html. Try to make it a non-issue for end user (i.e., make it work easily with both SLC6 an SLC7 so they don't have to think about what machine they need to use)
-- When running FullSim Condor step, consider copying `runFullSimCondor.sh` to `work_space` with some sort of identifier (date+time stamp?), so that running is more self contained (i.e., if I ran some jobs, edited that script, then wanted to resubmit). Then make sure the correct `runFullSim` script is called when submitting/resubmitting.
-- Add alpha_d to `model_name`
 - Change gen fragment such that the dark meson can decay into more than just d quarks. Would need to figure out how to distribute remaining branching fraction (1-r_inv) amongst the decays.
 - Change gen fragment such that there's hadronisation to two dark mesons (so n_f = 2 physical makes sense), with one species decaying invisibly and one to SM quarks. But would need to figure out how to implement r_inv such that the proportion of invisibly decaying dark mesons = r_inv.
 - Consider changing dark quarks to spin-1/2 in MadGraph model files (would have to change `spin` attribute in particles.py to '2'). Find out if that will affect decays or anything. Would also need to consider the spin of the dark hadron (see HV documentation in Pythia for PDGIDs).
