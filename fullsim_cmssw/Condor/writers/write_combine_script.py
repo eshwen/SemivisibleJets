@@ -9,7 +9,7 @@ from subprocess import call
 def write_combine_script(work_space, model_name):
     svj_top_dir = os.environ['SVJ_TOP_DIR']
 
-    file_path = os.path.join(work_space, "combineOutput_{}.sh".format(model_name))
+    file_path = os.path.join(work_space, "combine_components_{}.sh".format(model_name))
     with open(file_path, "w") as f:
         # Write bash combine script
         f.write("""#!/bin/bash
