@@ -127,8 +127,8 @@ def main(args):
         os.chdir(this_dir)
 
     # Install new Pythia version if not already done so. Use singularity if required
+    _source = '{}/sourceNewPythiaVer.sh {} {} {}'.format(this_dir, work_space, init_cmssw, init_arch)
     if all(x.startswith('slc6') for x in [this_sys, init_arch]):
-        _source = '{}/sourceNewPythiaVer.sh {} {} {}'.format(this_dir, work_space, init_cmssw, init_arch)
         call(_source, shell=True)
     else:
         call('{}/run_singularity.sh "{}"'.format(this_dir, _source), shell=True)
