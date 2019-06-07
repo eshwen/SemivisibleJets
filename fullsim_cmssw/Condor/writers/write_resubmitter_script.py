@@ -17,11 +17,10 @@ def main():
     model_name = args.model_name
     n_jobs_for_loop = args.n_jobs - 1
 
-    file_path = os.path.join(work_space, "resubmit_{0}.sh".format(model_name))
-    f = open(file_path, "w")
-
+    file_path = os.path.join(work_space, "resubmit_{}.sh".format(model_name))
     # Write bash combine script
-    f.write("""#!/bin/bash
+    with open(file_path, "w") as f:
+        f.write("""#!/bin/bash
 # Resubmit failed jobs by running this script. It checks to see if the output nanoAOD file is present for each seed.
 # Note that this should only be performed when all jobs have finished running.
 : "${{SVJ_TOP_DIR:?Please source the setup script before running this as environment variables are required.}}; exit"
@@ -31,9 +30,8 @@ def main():
         condor_submit -batch-name {model} {work_space}/submission_scripts/{model}/condor_submission_$i.job
     fi
 done
-    """.format(n_jobs=n_jobs_for_loop, work_space=work_space, model_name)
-    )
-    f.close()
+""".format(n_jobs=n_jobs_for_loop, work_space=work_space, model=model_name)
+        )
 
     call("chmod +x {}".format(file_path), shell=True)
     print Fore.MAGENTA + "Resubmission script written!", Style.RESET_ALL
