@@ -25,17 +25,17 @@ def main():
 # Resubmit failed jobs by running this script. It checks to see if the output nanoAOD file is present for each seed.
 # Note that this should only be performed when all jobs have finished running.
 : "${{SVJ_TOP_DIR:?Please source the setup script before running this as environment variables are required.}}; exit"
-for i in $(seq 0 1 {0}); do
-    if [ ! -r {1}/output/{2}_NANOAOD_$i.root ]; then
-        echo "Found no output file for {2} with seed $i. Resubmitting..."
-        condor_submit {1}/submission_scripts/{2}/condor_submission_$i.job
+    for i in $(seq 0 1 {n_jobs}); do
+    if [ ! -r {work_space}/output/{model}_NANOAOD_$i.root ]; then
+        echo "Found no output file for {model} with seed $i. Resubmitting..."
+        condor_submit -batch-name {model} {work_space}/submission_scripts/{model}/condor_submission_$i.job
     fi
 done
-    """.format(n_jobs_for_loop, work_space, model_name)
+    """.format(n_jobs=n_jobs_for_loop, work_space=work_space, model_name)
     )
     f.close()
 
-    call("chmod +x {0}".format(file_path), shell=True)
+    call("chmod +x {}".format(file_path), shell=True)
     print Fore.MAGENTA + "Resubmission script written!", Style.RESET_ALL
 
 
