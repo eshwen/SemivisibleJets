@@ -10,7 +10,7 @@ CMSSW*
 ebhal.cc
 *.root
 Plots/
-madgraph/models/*SVJ_s_*_mZp*
+madgraph/models/*SVJ_s_*mZp*
 madgraph/models/*SVJ_t_mPhi*
-madgraph/input_files/*SVJ_s_*_mZp*
+madgraph/input_files/*SVJ_s_*mZp*
 madgraph/input_files/*SVJ_t_mPhi*
