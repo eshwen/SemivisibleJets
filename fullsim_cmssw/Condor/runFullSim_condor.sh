@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 # Script to run FullSim CMSSW chain
 
+# Get SVJ_TOP_DIR without having to pass in as another argument to script
+this_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+export SVJ_TOP_DIR="$(readlink -f ${this_dir}/../../)"
+
 if [ -z $1 ]; then
     usr_msg="Usage ./runFullSim_condor.sh WORKING_DIRECTORY GEN_FRAGMENT_BASENAME PATH_TO_LHE_FILES MODEL_NAME N_EVENTS SEED"
     $SVJ_TOP_DIR/utils/print_bash_script_usage.sh "$usr_msg"
@@ -17,6 +21,8 @@ seed=$6 # index for job
 # Allow use of aliases (specifically cvmfs ones)
 shopt -s expand_aliases
 
+cd $SVJ_TOP_DIR
+source setup.sh
 cd $work_space
 source /cvmfs/cms.cern.ch/cmsset_default.sh
 
