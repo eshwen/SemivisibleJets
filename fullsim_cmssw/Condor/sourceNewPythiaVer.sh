@@ -3,14 +3,14 @@
 # This script allows a new version of Pythia not present in the architecutre for a given CMSSW version to be downloaded and linked to CMSSW.
 
 if [ -z $1 ]; then
-    usr_msg="Usage ./sourceNewPythiaVer.sh WORK_SPACE CMSSW_VER CALL_DIR"
+    usr_msg="Usage ./sourceNewPythiaVer.sh WORK_SPACE CMSSW_VER ARCH"
     $SVJ_TOP_DIR/utils/print_bash_script_usage.sh "$usr_msg"
     exit
 fi
 
 work_space=$1
 cmssw_ver=$2
-call_dir=$3 # directory script is called from, so as to return to it after running
+arch=$3
 
 # Unset env variables otherwise Pythia module compilation fails
 unset CXX
@@ -20,8 +20,9 @@ unset CC
 # Allow use of aliases (specifically cvmfs ones)
 shopt -s expand_aliases
 
+export SCRAM_ARCH="$arch"
 source /cvmfs/cms.cern.ch/cmsset_default.sh
-cd $work_space/$cmssw_ver
+pushd $work_space/$cmssw_ver >/dev/null 2>&1
 cmsenv
 
 if [[ "$PYTHIA8DATA" == "${work_space}/${cmssw_ver}/"* ]]; then
@@ -36,5 +37,5 @@ else
     echo -e "\e[1;35mInstalled Pythia 8.230, replacing the pre-installed version that ships with $cmssw_ver and $SCRAM_ARCH.\e[0m"
 fi
 
-cd $call_dir
+popd >/dev/null 2>&1
 exit
