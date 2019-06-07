@@ -11,16 +11,22 @@ from load_yaml_config import load_yaml_config
 import os
 from subprocess import call
 from writers.write_GS_fragment import write_GS_fragment
+from writers.write_combine_script import write_combine_script
+from writers.write_resubmitter_script import write_resubmitter_script
 
 # Reset text colours after colourful print statements
 init(autoreset=True)
+
+# Define some global variables
+this_dir = os.path.dirname(os.path.realpath(__file__))
+this_sys = os.environ['SCRAM_ARCH']
 
 parser = ArgumentParser(description=__doc__, formatter_class=ArgumentDefaultsHelpFormatter)
 parser.add_argument("config", type=str, help="Path to YAML config to parse")
 args = parser.parse_args()
 
 
-def write_submission_script(work_space, gen_frag, lhe_base, model, n_events, submission_dir, queue=1, seed=None):
+def write_submission_script(work_space, gen_frag, lhe_base, model, n_events, queue=1, seed=None):
     """
     Write the HTCondor submission script for sample generation.
     """
@@ -33,12 +39,11 @@ def write_submission_script(work_space, gen_frag, lhe_base, model, n_events, sub
 
     body = """# HTCondor submission script
 Universe   = vanilla
-cmd        = {submission_dir}/runFullSim_condor.sh
+cmd        = {this_dir}/runFullSim_condor.sh
 args       = {work_space} {gen_frag} {lhe_base}_$(Process).lhe {model} {n_events:.0f} $(Process)
 Log        = {work_space}/logs/{model}/condor_job_$(Process).log
 Output     = {work_space}/logs/{model}/condor_job_$(Process).out
 Error      = {work_space}/logs/{model}/condor_job_$(Process).error
-getenv     = True
 should_transfer_files   = YES
 when_to_transfer_output = ON_EXIT_OR_EVICT
 {grid_proxy}
@@ -49,9 +54,11 @@ request_disk = {disk}
 request_memory = 5000
 # Max runtime (seconds) determined by n_events
 +MaxRuntime = {runtime}
+# Require non-SLC7/CentOS7 machines
+Requirements = (OpSysAndVer == "SLCern6")
 # Number of instances of job to run
 queue {queue}
-""".format(submission_dir=submission_dir, work_space=work_space, gen_frag=gen_frag,
+""".format(this_dir=this_dir, work_space=work_space, gen_frag=gen_frag,
            lhe_base=lhe_base, model=model, n_events=n_events, disk=disk,
            runtime=runtime, grid_proxy=grid_proxy, queue=queue)
 
@@ -69,8 +76,6 @@ queue {queue}
 
 
 def main():
-    submission_dir = os.getcwd()
-
     # Load YAML config into a dictionary and assign values to variables for cleanliness
     input_params = load_yaml_config(args.config)
 
@@ -103,8 +108,10 @@ def main():
         os.environ['X509_USER_PROXY'] = grid_cert_path
 
     # Dict for architectures corresponding to different CMSSW versions
+    init_cmssw = 'CMSSW_7_1_30'
+    init_arch = 'slc6_amd64_gcc481'
     cmssw_archs = {
-        'CMSSW_7_1_30': 'slc6_amd64_gcc481',
+        init_cmssw: init_arch,
         'CMSSW_8_0_21': 'slc6_amd64_gcc530',
         'CMSSW_9_4_4': 'slc6_amd64_gcc630',
     }
@@ -114,16 +121,24 @@ def main():
         if os.path.exists(os.path.join(work_space, version, 'src')):
             print "{} release already exists!".format(version)
         else:
-            call('./sourceCMSSW.sh {} {} {}'.format(version, arch, work_space), shell=True)
+            _run = '{}/sourceCMSSW.sh {} {} {}'.format(this_dir, version, arch, work_space)
+            if this_sys.startswith('slc6'):
+                call(_run, shell=True)
+            else:
+                # Use singularity to initialise CMSSW in a SLC6 env
+                call('{}/run_singularity.sh "{}"'.format(this_dir, _run), shell=True)
 
-    if os.getcwd() != submission_dir:
-        os.chdir(submission_dir)
+    if os.getcwd() != this_dir:
+        os.chdir(this_dir)
 
-    # Install new Pythia version if not already done so
-    call('./sourceNewPythiaVer.sh {} {} {}'.format(work_space, 'CMSSW_7_1_30', submission_dir), shell=True)
+    # Install new Pythia version if not already done so. Use singularity if required
+    if all(x.startswith('slc6') for x in [this_sys, init_arch]):
+        call('{0}/sourceNewPythiaVer.sh {1} {2} {0}'.format(this_dir, work_space, init_cmssw), shell=True)
+    else:
+        call('{0}/run_singularity.sh "{0}/sourceNewPythiaVer.sh {1} {2} {0}"'.format(this_dir, work_space, init_cmssw), shell=True)
 
     # Create directories for gen fragments to occupy
-    gen_frag_dir = os.path.join(work_space, 'CMSSW_7_1_30', 'src', 'Configuration', 'GenProduction', 'python')
+    gen_frag_dir = os.path.join(work_space, init_cmssw, 'src', 'Configuration', 'GenProduction', 'python')
     if not os.path.exists(gen_frag_dir):
         os.makedirs(gen_frag_dir)
 
@@ -142,11 +157,11 @@ def main():
     gen_frag = os.path.basename(write_GS_fragment(args.config, gen_frag_dir))
 
     # Create scripts to hadd output files and resubmit failed jobs
-    call('python {}/writers/write_combine_script.py -w {} -m {}'.format(submission_dir, work_space, model_name), shell=True)
-    call('python {}/writers/write_resubmitter_script.py -w {} -m {} -n {}'.format(submission_dir, work_space, model_name, n_jobs), shell=True)
+    write_combine_script(work_space, model_name)
+    write_resubmitter_script(work_space, model_name, n_jobs)
 
     lhe_base = os.path.join(lhe_file_path, '{}_split'.format(model_name))
-    sub_args = (work_space, gen_frag, lhe_base, model_name, n_events, submission_dir)
+    sub_args = (work_space, gen_frag, lhe_base, model_name, n_events)
     # Write a single job file to submit everything at once
     job_main = write_submission_script(*sub_args, queue=n_jobs)
     call('condor_submit -batch-name {} {}'.format(model_name, job_main), shell=True)
