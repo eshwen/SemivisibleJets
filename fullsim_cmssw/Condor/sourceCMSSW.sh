@@ -10,7 +10,7 @@ cmssw_ver=$1
 arch=$2
 top_dir=$(readlink -m $3)
 
-cd $top_dir
+pushd $top_dir >/dev/null 2>&1
 
 # Allow use of aliases (specifically cvmfs ones)
 shopt -s expand_aliases
@@ -22,4 +22,5 @@ cd ${cmssw_ver}/src
 cmsenv
 scram b
 
+popd >/dev/null 2>&1
 exit
