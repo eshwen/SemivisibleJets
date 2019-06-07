@@ -97,7 +97,7 @@ def main(args):
         os.makedirs(work_space)
 
     # Initialise proxy of grid certificate if required
-    if 'root://' in lhe_file_path:
+    if 'root://' in lhe_file_path and 'X509_USER_PROXY' not in os.environ.keys():
         grid_cert_path = '{}/x509up_u{}'.format(work_space, os.getuid())
         call('voms-proxy-init --voms cms --valid 168:00 --out {}'.format(grid_cert_path), shell=True)
         os.environ['X509_USER_PROXY'] = grid_cert_path
@@ -128,9 +128,10 @@ def main(args):
 
     # Install new Pythia version if not already done so. Use singularity if required
     if all(x.startswith('slc6') for x in [this_sys, init_arch]):
-        call('{0}/sourceNewPythiaVer.sh {1} {2} {0}'.format(this_dir, work_space, init_cmssw), shell=True)
+        _source = '{}/sourceNewPythiaVer.sh {} {} {}'.format(this_dir, work_space, init_cmssw, init_arch)
+        call(_source, shell=True)
     else:
-        call('{0}/run_singularity.sh "{0}/sourceNewPythiaVer.sh {1} {2} {0}"'.format(this_dir, work_space, init_cmssw), shell=True)
+        call('{}/run_singularity.sh "{}"'.format(this_dir, _source), shell=True)
 
     # Create directories for gen fragments to occupy
     gen_frag_dir = os.path.join(work_space, init_cmssw, 'src', 'Configuration', 'GenProduction', 'python')
