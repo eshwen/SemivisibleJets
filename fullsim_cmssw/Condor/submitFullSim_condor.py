@@ -1,5 +1,5 @@
 #!/usr/bin/env python2
-""" Handle the input and parsing from a YAML config file, then submit jobs for running FullSim sample production chain """
+""" Submit jobs for running FullSim sample production chain in CMSSW """
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 import sys
 try:
@@ -21,17 +21,13 @@ init(autoreset=True)
 this_dir = os.path.dirname(os.path.realpath(__file__))
 this_sys = os.environ['SCRAM_ARCH']
 
-parser = ArgumentParser(description=__doc__, formatter_class=ArgumentDefaultsHelpFormatter)
-parser.add_argument("config", type=str, help="Path to YAML config to parse")
-args = parser.parse_args()
-
 
 def write_submission_script(work_space, gen_frag, lhe_base, model, n_events, queue=1, seed=None):
     """
     Write the HTCondor submission script for sample generation.
     """
     disk = 50000 * n_events  # kB
-    runtime = 288 * n_events  # seconds
+    runtime = 288 * n_events  # seconds. 8 hours/100 events
     if 'soolin' in os.environ['HOSTNAME'] or lhe_base.startswith('root://'):
         grid_proxy = "use_x509userproxy = true"
     else:
@@ -40,7 +36,7 @@ def write_submission_script(work_space, gen_frag, lhe_base, model, n_events, que
     body = """# HTCondor submission script
 Universe   = vanilla
 cmd        = {this_dir}/runFullSim_condor.sh
-args       = {work_space} {gen_frag} {lhe_base}_$(Process).lhe {model} {n_events:.0f} $(Process)
+args       = {work_space} {gen_frag} {lhe_base}_$(Process).lhe {model} {n_events:.0f} $(Process) {pu_file}
 Log        = {work_space}/logs/{model}/condor_job_$(Process).log
 Output     = {work_space}/logs/{model}/condor_job_$(Process).out
 Error      = {work_space}/logs/{model}/condor_job_$(Process).error
@@ -54,13 +50,13 @@ request_disk = {disk}
 request_memory = 5000
 # Max runtime (seconds) determined by n_events
 +MaxRuntime = {runtime}
-# Require non-SLC7/CentOS7 machines
+# Require SLC6 machines as CMSSW_7_1_30 can't run on SLC7/CentOS7
 Requirements = (OpSysAndVer == "SLCern6")
 # Number of instances of job to run
 queue {queue}
-""".format(this_dir=this_dir, work_space=work_space, gen_frag=gen_frag,
-           lhe_base=lhe_base, model=model, n_events=n_events, disk=disk,
-           runtime=runtime, grid_proxy=grid_proxy, queue=queue)
+""".format(this_dir=this_dir, work_space=work_space, gen_frag=gen_frag, lhe_base=lhe_base, model=model,
+           n_events=n_events, pu_file=os.path.join(os.environ['SVJ_TOP_DIR'], 'pileup_filelist_2016.txt'),
+           disk=disk, runtime=runtime, grid_proxy=grid_proxy, queue=queue)
 
     job_file = os.path.join(work_space, 'submission_scripts', model, 'condor_submission_all.job')
     # Edit submission script file name and body if writing individual files
@@ -71,11 +67,10 @@ queue {queue}
     with open(job_file, 'w') as f:
         f.write(body)
 
-    call('chmod +x {}'.format(job_file), shell=True)
     return job_file
 
 
-def main():
+def main(args):
     # Load YAML config into a dictionary and assign values to variables for cleanliness
     input_params = load_yaml_config(args.config)
 
@@ -169,9 +164,13 @@ def main():
 
     print Fore.CYAN + "Writing individual job files to make resubmitting failed jobs easier..."
     for seed in xrange(n_jobs):
-        job_path = write_submission_script(*sub_args, seed=seed)  # Consider **kwargs instead
+        job_path = write_submission_script(*sub_args, seed=seed)
 
 
 if __name__ == '__main__':
-    main()
+    parser = ArgumentParser(description=__doc__, formatter_class=ArgumentDefaultsHelpFormatter)
+    parser.add_argument("config", type=str, help="Path to YAML config to parse")
+    args = parser.parse_args()
+
+    main(args)
     sys.exit("Done")
