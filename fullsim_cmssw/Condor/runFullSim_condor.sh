@@ -20,7 +20,7 @@ shopt -s expand_aliases
 
 cd $work_space
 source /cvmfs/cms.cern.ch/cmsset_default.sh
-export SCRAM_ARCH="slc6_amd64_gcc481"
+export SCRAM_ARCH=slc6_amd64_gcc481
 
 # If script above cannot be sourced, manually set cmsenv alias
 if ! type cmsenv > /dev/null; then
