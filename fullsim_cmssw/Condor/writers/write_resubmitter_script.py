@@ -16,10 +16,11 @@ def write_resubmitter_script(work_space, model_name, n_jobs):
 # Resubmit failed jobs by running this script. It checks to see if the output nanoAOD file is present for each seed.
 # Note that this should only be performed when all jobs have finished running.
 : "${{SVJ_TOP_DIR:?Please source the setup script before running this as environment variables are required.}}; exit"
+work_space="{work_space}"
     for i in $(seq 0 1 {n_jobs_for_loop}); do
-    if [ ! -r {work_space}/output/{model}_NANOAOD_$i.root ]; then
+    if [ ! -r $work_space/output/{model}_NANOAOD_$i.root ] || (( $(stat -c%s $work_space/output/{model}_NANOAOD_$i.root) == 0 )); then
         echo "Found no output file for {model} with seed $i. Resubmitting..."
-        condor_submit -batch-name {model} {work_space}/submission_scripts/{model}/condor_submission_$i.job
+        condor_submit -batch-name {model} $work_space/submission_scripts/{model}/condor_submission_$i.job
     fi
 done
 """.format(n_jobs_for_loop=n_jobs_for_loop, work_space=work_space, model=model_name)
@@ -36,4 +37,4 @@ if __name__ == '__main__':
     parser.add_argument("n_jobs", type=int, help="Number of jobs to be submitted")
     args = parser.parse_args()
 
-    write_resubmitter_script(*args)
+    write_resubmitter_script(args.work_space, args.model_name, args.n_jobs)
