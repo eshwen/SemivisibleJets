@@ -48,9 +48,9 @@ def main(args):
     # Append cross section to config file if not included already
     with open(args.config, 'r+') as f:
         config_str = f.read()
-        f.seek(0)
         if str(x_sec_mg) not in config_str:
             print Fore.CYAN + "Appending config file with cross section as calculated by MadGraph..."
+            f.seek(0)
             config_lines = f.readlines()
             f.seek(0)
             f.truncate()
