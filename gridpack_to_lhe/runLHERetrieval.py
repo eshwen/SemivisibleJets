@@ -43,15 +43,13 @@ def main(args):
     # Get cross section from gridpack generation log file
     with open(os.path.join(lhe_gen_dir, 'gridpack_generation.log'), 'r') as f:
         log_str = f.read()
-        x_sec = re.search("(?<=Cross-section :   )(\d*.\d+)", log_str).group(0)
+        x_sec_mg = re.search("(?<=Cross-section :   )(\d*.\d+)", log_str).group(0)
 
     # Append cross section to config file if not included already
     with open(args.config, 'r+') as f:
         config_str = f.read()
         f.seek(0)
-        if str(x_sec) in config_str:
-            print "No need to append config file with new cross section!"
-        else:
+        if str(x_sec_mg) not in config_str:
             print Fore.CYAN + "Appending config file with cross section as calculated by MadGraph..."
             config_lines = f.readlines()
             f.seek(0)
