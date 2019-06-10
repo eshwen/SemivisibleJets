@@ -45,6 +45,7 @@ def write_GS_fragment(config, GS_dir):
 
     if process_type == 's-channel':
         x_sec = xsec_from_dict(os.path.join(os.environ['SVJ_TOP_DIR'], 'utils/xsecs_{}.yaml'.format(process_type)), m_med)
+        print Fore.CYAN + "Taking cross section from dictionary instead of MadGraph's calculation..."
     else:
         x_sec = x_sec_mg
 
