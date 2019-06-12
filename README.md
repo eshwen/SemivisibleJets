@@ -373,8 +373,8 @@ _FINISH_
 ```bash
 pip install --user --upgrade -r requirements.txt
 ```
-- Some rudimentary plotting, for a quick look at distributions, can be done by running [utils/plotSVJHistos.py](plotSVJHistos.py). You just need to specify the root files in the list `files`.
-
+- Some rudimentary plotting, for a quick look at distributions, can be done by running [plotSVJHistos.py](utils/plotSVJHistos.py). You just need to specify the root files in the list `files`.
+- This repository utlises many software packages. To cite any of them, I have listed their BibTeX entries in [software_references.bib](utils/software_references.bib)
 
 
 ## Contact <a name="contact"></a>
@@ -389,7 +389,8 @@ For questions or issues please contact:
 
 ## To do <a name="todo"></a>
 
-- Fix bug in FullSim Condor step, where CMSSW_7_1_30 (maybe other ones as well, but I haven't checked) won't compile on SLC7 machines due to architecture. See http://cms-sw.github.io/singularity.html. Try to make it a non-issue for end user (i.e., make it work easily with both SLC6 an SLC7 so they don't have to think about what machine they need to use)
+- See Kevin's email on how to get his gen fragment so can hadronise to multiple dark mesons (changing `n_f`) and decay to multiple quarks properly
+- Try to fix repeated "ProductNotFound" errors. Recompiling CMSSW_7_1_30 at start of job seems to fix, but causes heavy load on system if all jobs are doing it. Could potentially let each job set up its own CMSSW release with own Pythia8 so they don't interfere. Once I've fixed this issue such that all jobs run consistently, make a tag so a working copy is cemented.
 - Change gen fragment such that the dark meson can decay into more than just d quarks. Would need to figure out how to distribute remaining branching fraction (1-r_inv) amongst the decays.
 - Change gen fragment such that there's hadronisation to two dark mesons (so n_f = 2 physical makes sense), with one species decaying invisibly and one to SM quarks. But would need to figure out how to implement r_inv such that the proportion of invisibly decaying dark mesons = r_inv.
 - Consider changing dark quarks to spin-1/2 in MadGraph model files (would have to change `spin` attribute in particles.py to '2'). Find out if that will affect decays or anything. Would also need to consider the spin of the dark hadron (see HV documentation in Pythia for PDGIDs).
