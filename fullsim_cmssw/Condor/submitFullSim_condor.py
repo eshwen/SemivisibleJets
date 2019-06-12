@@ -50,7 +50,7 @@ request_disk = {disk}
 request_memory = 5000
 # Max runtime (seconds) determined by n_events
 +MaxRuntime = {runtime}
-# Require SLC6 machines as CMSSW_7_1_30 can't run on SLC7/CentOS7
+# Require SLC6 machines as CMSSW_7_1_X can't run on SLC7/CentOS7
 Requirements = (OpSysAndVer == "SLCern6")
 # Number of instances of job to run
 queue {queue}
@@ -103,7 +103,7 @@ def main(args):
         os.environ['X509_USER_PROXY'] = grid_cert_path
 
     # Dict for architectures corresponding to different CMSSW versions
-    init_cmssw = 'CMSSW_7_1_30'
+    init_cmssw = 'CMSSW_7_1_38_patch1'  # this version has CMSSW plug-in required by gen fragment filters
     init_arch = 'slc6_amd64_gcc481'
     cmssw_archs = {
         init_cmssw: init_arch,

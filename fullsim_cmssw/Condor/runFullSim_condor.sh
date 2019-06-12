@@ -28,7 +28,7 @@ if ! type cmsenv > /dev/null; then
 fi
 
 # Write so CMSSW versions aren't hardcoded, but can take from dict in submitFullSim_condor.py or something
-cd CMSSW_7_1_30/src
+cd CMSSW_7_1_38_patch1/src
 cmsenv
 #scram b
 
@@ -80,7 +80,7 @@ rm ${model_name}_MINIAOD_${seed}.root
 mv ${model_name}_NANOAOD_${seed}.root $work_space/output/
 
 echo -e "\e[1;36m**** CLEANING UNNECESSARY FILES ****\e[0m"
-rm $work_space/CMSSW_7_1_30/src/${model_name}_GEN_SIM_${seed}.py
+rm $work_space/CMSSW_7_1_38_patch1/src/${model_name}_GEN_SIM_${seed}.py
 rm $work_space/CMSSW_8_0_21/src/${model_name}_{AOD_step1,AOD_step2,MINIAOD}_${seed}.py
 rm $work_space/CMSSW_9_4_4/src/${model_name}_NANOAOD_${seed}.py
 
