@@ -10,7 +10,7 @@ from colorama import Fore, init
 from load_yaml_config import load_yaml_config
 import os
 from subprocess import call
-from writers.write_GS_fragment import write_GS_fragment
+from writers.write_GS_fragment import WriteGenSimFragment
 from writers.write_combine_script import write_combine_script
 from writers.write_resubmitter_script import write_resubmitter_script
 
@@ -133,24 +133,20 @@ def main(args):
     else:
         call('{}/run_singularity.sh "{}"'.format(this_dir, _source), shell=True)
 
-    # Create directories for gen fragments to occupy
+    # Create additional directories
     gen_frag_dir = os.path.join(work_space, init_cmssw, 'src', 'Configuration', 'GenProduction', 'python')
-    if not os.path.exists(gen_frag_dir):
-        os.makedirs(gen_frag_dir)
-
-    # Create directories for logs, submission scripts and GS fragments
     extra_fullsim_dirs = [
-        'logs/{}'.format(model_name),
-        'output',
-        'submission_scripts/{}'.format(model_name),
+        gen_frag_dir,
+        '{}/logs/{}'.format(work_space, model_name),
+        '{}/output'.format(work_space),
+        '{}/submission_scripts/{}'.format(work_space, model_name),
     ]
-
     for dir in extra_fullsim_dirs:
-        if not os.path.exists(os.path.join(work_space, dir)):
-            os.makedirs(os.path.join(work_space, dir))
+        if not os.path.exists(dir):
+            os.makedirs(dir)
 
     # Create the gen fragment
-    gen_frag = os.path.basename(write_GS_fragment(args.config, gen_frag_dir))
+    gen_frag = os.path.basename(WriteGenSimFragment(args.config, gen_frag_dir).write_fragment())
 
     # Create scripts to hadd output files and resubmit failed jobs
     write_combine_script(work_space, model_name)
