@@ -40,7 +40,7 @@ cmsDriver.py Configuration/GenProduction/python/${gen_fragment} --filein file:${
 # Add to CMSSW config in case stringent hadronisation cuts remove all events from a job
 sed -i "s/process.options = cms.untracked.PSet(/process.options = cms.untracked.PSet(SkipEvent = cms.untracked.vstring(\'ProductNotFound\'),/g" ${model_name}_GEN_SIM_${seed}.py
 # Add to CMSSW config to ensure Z2 and dark quark filters are used
-sed -i "s/process.generator */(process.generator + process.darkhadronZ2filter + process.darkquarkFilter) */g" ${model_name}_GEN_SIM_${seed}.py
+sed -i "s/seq = process.generator/seq = (process.generator + process.darkhadronZ2filter + process.darkquarkFilter)/g" ${model_name}_GEN_SIM_${seed}.py
 
 cmsRun ${model_name}_GEN_SIM_${seed}.py
 echo -e "\e[1;35m**** CREATED GEN-SIM FILE ****\e[0m"
