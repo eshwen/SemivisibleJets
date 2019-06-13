@@ -20,13 +20,21 @@ unset CC
 # Allow use of aliases (specifically cvmfs ones)
 shopt -s expand_aliases
 
+if [ -z "$SVJ_TOP_DIR" ]; then
+    this_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+    cd ${this_dir}/../../
+    source setup.sh
+fi
+
 export SCRAM_ARCH="$arch"
 source /cvmfs/cms.cern.ch/cmsset_default.sh
 pushd $work_space/$cmssw_ver >/dev/null 2>&1
 cmsenv
 
-if [[ "$PYTHIA8DATA" == "${work_space}/${cmssw_ver}/"* ]]; then
+if [[ "$PYTHIA8DATA" == "${work_space}/${cmssw_ver}/pythia8"* ]]; then
     echo -e "\e[1;35mThe new version of Pythia has already been installed. No need to do it again.\e[0m"
+    cmsenv
+    scram b
 else
     # For Pythia 8.230
     cp $SVJ_TOP_DIR/utils/install_pythia8230.sh .
