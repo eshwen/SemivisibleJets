@@ -13,4 +13,4 @@ r_inv: 0.3
 
 model_name: DMsimp_SVJ_t_mPhi-1000_mDQ-10_rinv-0p3
 total_events: 50000
-x_sec: 96.99
+x_sec_mg: 96.99

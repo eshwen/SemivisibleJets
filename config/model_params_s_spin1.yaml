@@ -10,7 +10,7 @@ m_med: 2000
 m_d: 40
 n_f: 1
 r_inv: 0.7
-x_sec: 6.707
+x_sec_mg: 6.707
 
 model_name: DMsimp_SVJ_s_spin1_mZp-2000_mDQ-40_rinv-0p7
 total_events: 50000
