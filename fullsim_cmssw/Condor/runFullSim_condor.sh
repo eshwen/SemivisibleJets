@@ -28,7 +28,10 @@ if ! type cmsenv > /dev/null; then
 fi
 
 # Write so CMSSW versions aren't hardcoded, but can take from dict in submitFullSim_condor.py or something
-cd CMSSW_7_1_38_patch1/src
+cmssw_gs="CMSSW_7_1_38_patch1"
+cmssw_aod="CMSSW_8_0_21"
+cmssw_nano="CMSSW_9_4_4"
+cd $cmssw_gs/src
 cmsenv
 #scram b
 
@@ -45,8 +48,8 @@ sed -i "s/seq = process.generator/seq = (process.generator + process.darkhadronZ
 cmsRun ${model_name}_GEN_SIM_${seed}.py
 echo -e "\e[1;35m**** CREATED GEN-SIM FILE ****\e[0m"
 
-mv ${model_name}_GEN_SIM_${seed}.root ../../CMSSW_8_0_21/src/
-cd ../../CMSSW_8_0_21/src
+mv ${model_name}_GEN_SIM_${seed}.root ../../$cmssw_aod/src/
+cd ../../$cmssw_aod/src
 cmsenv
 
 cmsDriver.py step1 --filein file:${model_name}_GEN_SIM_${seed}.root --fileout file:${model_name}_AOD_step1_${seed}.root --pileup_input filelist:$pu_file --mc --eventcontent PREMIXRAW --datatier GEN-SIM-RAW --conditions 80X_mcRun2_asymptotic_2016_TrancheIV_v6 --step DIGIPREMIX_S2,DATAMIX,L1,DIGI2RAW,HLT:@frozen2016 --datamix PreMix --era Run2_2016 --python_filename ${model_name}_AOD_step1_${seed}.py --no_exec --customise Configuration/DataProcessing/Utils.addMonitoring -n $n_events
@@ -67,8 +70,8 @@ cmsRun ${model_name}_MINIAOD_${seed}.py
 echo -e "\e[1;35m**** CREATED MINIAOD FILE ****\e[0m"
 rm ${model_name}_AOD_step2_${seed}.root
 
-mv ${model_name}_MINIAOD_${seed}.root ../../CMSSW_9_4_4/src/
-cd ../../CMSSW_9_4_4/src
+mv ${model_name}_MINIAOD_${seed}.root ../../$cmssw_nano/src/
+cd ../../$cmssw_nano/src
 cmsenv
 
 cmsDriver.py --filein file:${model_name}_MINIAOD_${seed}.root --fileout file:${model_name}_NANOAOD_${seed}.root --mc --eventcontent NANOAODSIM --datatier NANOAODSIM --conditions auto:run2_mc -s NANO --era Run2_2016,run2_miniAOD_80XLegacy --python_filename ${model_name}_NANOAOD_${seed}.py --no_exec -n $n_events
@@ -80,8 +83,8 @@ rm ${model_name}_MINIAOD_${seed}.root
 mv ${model_name}_NANOAOD_${seed}.root $work_space/output/
 
 echo -e "\e[1;36m**** CLEANING UNNECESSARY FILES ****\e[0m"
-rm $work_space/CMSSW_7_1_38_patch1/src/${model_name}_GEN_SIM_${seed}.py
-rm $work_space/CMSSW_8_0_21/src/${model_name}_{AOD_step1,AOD_step2,MINIAOD}_${seed}.py
-rm $work_space/CMSSW_9_4_4/src/${model_name}_NANOAOD_${seed}.py
+rm $work_space/$cmssw_gs/src/${model_name}_GEN_SIM_${seed}.py
+rm $work_space/$cmssw_aod/src/${model_name}_{AOD_step1,AOD_step2,MINIAOD}_${seed}.py
+rm $work_space/$cmssw_nano/src/${model_name}_NANOAOD_${seed}.py
 
 exit
