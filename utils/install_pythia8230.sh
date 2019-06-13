@@ -55,8 +55,14 @@ fi
 
 echo "You can now link to the pythia8 libraries through scram!"
 
+# Subtlety where running 'scram b echo_pythia8_USED_BY' gives path prefix of "self" in CMSSW_7_1_30 but prefix of "cmssw" in CMSSW_7_1_38_patch1
+if [[ "$CMSSW_BASE" == *"7_1_38_patch1"*  ]]; then
+    grep_str="cmssw"
+else
+    grep_str="self"
+fi
 # better to use 'scram b checkdeps' but this is not available in 71X
-scram b echo_pythia8_USED_BY | tr ' ' '\n' | grep "self" | cut -d'/' -f2-3 | sort -u > pkgs.txt
+scram b echo_pythia8_USED_BY | tr ' ' '\n' | grep $grep_str | cut -d'/' -f2-3 | sort -u > pkgs.txt
 # update CMSSW dependencies
 cd $CMSSW_BASE/src
 eval `scramv1 runtime -sh`
