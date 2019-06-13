@@ -70,6 +70,13 @@ queue {queue}
     return job_file
 
 
+def run_in_slc6_env(command, target_arch="slc6_amd64_gcc481", current_sys=this_sys, singularity_dir=this_dir):
+    if all(x.startswith('slc6') for x in [current_sys, target_arch]):
+        call(command, shell=True)
+    else:
+        call('{}/run_singularity.sh "{}"'.format(singularity_dir, command), shell=True)
+
+
 def main(args):
     # Load YAML config into a dictionary and assign values to variables for cleanliness
     input_params = load_yaml_config(args.config)
@@ -117,11 +124,11 @@ def main(args):
             print "{} release already exists!".format(version)
         else:
             _run = '{}/sourceCMSSW.sh {} {} {}'.format(this_dir, version, arch, work_space)
-            if this_sys.startswith('slc6'):
-                call(_run, shell=True)
-            else:
-                # Use singularity to initialise CMSSW in a SLC6 env
-                call('{}/run_singularity.sh "{}"'.format(this_dir, _run), shell=True)
+            run_in_slc6_env(_run, arch)
+
+    #Install new Pythia version if not already done so
+    _source = '{}/sourceNewPythiaVer.sh {} {} {}'.format(this_dir, work_space, init_cmssw, init_arch)
+    run_in_slc6_env(_source)
 
     if os.getcwd() != this_dir:
         os.chdir(this_dir)
@@ -141,12 +148,9 @@ def main(args):
     # Create the gen fragment
     gen_frag = os.path.basename(WriteGenSimFragment(args.config, gen_frag_dir).write_fragment())
 
-    # Install new Pythia version if not already done so. Use singularity if required. Will compile to ensure gen fragment can be linked to
-    _source = '{}/sourceNewPythiaVer.sh {} {} {}'.format(this_dir, work_space, init_cmssw, init_arch)
-    if all(x.startswith('slc6') for x in [this_sys, init_arch]):
-        call(_source, shell=True)
-    else:
-        call('{}/run_singularity.sh "{}"'.format(this_dir, _source), shell=True)
+    # Compile after everything is written to ensure gen fragment can be linked to
+    _compile = '{}/utils/compile_cmssw.sh {} {} {}'.format(os.environ['SVJ_TOP_DIR'], work_space, init_cmssw, init_arch)
+    run_in_slc6_env(_compile)
 
     # Create scripts to hadd output files and resubmit failed jobs
     write_combine_script(work_space, model_name)
