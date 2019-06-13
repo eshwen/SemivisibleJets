@@ -37,8 +37,7 @@ if [[ "$PYTHIA8DATA" == "${work_space}/${cmssw_ver}/pythia8"* ]]; then
     scram b
 else
     # For Pythia 8.230
-    cp $SVJ_TOP_DIR/utils/install_pythia8230.sh .
-    ./install_pythia8230.sh
+    $SVJ_TOP_DIR/utils/install_pythia8230.sh
     scram b
     cmsenv
     cd $CMSSW_BASE/src
