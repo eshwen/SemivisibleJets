@@ -2,7 +2,7 @@
 
 # This script allows a new version of Pythia not present in the architecutre for a given CMSSW version to be downloaded and linked to CMSSW.
 
-if [ -z $1 ]; then
+if [ -z $3 ]; then
     usr_msg="Usage ./sourceNewPythiaVer.sh WORK_SPACE CMSSW_VER ARCH"
     $SVJ_TOP_DIR/utils/print_bash_script_usage.sh "$usr_msg"
     exit
