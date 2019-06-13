@@ -126,13 +126,6 @@ def main(args):
     if os.getcwd() != this_dir:
         os.chdir(this_dir)
 
-    # Install new Pythia version if not already done so. Use singularity if required
-    _source = '{}/sourceNewPythiaVer.sh {} {} {}'.format(this_dir, work_space, init_cmssw, init_arch)
-    if all(x.startswith('slc6') for x in [this_sys, init_arch]):
-        call(_source, shell=True)
-    else:
-        call('{}/run_singularity.sh "{}"'.format(this_dir, _source), shell=True)
-
     # Create additional directories
     gen_frag_dir = os.path.join(work_space, init_cmssw, 'src', 'Configuration', 'GenProduction', 'python')
     extra_fullsim_dirs = [
@@ -147,6 +140,13 @@ def main(args):
 
     # Create the gen fragment
     gen_frag = os.path.basename(WriteGenSimFragment(args.config, gen_frag_dir).write_fragment())
+
+    # Install new Pythia version if not already done so. Use singularity if required. Will compile to ensure gen fragment can be linked to
+    _source = '{}/sourceNewPythiaVer.sh {} {} {}'.format(this_dir, work_space, init_cmssw, init_arch)
+    if all(x.startswith('slc6') for x in [this_sys, init_arch]):
+        call(_source, shell=True)
+    else:
+        call('{}/run_singularity.sh "{}"'.format(this_dir, _source), shell=True)
 
     # Create scripts to hadd output files and resubmit failed jobs
     write_combine_script(work_space, model_name)
