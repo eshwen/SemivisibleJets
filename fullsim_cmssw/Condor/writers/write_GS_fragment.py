@@ -205,6 +205,8 @@ generator = cms.EDFilter("Pythia8HadronizerFilter",
             '4900213:addChannel = 1 {remain_BR_democ:.3f} 91 5 -5'
 """.format(m_dark_meson=self.m_dark_meson, m_dark_stable=self.m_dark_stable, r_inv=self.r_inv, remain_BR_democ=self.remaining_br_democratic(5),
            remain_BR_c=self.remaining_br_mass_insertion(quark_id=4), remain_BR_b=self.remaining_br_mass_insertion(quark_id=5))
+        elif self.n_f == 1:
+            ret = "\n"
         else:
             raise ValueError("The value of n_f = {} specified is not allowed. Please choose either n_f = 1 or n_f = 2".format(self.n_f))
         return ret
