@@ -146,7 +146,7 @@ def main(args):
             os.makedirs(dir)
 
     # Create the gen fragment
-    gen_frag = os.path.basename(WriteGenSimFragment(args.config, gen_frag_dir).write_fragment())
+    gen_frag = os.path.basename(WriteGenSimFragment(args.config, gen_frag_dir).out_file)
 
     # Compile after everything is written to ensure gen fragment can be linked to
     _compile = '{}/utils/compile_cmssw.sh {} {} {}'.format(os.environ['SVJ_TOP_DIR'], work_space, init_cmssw, init_arch)
