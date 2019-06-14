@@ -56,15 +56,14 @@ class WriteGenSimFragment(object):
         #    print Fore.MAGENTA + "Recalculated alpha_d =", alpha_d
 
     def get_xsec(self):
-        """ Get cross section from dictionary if possible, to replace value calculated by MadGraph """
+        """ Get cross section from dictionary if possible to replace value calculated by MadGraph """
         if self.process_type == 's-channel':
             self.x_sec = xsec_from_dict(os.path.join(os.environ['SVJ_TOP_DIR'], 'utils/xsecs_{}.yaml'.format(self.process_type)), self.m_med)
             print Fore.CYAN + "Taking cross section from dictionary instead of MadGraph's calculation..."
         else:
             self.x_sec = self.x_sec_mg
 
-    def get_quark_mass_dict(self):
-        """ Return dictionary of quark rest masses """
+    def get_quark_mass_dict(self, quark_type):
         quark_masses = {  # PDGID: mass (GeV)
             1: 0.0048,    # down
             2: 0.0023,    # up
@@ -73,20 +72,24 @@ class WriteGenSimFragment(object):
             5: 4.18,      # bottom
         }
 
-        # Check if dark hadron mass > b quark. If so, all quarks are in the mix. Otherwise remove b from calculations
-        if (self.m_dark_meson > quark_masses[5]):
-            return quark_masses
+        if quark_type == "heavy":
+            return {k: v for k, v in quark_masses.items() if k > 3}
+        elif quark_type == "light":
+            return {k: v for k, v in quark_masses.items() if k < 4}
         else:
-            return {k: v for k, v in quark_masses.items() if k < 5}
+            return quark_masses
 
     def remaining_br_democratic(self, n_quarks):
         """ Democratically allocate remaining BR (1 - r_inv)/n_quarks """
         # Can expand this in the future to take the running b- and c-quark masses into account
         return (1.0 - self.r_inv) / float(n_quarks)
 
-    def remaining_br_mass_insertion(self, quark_id):
+    def remaining_br_mass_insertion(self, n_quarks, quark_id, quark_type="heavy"):
         """ Calculating running quark masses and use to calculate branching ratio """
-        m_q_dict = self.get_quark_mass_dict()
+        if quark_type is not None:
+            m_q_dict = self.get_quark_mass_dict(quark_type)
+        else:
+            raise ValueError("You've specified a mass insertion decay but not the types of quark it applies to")
         normaliser = sum([MassRunner(mass, len(m_q_dict), self.m_dark_meson, self.n_f).m_run ** 2 for mass in m_q_dict.values()])
         m_run = MassRunner(m_q_dict[quark_id], len(m_q_dict), self.m_dark_meson, self.n_f).m_run
         remain_br = (1.0 - self.r_inv) * (m_run ** 2) / normaliser
@@ -204,7 +207,7 @@ generator = cms.EDFilter("Pythia8HadronizerFilter",
             '4900213:addChannel = 1 {remain_BR_democ:.3f} 91 4 -4',
             '4900213:addChannel = 1 {remain_BR_democ:.3f} 91 5 -5'
 """.format(m_dark_meson=self.m_dark_meson, m_dark_stable=self.m_dark_stable, r_inv=self.r_inv, remain_BR_democ=self.remaining_br_democratic(5),
-           remain_BR_c=self.remaining_br_mass_insertion(quark_id=4), remain_BR_b=self.remaining_br_mass_insertion(quark_id=5))
+           remain_BR_c=self.remaining_br_mass_insertion(2, 4), remain_BR_b=self.remaining_br_mass_insertion(2, 5))
         else:
             raise ValueError("The value of n_f = {} specified is not allowed. Please choose either n_f = 1 or n_f = 2".format(self.n_f))
         return ret
