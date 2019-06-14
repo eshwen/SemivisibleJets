@@ -7,13 +7,12 @@ class MassRunner(object):
     """
     Calculate running quark masses
     """
-    def __init__(self, quark_mass, nfq, scale, n_f):
+    def __init__(self, m_q, nfq, scale, n_f):
         self.Lambda = 0.218  # QCD scale in GeV
-        self.m_q = quark_mass
-        self.nfq = nfq  # number of quark flavours to consider
-        self.scale = scale  # dark hadron mass
-        self.n_f = n_f  # number of dark flavours
-        self.m_run = self.run(self.m_q, self.nfq, self.scale, self.n_f)
+        self.m_run = self.run(m_q,  # quark mass
+                              nfq,  # number of quark flavours to consider
+                              scale,  # dark hadron mass
+                              n_f)  # number of dark flavours
 
     # RG terms, assuming n_c = 3 (QCD)
     def c(self):
