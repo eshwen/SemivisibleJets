@@ -88,8 +88,11 @@ class WriteGenSimFragment(object):
         """ Calculating running quark masses and use to calculate branching ratio """
         m_q_dict = self.get_quark_mass_dict()
         normaliser = sum([MassRunner(mass, len(m_q_dict), self.m_dark_meson, self.n_f).m_run ** 2 for mass in m_q_dict.values()])
-        m_run = MassRunner(m_q_dict[quark_id], len(m_q_dict), self.m_dark_meson, self.n_f).m_run
-        remain_br = (1.0 - self.r_inv) * (m_run ** 2) / normaliser
+        try:
+            m_run = MassRunner(m_q_dict[quark_id], len(m_q_dict), self.m_dark_meson, self.n_f).m_run
+            remain_br = (1.0 - self.r_inv) * (m_run ** 2) / normaliser
+        except KeyError:  # i.e., if m_dark_meson < b quark
+            remain_br = 0
         return remain_br
 
     def write_fragment(self):
@@ -131,7 +134,14 @@ generator = cms.EDFilter("Pythia8HadronizerFilter",
 
         if self.process_type == 's-channel':
             f.write("""
-            '4900023:m0 = {}', # explicitly stating Z' mass in case it's not picked up properly by Pythia""".format(self.m_med))
+            '4900023:m0 = {}', # explicitly stating Z' mass in case it's not picked up properly by Pythia
+            '4900023:oneChannel = 1 0.982 102 4900101 -4900101', # explicitly stating Z' to dark quarks in case it's not picked up properly by Pythia
+            '4900023:addChannel = 1 0.003 102 1 -1', # including small branching ratios to SM quarks for realism
+            '4900023:addChannel = 1 0.003 102 2 -2',
+            '4900023:addChannel = 1 0.003 102 3 -3',
+            '4900023:addChannel = 1 0.003 102 4 -4',
+            '4900023:addChannel = 1 0.003 102 5 -5',
+            '4900023:addChannel = 1 0.003 102 6 -6',""".format(self.m_med))
         elif self.process_type == 't-channel':
             f.write("""
             # ADD SHIT HERE""")
@@ -143,29 +153,29 @@ generator = cms.EDFilter("Pythia8HadronizerFilter",
             '51:m0 = {m_dmatter:.1f}', # Stable dark particle mass. PDGID corresponds to spin-0 dark matter
             '51:isResonance = false',
             '4900113:oneChannel = 1 {r_inv:.3f} 51 -51', # Dark meson decay into stable dark particles with branching fraction r_inv
-            '4900113:addChannel = 1 {remain_br:.3f} 91 1 -1', # Dark meson decay into down quarks
-            '4900113:addChannel = 1 {remain_br:.3f} 91 2 -2', # Dark meson decay into up quarks
-            '4900113:addChannel = 1 {remain_br:.3f} 91 3 -3', # Dark meson decay into strange quarks
-            '4900113:addChannel = 1 {remain_br:.3f} 91 4 -4', # Dark meson decay into charm quarks
-            '4900113:addChannel = 1 {remain_br:.3f} 91 5 -5', # Dark meson decay into bottom quarks
+            '4900113:addChannel = 1 {remain_br:.3f} 91 1 -1', # Dark meson decay into SM quarks
+            '4900113:addChannel = 1 {remain_br:.3f} 91 2 -2',
+            '4900113:addChannel = 1 {remain_br:.3f} 91 3 -3',
+            '4900113:addChannel = 1 {remain_br:.3f} 91 4 -4',
+            '4900113:addChannel = 1 {remain_br:.3f} 91 5 -5',
 """.format(m_dq=self.m_d, m_dmeson=self.m_dark_meson, m_dmatter=self.m_dark_stable, r_inv=self.r_inv, remain_br=remain_br))
 
         if self.n_f == 2:
             f.write(self.get_extra_decays())
         f.write("""
-            'HiddenValley:probVector = {prob_vector}', # ratio of number of vector mesons over scalar meson
-            #'HiddenValley:ffbar2Zv = on', # production of f fbar -> Zv (4900023). it works only in the case of narrow width approx
-            'HiddenValley:fragment = on', # enable hidden valley fragmentation
-            'HiddenValley:Ngauge = 2', # dark sector is SU(2)
-            #'HiddenValley:spinFv = 0', # spin of the HV partners of the SM fermions
-            'HiddenValley:FSR = on', # enable final-state shower of HV gammav
-            #'HiddenValley:NBFlavRun = 0', # number of bosonic flavor for running
-            #'HiddenValley:NFFlavRun = 2', # number of fermionic flavor for running
-            'HiddenValley:alphaOrder = 1', # order at which running coupling runs
-            'HiddenValley:Lambda = {Lambda_dark:.2f}', # parameter used for running coupling
-            'HiddenValley:nFlav = {nFlav:.0f}', # this dictates what kind of hadrons come out of the shower, if nFlav = 2, for example, there will be many different flavor of hadrons
-            'HiddenValley:pTminFSR = {pTminFSR:.2f}', # cutoff for the showering, should be roughly confinement scale
-            #'TimeShower:nPartonsInBorn = 2', # number of coloured particles (before resonance decays) in born matrix element
+            'HiddenValley:probVector = {prob_vector}', # Ratio of number of vector mesons over scalar meson
+            #'HiddenValley:ffbar2Zv = on', # Production of f fbar -> Zv (4900023). It works only in the case of narrow width approx
+            'HiddenValley:fragment = on', # Enable hidden valley fragmentation
+            'HiddenValley:Ngauge = 2', # As dark sector is SU(2)
+            #'HiddenValley:spinFv = 0', # Spin of the HV partners of the SM fermions
+            'HiddenValley:FSR = on', # Enable final-state shower of HV gammav
+            #'HiddenValley:NBFlavRun = 0', # Number of bosonic flavor for running
+            #'HiddenValley:NFFlavRun = 2', # Number of fermionic flavor for running
+            'HiddenValley:alphaOrder = 1', # Order at which running coupling runs
+            'HiddenValley:Lambda = {Lambda_dark:.2f}', # Dark confinement scale
+            'HiddenValley:nFlav = {nFlav:.0f}', # This dictates what kind of hadrons come out of the shower. If nFlav = 2, for example, there will be many different flavor of hadrons
+            'HiddenValley:pTminFSR = {pTminFSR:.2f}', # Cut-off for the showering, should be roughly confinement scale
+            #'TimeShower:nPartonsInBorn = 2', # Number of coloured particles (before resonance decays) in born matrix element
             ),
         parameterSets = cms.vstring('pythia8CommonSettings',
                                     'pythia8CUEP8M1Settings',
@@ -187,8 +197,8 @@ generator = cms.EDFilter("Pythia8HadronizerFilter",
         if self.n_f == 2:
             ret = """
             '4900111:m0 = {m_dark_meson:.0f}', # Dark meson mass. PDGID corresponds to pivDiag HV spin-0 meson that can decay into SM particles
-            '4900211:m0 = {m_dark_meson:.0f}', # Dark meson mass. PDGID corresponds to pivUp HV spin-0 meson that is stable and invisible
-            '4900213:m0 = {m_dark_meson:.0f}', # Dark meson mass. PDGID corresponds to rhovUp HV spin-1 meson that is stable and invisible
+            '4900211:m0 = {m_dark_meson:.0f}', # Dark meson mass. PDGID corresponds to pivUp HV spin-0 meson that is stable and invisible by default
+            '4900213:m0 = {m_dark_meson:.0f}', # Dark meson mass. PDGID corresponds to rhovUp HV spin-1 meson that is stable and invisible by default
             '53:m0 = {m_dark_stable:.1f}', # Stable dark particle mass. PDGID corresponds to spin-1 dark matter
             '53:isResonance = false',
             '4900111:oneChannel = 1 {r_inv:.3f} 0 51 -51',
