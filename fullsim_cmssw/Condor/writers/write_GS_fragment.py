@@ -2,6 +2,7 @@ import calc_dark_params as cdp
 from colorama import Fore, init
 import os
 from load_yaml_config import load_yaml_config
+from mass_runner import MassRunner
 from xsec_from_dict import xsec_from_dict
 
 
@@ -9,7 +10,6 @@ class WriteGenSimFragment(object):
     """
     Write GEN-SIM fragment for job and return its path.
     """
-
     def __init__(self, config, GS_dir):
         """ Load YAML config into a dictionary and assign values to variables for cleanliness """
         _config = load_yaml_config(config)
@@ -63,11 +63,37 @@ class WriteGenSimFragment(object):
         else:
             self.x_sec = self.x_sec_mg
 
-    def calc_remaining_br(self, n_quarks):
+    def get_quark_mass_dict(self, quark_type):
+        quark_masses = {  # PDGID: mass (GeV)
+            1: 0.0048,    # down
+            2: 0.0023,    # up
+            3: 0.095,     # strange
+            4: 1.275,     # charm
+            5: 4.18,      # bottom
+        }
+
+        if quark_type == "heavy":
+            return {k: v for k, v in quark_masses.items() if k > 3}
+        elif quark_type == "light":
+            return {k: v for k, v in quark_masses.items() if k < 4}
+        else:
+            return quark_masses
+
+    def remaining_br_democratic(self, n_quarks):
+        """ Democratically allocate remaining BR (1 - r_inv)/n_quarks """
         # Can expand this in the future to take the running b- and c-quark masses into account
-        remain_br = (1.0 - self.r_inv) / float(n_quarks)
-        br_helper_str = "democratically allocating remaining BR (1 - r_inv)/{}".format(n_quarks)
-        return remain_br, br_helper_str
+        return (1.0 - self.r_inv) / float(n_quarks)
+
+    def remaining_br_mass_insertion(self, n_quarks, quark_id, quark_type="heavy"):
+        """ Calculating running quark masses and use to calculate branching ratio """
+        if quark_type is not None:
+            m_q_dict = self.get_quark_mass_dict(quark_type)
+        else:
+            raise ValueError("You've specified a mass insertion decay but not the types of quark it applies to")
+        normaliser = sum([MassRunner(mass, len(m_q_dict), self.m_dark_meson, self.n_f).m_run ** 2 for mass in m_q_dict.values()])
+        m_run = MassRunner(m_q_dict[quark_id], len(m_q_dict), self.m_dark_meson, self.n_f).m_run
+        remain_br = (1.0 - self.r_inv) * (m_run ** 2) / normaliser
+        return remain_br
 
     def write_fragment(self):
         """ Actually write the gen fragment """
@@ -104,8 +130,7 @@ generator = cms.EDFilter("Pythia8HadronizerFilter",
 """.format(cross_section=self.x_sec))
 
         f.write("""
-        processParameters = cms.vstring(
-""")
+        processParameters = cms.vstring(""")
 
         if self.process_type == 's-channel':
             f.write("""
@@ -114,24 +139,24 @@ generator = cms.EDFilter("Pythia8HadronizerFilter",
             f.write("""
             # ADD SHIT HERE""")
 
-        remain_br, br_helper_str = self.calc_remaining_br(5)
+        remain_br = self.remaining_br_democratic(5)
         f.write("""
-            '4900101:m0 = {m_dark_quark:.0f}', # explicitly stating dark quark mass in case it's not picked up properly by Pythia
-            '4900113:m0 = {m_dark_meson:.0f}', # Dark meson mass. PDGID corresponds to rhovDiag HV spin-1 meson that can decay into SM particles
-            '51:m0 = {m_dark_stable:.1f}', # Stable dark particle mass. PDGID corresponds to spin-0 dark matter
+            '4900101:m0 = {m_dq:.0f}', # explicitly stating dark quark mass in case it's not picked up properly by Pythia
+            '4900113:m0 = {m_dmeson:.0f}', # Dark meson mass. PDGID corresponds to rhovDiag HV spin-1 meson that can decay into SM particles
+            '51:m0 = {m_dmatter:.1f}', # Stable dark particle mass. PDGID corresponds to spin-0 dark matter
             '51:isResonance = false',
             '4900113:oneChannel = 1 {r_inv:.3f} 51 -51', # Dark meson decay into stable dark particles with branching fraction r_inv
-            '4900113:addChannel = 1 {remain_BR:.3f} 91 1 -1', # Dark meson decay into down quarks, {sm_decay_helper}
-            '4900113:addChannel = 1 {remain_BR:.3f} 91 2 -2', # Dark meson decay into up quarks, {sm_decay_helper}
-            '4900113:addChannel = 1 {remain_BR:.3f} 91 3 -3', # Dark meson decay into strange quarks, {sm_decay_helper}
-            '4900113:addChannel = 1 {remain_BR:.3f} 91 4 -4', # Dark meson decay into charm quarks, {sm_decay_helper}
-            '4900113:addChannel = 1 {remain_BR:.3f} 91 5 -5', # Dark meson decay into bottom quarks, {sm_decay_helper}
-""".format(m_dark_quark=self.m_d, m_dark_meson=self.m_dark_meson, m_dark_stable=self.m_dark_stable,
-           r_inv=self.r_inv, remain_BR=remain_br, sm_decay_helper=br_helper_str)
-        )
+            '4900113:addChannel = 1 {remain_br:.3f} 91 1 -1', # Dark meson decay into down quarks
+            '4900113:addChannel = 1 {remain_br:.3f} 91 2 -2', # Dark meson decay into up quarks
+            '4900113:addChannel = 1 {remain_br:.3f} 91 3 -3', # Dark meson decay into strange quarks
+            '4900113:addChannel = 1 {remain_br:.3f} 91 4 -4', # Dark meson decay into charm quarks
+            '4900113:addChannel = 1 {remain_br:.3f} 91 5 -5', # Dark meson decay into bottom quarks
+""".format(m_dq=self.m_d, m_dmeson=self.m_dark_meson, m_dmatter=self.m_dark_stable, r_inv=self.r_inv, remain_br=remain_br))
 
-        f.write(self.get_extra_decays())
+        if self.n_f == 2:
+            f.write(self.get_extra_decays())
         f.write("""
+            'HiddenValley:probVector = {prob_vector}', # ratio of number of vector mesons over scalar meson
             #'HiddenValley:ffbar2Zv = on', # production of f fbar -> Zv (4900023). it works only in the case of narrow width approx
             'HiddenValley:fragment = on', # enable hidden valley fragmentation
             'HiddenValley:Ngauge = 2', # dark sector is SU(2)
@@ -153,7 +178,7 @@ generator = cms.EDFilter("Pythia8HadronizerFilter",
                                     )
     )
 )
-""".format(Lambda_dark=self.Lambda_d, nFlav=self.n_f, pTminFSR=1.1*self.Lambda_d))
+""".format(prob_vector=0.0 if self.n_f == 1 else 0.75, Lambda_dark=self.Lambda_d, nFlav=self.n_f, pTminFSR=1.1*self.Lambda_d))
 
         f.write(self.insert_filters())
         f.close()
@@ -162,34 +187,27 @@ generator = cms.EDFilter("Pythia8HadronizerFilter",
 
     def get_extra_decays(self):
         """ Compile string to include extra dark mesons and their decays, depending on value of n_f """
-        if self.n_f == 1:
-            ret = """
-            'HiddenValley:probVector = 0.', # ratio of number of vector mesons over scalar meson"""
-        elif self.n_f == 2:
-            br_bc, helper_bc = self.calc_remaining_br(2)
-            br_all_quarks, helper_all_quarks = self.calc_remaining_br(5)
+        if self.n_f == 2:
             ret = """
             '4900111:m0 = {m_dark_meson:.0f}', # Dark meson mass. PDGID corresponds to pivDiag HV spin-0 meson that can decay into SM particles
             '4900211:m0 = {m_dark_meson:.0f}', # Dark meson mass. PDGID corresponds to pivUp HV spin-0 meson that is stable and invisible
             '4900213:m0 = {m_dark_meson:.0f}', # Dark meson mass. PDGID corresponds to rhovUp HV spin-1 meson that is stable and invisible
             '53:m0 = {m_dark_stable:.1f}', # Stable dark particle mass. PDGID corresponds to spin-1 dark matter
             '53:isResonance = false',
-            '4900111:oneChannel = 1 {r_inv:.3f} 0 51 -51', # Dark meson decay into stable dark particles with branching fraction r_inv
+            '4900111:oneChannel = 1 {r_inv:.3f} 0 51 -51',
             '4900111:addChannel = 1 {remain_BR_c:.5f} 91 4 -4', # Dark meson decay into c quarks with BR set by running mass
             '4900111:addChannel = 1 {remain_BR_b:.5f} 91 5 -5', # Dark meson decay into b quarks with BR set by running mass
-            '4900211:oneChannel = 1 {r_inv:.3f} 0 51 -51', # Dark meson decay into stable dark particles with branching fraction r_inv
-            '4900211:addChannel = 1 {remain_BR_c:.5f} 91 4 -4', # Dark meson decay into c quarks with BR set by running mass
-            '4900211:addChannel = 1 {remain_BR_b:.5f} 91 5 -5', # Dark meson decay into b quarks with BR set by running mass
+            '4900211:oneChannel = 1 {r_inv:.3f} 0 51 -51',
+            '4900211:addChannel = 1 {remain_BR_c:.5f} 91 4 -4',
+            '4900211:addChannel = 1 {remain_BR_b:.5f} 91 5 -5',
             '4900213:oneChannel = 1 {r_inv:.3f} 0 53 -53', # Dark meson decay into stable dark particles with branching fraction r_inv
-            '4900213:addChannel = 1 {remain_BR_democ:.3f} 91 1 -1', # Dark meson decay into down quarks, {sm_decay_helper}
-            '4900213:addChannel = 1 {remain_BR_democ:.3f} 91 2 -2', # Dark meson decay into up quarks, {sm_decay_helper}
-            '4900213:addChannel = 1 {remain_BR_democ:.3f} 91 3 -3', # Dark meson decay into strange quarks, {sm_decay_helper}
-            '4900213:addChannel = 1 {remain_BR_democ:.3f} 91 4 -4', # Dark meson decay into charm quarks, {sm_decay_helper}
-            '4900213:addChannel = 1 {remain_BR_democ:.3f} 91 5 -5'# Dark meson decay into bottom quarks, {sm_decay_helper}
-            'HiddenValley:probVector = 0.75', # ratio of number of vector mesons over scalar meson
-""".format(m_dark_meson=self.m_dark_meson, m_dark_stable=self.m_dark_stable, r_inv=self.r_inv,
-           remain_BR_c=br_bc, remain_BR_b=br_bc, remain_BR_democ=br_all_quarks, sm_decay_helper=helper_all_quarks)
-            # sort out running masses and BR calculation for 4900111 and 4900211 to cc/bb
+            '4900213:addChannel = 1 {remain_BR_democ:.3f} 91 1 -1',
+            '4900213:addChannel = 1 {remain_BR_democ:.3f} 91 2 -2',
+            '4900213:addChannel = 1 {remain_BR_democ:.3f} 91 3 -3',
+            '4900213:addChannel = 1 {remain_BR_democ:.3f} 91 4 -4',
+            '4900213:addChannel = 1 {remain_BR_democ:.3f} 91 5 -5'
+""".format(m_dark_meson=self.m_dark_meson, m_dark_stable=self.m_dark_stable, r_inv=self.r_inv, remain_BR_democ=self.remaining_br_democratic(5),
+           remain_BR_c=self.remaining_br_mass_insertion(2, 4), remain_BR_b=self.remaining_br_mass_insertion(2, 5))
         else:
             raise ValueError("The value of n_f = {} specified is not allowed. Please choose either n_f = 1 or n_f = 2".format(self.n_f))
         return ret
@@ -201,8 +219,8 @@ generator = cms.EDFilter("Pythia8HadronizerFilter",
 darkhadronZ2filter = cms.EDFilter("MCParticleModuloFilter",
     moduleLabel = cms.InputTag("generator"),
     absID = cms.bool(True),
-    multipleOf = cms.uint32({two_n_dark_stable:.0f}), # 2x number of stable dark particles
-    particleIDs = cms.vint32(51{extra_dark_stable}) # PDGIDs of stable dark particles
+    multipleOf = cms.uint32({two_n_dmatter:.0f}),  # 2x number of stable dark particles
+    particleIDs = cms.vint32(51{extra_dmatter})  # PDGIDs of stable dark particles
 )
 
 darkquarkFilter = cms.EDFilter("MCParticleModuloFilter",
@@ -211,10 +229,7 @@ darkquarkFilter = cms.EDFilter("MCParticleModuloFilter",
     moduleLabel = cms.InputTag("generator"),
     absID = cms.bool(True),
     multipleOf = cms.uint32(2),
-    particleIDs = cms.vint32(4900101) # PDGID of dark quark
+    particleIDs = cms.vint32(4900101)  # PDGID of dark quark
 )
-""".format(two_n_dark_stable=2*self.n_f, extra_dark_stable=', 53' if self.n_f == 2 else '')
+""".format(two_n_dmatter=2*self.n_f, extra_dmatter=', 53' if self.n_f == 2 else '')
         return ret
-
-
-# TO DO: ADD SUPPORT FOR CALCULATING BR FOR C AND B BASED ON RUNNING MASSES
