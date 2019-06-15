@@ -148,16 +148,16 @@ generator = cms.EDFilter("Pythia8HadronizerFilter",
 
         remain_br = self.remaining_br_democratic(5)
         f.write("""
-            '4900101:m0 = {m_dq:.0f}', # explicitly stating dark quark mass in case it's not picked up properly by Pythia
-            '4900113:m0 = {m_dmeson:.0f}', # Dark meson mass. PDGID corresponds to rhovDiag HV spin-1 meson that can decay into SM particles
-            '51:m0 = {m_dmatter:.1f}', # Stable dark particle mass. PDGID corresponds to spin-0 dark matter
+            '4900101:m0 = {m_dq}', # explicitly stating dark quark mass in case it's not picked up properly by Pythia
+            '4900113:m0 = {m_dmeson}', # Dark meson mass. PDGID corresponds to rhovDiag HV spin-1 meson that can decay into SM particles
+            '51:m0 = {m_dmatter}', # Stable dark particle mass. PDGID corresponds to spin-0 dark matter
             '51:isResonance = false',
-            '4900113:oneChannel = 1 {r_inv:.3f} 51 -51', # Dark meson decay into stable dark particles with branching fraction r_inv
-            '4900113:addChannel = 1 {remain_br:.3f} 91 1 -1', # Dark meson decay into SM quarks
-            '4900113:addChannel = 1 {remain_br:.3f} 91 2 -2',
-            '4900113:addChannel = 1 {remain_br:.3f} 91 3 -3',
-            '4900113:addChannel = 1 {remain_br:.3f} 91 4 -4',
-            '4900113:addChannel = 1 {remain_br:.3f} 91 5 -5',
+            '4900113:oneChannel = 1 {r_inv} 51 -51', # Dark meson decay into stable dark particles with branching fraction r_inv
+            '4900113:addChannel = 1 {remain_br} 91 1 -1', # Dark meson decay into SM quarks
+            '4900113:addChannel = 1 {remain_br} 91 2 -2',
+            '4900113:addChannel = 1 {remain_br} 91 3 -3',
+            '4900113:addChannel = 1 {remain_br} 91 4 -4',
+            '4900113:addChannel = 1 {remain_br} 91 5 -5',
 """.format(m_dq=self.m_d, m_dmeson=self.m_dark_meson, m_dmatter=self.m_dark_stable, r_inv=self.r_inv, remain_br=remain_br))
 
         if self.n_f == 2:
@@ -172,7 +172,7 @@ generator = cms.EDFilter("Pythia8HadronizerFilter",
             #'HiddenValley:NBFlavRun = 0', # Number of bosonic flavor for running
             #'HiddenValley:NFFlavRun = 2', # Number of fermionic flavor for running
             'HiddenValley:alphaOrder = 1', # Order at which running coupling runs
-            'HiddenValley:Lambda = {Lambda_dark:.2f}', # Dark confinement scale
+            'HiddenValley:Lambda = {Lambda_dark}', # Dark confinement scale
             'HiddenValley:nFlav = {nFlav:.0f}', # This dictates what kind of hadrons come out of the shower. If nFlav = 2, for example, there will be many different flavor of hadrons
             'HiddenValley:pTminFSR = {pTminFSR:.2f}', # Cut-off for the showering, should be roughly confinement scale
             #'TimeShower:nPartonsInBorn = 2', # Number of coloured particles (before resonance decays) in born matrix element
@@ -196,24 +196,24 @@ generator = cms.EDFilter("Pythia8HadronizerFilter",
         """ Compile string to include extra dark mesons and their decays, depending on value of n_f """
         if self.n_f == 2:
             ret = """
-            '4900111:m0 = {m_dark_meson:.0f}', # Dark meson mass. PDGID corresponds to pivDiag HV spin-0 meson that can decay into SM particles
-            '4900211:m0 = {m_dark_meson:.0f}', # Dark meson mass. PDGID corresponds to pivUp HV spin-0 meson that is stable and invisible by default
-            '4900213:m0 = {m_dark_meson:.0f}', # Dark meson mass. PDGID corresponds to rhovUp HV spin-1 meson that is stable and invisible by default
-            '53:m0 = {m_dark_stable:.1f}', # Stable dark particle mass. PDGID corresponds to spin-1 dark matter
+            '4900111:m0 = {m_dmeson}', # Dark meson mass. PDGID corresponds to pivDiag HV spin-0 meson that can decay into SM particles
+            '4900211:m0 = {m_dmeson}', # Dark meson mass. PDGID corresponds to pivUp HV spin-0 meson that is stable and invisible by default
+            '4900213:m0 = {m_dmeson}', # Dark meson mass. PDGID corresponds to rhovUp HV spin-1 meson that is stable and invisible by default
+            '53:m0 = {m_dmatter}', # Stable dark particle mass. PDGID corresponds to spin-1 dark matter
             '53:isResonance = false',
-            '4900111:oneChannel = 1 {r_inv:.3f} 0 51 -51',
+            '4900111:oneChannel = 1 {r_inv} 0 51 -51',
             '4900111:addChannel = 1 {remain_BR_c:.5f} 91 4 -4', # Dark meson decay into c quarks with BR set by running mass
             '4900111:addChannel = 1 {remain_BR_b:.5f} 91 5 -5', # Dark meson decay into b quarks with BR set by running mass
-            '4900211:oneChannel = 1 {r_inv:.3f} 0 51 -51',
+            '4900211:oneChannel = 1 {r_inv} 0 51 -51',
             '4900211:addChannel = 1 {remain_BR_c:.5f} 91 4 -4',
             '4900211:addChannel = 1 {remain_BR_b:.5f} 91 5 -5',
-            '4900213:oneChannel = 1 {r_inv:.3f} 0 53 -53', # Dark meson decay into stable dark particles with branching fraction r_inv
-            '4900213:addChannel = 1 {remain_BR_democ:.3f} 91 1 -1',
-            '4900213:addChannel = 1 {remain_BR_democ:.3f} 91 2 -2',
-            '4900213:addChannel = 1 {remain_BR_democ:.3f} 91 3 -3',
-            '4900213:addChannel = 1 {remain_BR_democ:.3f} 91 4 -4',
-            '4900213:addChannel = 1 {remain_BR_democ:.3f} 91 5 -5'
-""".format(m_dark_meson=self.m_dark_meson, m_dark_stable=self.m_dark_stable, r_inv=self.r_inv, remain_BR_democ=self.remaining_br_democratic(5),
+            '4900213:oneChannel = 1 {r_inv} 0 53 -53', # Dark meson decay into stable dark particles with branching fraction r_inv
+            '4900213:addChannel = 1 {remain_BR_democ} 91 1 -1',
+            '4900213:addChannel = 1 {remain_BR_democ} 91 2 -2',
+            '4900213:addChannel = 1 {remain_BR_democ} 91 3 -3',
+            '4900213:addChannel = 1 {remain_BR_democ} 91 4 -4',
+            '4900213:addChannel = 1 {remain_BR_democ} 91 5 -5'
+""".format(m_dmeson=self.m_dark_meson, m_dmatter=self.m_dark_stable, r_inv=self.r_inv, remain_BR_democ=self.remaining_br_democratic(5),
            remain_BR_c=self.remaining_br_mass_insertion(quark_id=4), remain_BR_b=self.remaining_br_mass_insertion(quark_id=5))
         elif self.n_f == 1:
             ret = "\n"
