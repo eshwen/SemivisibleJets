@@ -386,14 +386,13 @@ For questions or issues please contact:
 
 ## To do <a name="todo"></a>
 
-- Try to fix repeated "ProductNotFound" errors. Recompiling CMSSW_7_1_30 at start of job seems to fix, but causes heavy load on system if all jobs are doing it. Could potentially let each job set up its own CMSSW release with own Pythia8 so they don't interfere. Once I've fixed this issue such that all jobs run consistently, make a tag so a working copy is cemented.
 - Consider changing dark quarks to spin-1/2 in MadGraph model files (would have to change `spin` attribute in particles.py to '2'). Find out if that will affect decays or anything. Would also need to consider the spin of the dark hadron (see HV documentation in Pythia for PDGIDs).
 - See if I still need to do the confinement scale rescaling
 - Add n_c to config file? How would changing value affect things physically/kinematically?
-- Optimise `runLHERetrieval.py`. Changing PDGIDs and splitting LHE file take a while (probably to do with systematics computation in MadGraph)
 - Figure out correct xsec values for t-channel as has been done for s-channel. Update scripts accordingly
 - Rewrite plotting script to do in 2 stages. Run fast-carpenter with a config file of important variables, etc., to make a summary dataframe for each model. Then run fast-plotter with a plotting config to make matplotlib plots. Move everything to a new directory: `$SVJ_TOP_DIR/plotting/`
 - Replace my `m_d` with `m_dq` so as not to confuse with FNAL's m_d = m_dark_hadron
 - Add support for running 2017 and 2018 production. Would need to make sure the right MadGraph version(s), PDF, CMSSW versions, Pythia version(s), and `cmsRun` options are used. For user, could just add a new option in config file (like `year: 2017`). For myself, would need to structure code and directories so everything is laid out well. Might also need to append year to `model_name`.
+- Add support for running at other T2/T3 sites
 
 - Whenever I change/update things, remember to update the README as well
