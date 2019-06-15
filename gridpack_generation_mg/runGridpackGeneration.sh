@@ -30,8 +30,8 @@ The master job will be run locally, and the individual channels will be run on H
 
 sleep 15
 
-# Initialise proxy of grid cert to /afs/ so Condor jobs can pick it up
-export X509_USER_PROXY=/afs/cern.ch/user/${USER:0:1}/$USER/x509up_u${UID}
+# Initialise proxy of grid cert to home directory so Condor jobs can pick it up
+export X509_USER_PROXY=$HOME/x509up_u${UID}
 inception=$(( $(date "+%s") - $(date "+%s" -r ${X509_USER_PROXY}) ))
 proxy_length_hr=168 # 1 week
 proxy_length_s=$(( $proxy_length_hr * 3600 ))
