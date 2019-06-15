@@ -78,7 +78,7 @@ cd $SVJ_TOP_DIR/gridpack_to_lhe
 python runLHERetrieval.py <path to YAML config>
 ```
 
-The location of the split LHE files will be printed in the terminal, which will be the path specified by the config parameter `lhe_file_path`.
+The location of the split LHE files will be printed in the terminal, which will be the path specified by the config parameter `lhe_file_path`. **Note that the systematic weights computation is turned off in my fork of the `genproductions` repo**, as this step otherwise takes ages. To turn it back on, uncomment this block in [runcmsgrid_LO.sh](https://github.com/eshwen/genproductions/blob/1d1df93a7078d4aa24c022ba7ea4aa0c977c5de6/bin/MadGraph5_aMCatNLO/runcmsgrid_LO.sh#L165-L177).
 
 Now, the final step is to run the full CMSSW chain on these split LHE files and get nanoAODs out. The cmsDriver commands are written to emulate 2016 MC with 2017 re-processing. If you would like to change that, edit [fullsim_cmssw/Condor/runFullSim_condor.sh](runFullSim_condor.sh). And if you would like to change some more specific aspects of the model or hadronisation, either edit your config (as some parameters are detailed there) or [fullsim_cmssw/Condor/writers/write_GS_fragment.py](write_GS_fragment.py). The batch system used for running the jobs is HTCondor, configured to run at lxplus (it _may_ run out of the box on other T2/T3 systems, but may need to be modified if specific requirements need to be met). Now, just run
 
