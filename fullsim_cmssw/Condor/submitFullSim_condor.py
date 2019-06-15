@@ -52,6 +52,7 @@ request_memory = 5000
 +MaxRuntime = {runtime}
 # Require SLC6 machines as CMSSW_7_1_X can't run on SLC7/CentOS7
 Requirements = (OpSysAndVer == "SLCern6")
+batch_name = {model} 
 # Number of instances of job to run
 queue {queue}
 """.format(this_dir=this_dir, work_space=work_space, gen_frag=gen_frag, lhe_base=lhe_base, model=model,
@@ -160,7 +161,7 @@ def main(args):
     sub_args = (work_space, gen_frag, lhe_base, model_name, n_events)
     # Write a single job file to submit everything at once
     job_main = write_submission_script(*sub_args, queue=n_jobs)
-    call('condor_submit -batch-name {} {}'.format(model_name, job_main), shell=True)
+    call('condor_submit {}'.format(job_main), shell=True)
     print Fore.MAGENTA + "Jobs submitted. Monitor them with 'condor_q $USER'"
 
     print Fore.CYAN + "Writing individual job files to make resubmitting failed jobs easier..."
