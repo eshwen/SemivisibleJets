@@ -50,13 +50,10 @@ There are scripts included to run the entire sample production using a single co
 Fork this repository, then clone it somewhere with the genproductions repo as a submodule:
 
 ```bash
-git clone git@github.com:<your fork>/SemivisibleJets.git
+git clone --recursive git@github.com:<user>/SemivisibleJets.git
 cd SemivisibleJets
 source setup.sh
 pip install --user -r requirements.txt
-git submodule add -b mg26x git@github.com:eshwen/genproductions.git external/genproductions/
-git submodule init
-git submodule update
 ```
 
 In each new session, you must set up the environment with
@@ -389,10 +386,7 @@ For questions or issues please contact:
 
 ## To do <a name="todo"></a>
 
-- See Kevin's email on how to get his gen fragment so can hadronise to multiple dark mesons (changing `n_f`) and decay to multiple quarks properly
 - Try to fix repeated "ProductNotFound" errors. Recompiling CMSSW_7_1_30 at start of job seems to fix, but causes heavy load on system if all jobs are doing it. Could potentially let each job set up its own CMSSW release with own Pythia8 so they don't interfere. Once I've fixed this issue such that all jobs run consistently, make a tag so a working copy is cemented.
-- Change gen fragment such that the dark meson can decay into more than just d quarks. Would need to figure out how to distribute remaining branching fraction (1-r_inv) amongst the decays.
-- Change gen fragment such that there's hadronisation to two dark mesons (so n_f = 2 physical makes sense), with one species decaying invisibly and one to SM quarks. But would need to figure out how to implement r_inv such that the proportion of invisibly decaying dark mesons = r_inv.
 - Consider changing dark quarks to spin-1/2 in MadGraph model files (would have to change `spin` attribute in particles.py to '2'). Find out if that will affect decays or anything. Would also need to consider the spin of the dark hadron (see HV documentation in Pythia for PDGIDs).
 - See if I still need to do the confinement scale rescaling
 - Add n_c to config file? How would changing value affect things physically/kinematically?
