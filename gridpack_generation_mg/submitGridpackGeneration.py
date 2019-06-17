@@ -134,13 +134,14 @@ def main(args):
     rel_cards_dir = os.path.relpath(input_cards_dir, os.environ['MG_GENPROD_DIR'])
 
     # Run the gridpack generation
-    call("{}/runGridpackGeneration.sh {} {}".format(os.path.dirname(os.path.realpath(__file__)), model_name, rel_cards_dir), shell=True)
+    call("{}/runGridpackGeneration.sh {} {} {}".format(os.path.dirname(os.path.realpath(__file__)), model_name, rel_cards_dir, args.mode), shell=True)
 
 
 if __name__ == '__main__':
     parser = ArgumentParser(description=__doc__, formatter_class=ArgumentDefaultsHelpFormatter)
     parser.add_argument("config", type=str, help="Path to YAML config to parse")
     parser.add_argument('-r', '--resub', action="store_true", help="Retry if previous attempt failed")
+    parser.add_argument('-m', '--mode', type=str, choices=['local', 'batch'], default="batch", help="Mode to submit jobs for gridpack generation")
     args = parser.parse_args()
 
     main(args)

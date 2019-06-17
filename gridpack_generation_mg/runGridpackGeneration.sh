@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [ -z $2 ]; then
-    usr_msg="Usage ./runGridpackGeneration.sh model_name rel_path(input_cards_dir)"
+    usr_msg="Usage ./runGridpackGeneration.sh model_name rel_path(input_cards_dir) mode"
     $SVJ_TOP_DIR/utils/print_bash_script_usage.sh "$usr_msg"
     exit
 fi
@@ -10,6 +10,7 @@ fi
 
 model_name=$1
 input_cards_dir=$2
+mode=$3
 
 cd $MG_GENPROD_DIR
 
@@ -24,9 +25,9 @@ unset CXX
 
 printf "\e[1;33mSometimes gridpack generation can fail.
 MadGraph is quite temperamental and so can fail when running subprocess for a model.
-When running on batch, disk quotas can also be exceeded.
 If the creation fails at any point, rerun with the '-r' option.
-The master job will be run locally, and the individual channels will be run on HTCondor.\n\e[0m"
+If your mode selection is 'local', the entire process will be run locally.
+If your mode selection is 'batch', the master job will be run locally and the individual channels will be run on HTCondor.\n\e[0m"
 
 sleep 15
 
@@ -41,7 +42,12 @@ else
     voms-proxy-init --voms cms --valid ${proxy_length_hr}:00
 fi
 
-printf "Submitting. Check on jobs with \e[1mcondor_q $USER\n\e[0m"
-./submit_condor_gridpack_generation.sh $model_name $input_cards_dir
+if [[ "$mode" == "batch" ]]; then
+    ./submit_condor_gridpack_generation.sh $model_name $input_cards_dir
+elif [[ "$mode" == "local" ]]; then
+    ./gridpack_generation.sh $model_name $input_cards_dir
+else
+    echo "Unknown mode '$mode' given. Please try again"
+fi
 
 # IF RUNNING PRIVATE PRODUCTION, I COULD JUST CUT OUT THE ACTUAL GRIDPACK STAGE AND JUST DOWNLOAD A COPY OF MADGRAPH, PLACE THE MODEL DIRECTORY IN THERE AND RUN. BUT WOULD HAVE TO MAKE SURE MY RUN CARD IS USED AND WOULD NEED TO INCLUDE THE "launch" LINE IN THE PROC CARDS
