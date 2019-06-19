@@ -181,7 +181,7 @@ generator = cms.EDFilter("Pythia8HadronizerFilter",
                                     'pythia8CUEP8M1Settings',
                                     'pythia8aMCatNLOSettings',
                                     'processParameters',
-                                    'JetMatchingParameters'
+                                    'JetMatchingParameters',
                                     )
     )
 )
@@ -212,7 +212,7 @@ generator = cms.EDFilter("Pythia8HadronizerFilter",
             '4900213:addChannel = 1 {remain_BR_democ} 91 2 -2',
             '4900213:addChannel = 1 {remain_BR_democ} 91 3 -3',
             '4900213:addChannel = 1 {remain_BR_democ} 91 4 -4',
-            '4900213:addChannel = 1 {remain_BR_democ} 91 5 -5'
+            '4900213:addChannel = 1 {remain_BR_democ} 91 5 -5',
 """.format(m_dmeson=self.m_dark_meson, m_dmatter=self.m_dark_stable, r_inv=self.r_inv, remain_BR_democ=self.remaining_br_democratic(5),
            remain_BR_c=self.remaining_br_mass_insertion(quark_id=4), remain_BR_b=self.remaining_br_mass_insertion(quark_id=5))
         elif self.n_f == 1:
@@ -229,7 +229,7 @@ darkhadronZ2filter = cms.EDFilter("MCParticleModuloFilter",
     moduleLabel = cms.InputTag("generator"),
     absID = cms.bool(True),
     multipleOf = cms.uint32({two_n_dmatter:.0f}),  # 2x number of stable dark particles
-    particleIDs = cms.vint32(51{extra_dmatter})  # PDGIDs of stable dark particles
+    particleIDs = cms.vint32(51{extra_dmatter}),  # PDGIDs of stable dark particles
 )
 
 darkquarkFilter = cms.EDFilter("MCParticleModuloFilter",
@@ -238,7 +238,7 @@ darkquarkFilter = cms.EDFilter("MCParticleModuloFilter",
     moduleLabel = cms.InputTag("generator"),
     absID = cms.bool(True),
     multipleOf = cms.uint32(2),
-    particleIDs = cms.vint32(4900101)  # PDGID of dark quark
+    particleIDs = cms.vint32(4900101),  # PDGID of dark quark
 )
 """.format(two_n_dmatter=2*self.n_f, extra_dmatter=', 53' if self.n_f == 2 else '')
         return ret
