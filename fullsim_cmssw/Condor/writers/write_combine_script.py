@@ -31,7 +31,7 @@ if [ ! -d $work_space/output/components ]; then
 fi
 
 if grep -rq "Error in <TFile\|has size 0\|AttributeError\|Traceback\|Offending" $temp_file > /dev/null; then
-    echo -e "\e[1;32mFound an error while combining files. Check the output and try again. If you're struggling to locate the offending file (and getting an error related to missing leaves), try doing `ls -alrth <files>` and check the files with the smallest sizes.\e[0m"
+    echo -e "\e[1;32mFound an error while combining files. Check the output and try again. If you're struggling to locate the offending file (and getting an error related to missing leaves), try doing 'ls -alrth {work_space}/output/{model}_NANOAOD_*.root' and check the files with the smallest sizes.\e[0m"
     rm $work_space/output/{model}_nanoAOD_final.root
 else
     mv $work_space/output/{model}_NANOAOD_*.root $work_space/output/components
