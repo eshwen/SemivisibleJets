@@ -21,9 +21,9 @@ from subprocess import call
 init(autoreset=True)
 
 
-def main(args):
+def main(config):
     # Load YAML config into a dictionary and assign values to variables for cleanliness
-    input_params = load_yaml_config(args.config)
+    input_params = load_yaml_config(config)
 
     model_name = input_params['model_name']
     total_events = input_params['total_events']
@@ -46,7 +46,7 @@ def main(args):
         x_sec_mg = re.search("(?<=Cross-section :   )(\d*.\d+)", log_str).group(0)
 
     # Append cross section to config file if not included already
-    with open(args.config, 'r+') as f:
+    with open(config, 'r+') as f:
         config_str = f.read()
         if str(x_sec_mg) not in config_str:
             print Fore.CYAN + "Appending config file with cross section as calculated by MadGraph..."
@@ -91,7 +91,7 @@ def main(args):
     for split_file in glob.glob(os.path.join(os.getcwd(), model_name+'_split*.lhe')):
         shutil.copy(split_file, out_split_lhe)
         os.remove(split_file)
-    print Fore.MAGENTA + "Split LHE files moved to", Fore.MAGENTA + out_split_lhe
+    print Fore.MAGENTA + "Split LHE files moved to {}".format(out_split_lhe)
 
 
 if __name__ == '__main__':
@@ -99,5 +99,5 @@ if __name__ == '__main__':
     parser.add_argument("config", type=str, help="Path to YAML config to parse")
     args = parser.parse_args()
 
-    main(args)
+    main(args.config)
     sys.exit("Done")
