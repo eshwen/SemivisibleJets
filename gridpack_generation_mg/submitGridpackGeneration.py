@@ -9,6 +9,7 @@ except ImportError:
     sys.exit('Please source the setup script first.')
 from colorama import Fore, init
 import glob
+from lhaIDs import lhaIDs as lhaID_dict
 from load_yaml_config import load_yaml_config
 import os
 import re
@@ -20,9 +21,9 @@ from subprocess import call
 init(autoreset=True)
 
 
-def main(args):
+def main(config, resub=False, mode='batch'):
     # Load YAML config into a dictionary and assign values to variables for cleanliness
-    input_params = load_yaml_config(args.config)
+    input_params = load_yaml_config(config)
 
     # Set variables from config file
     process_type = input_params['process_type']
@@ -32,6 +33,7 @@ def main(args):
     m_d = input_params['m_d']
     r_inv = input_params['r_inv']
     alpha_d = input_params['alpha_d']
+    year = input_params['year']
 
     # Check arguments in config file
     basic_checks(input_params)
@@ -47,11 +49,13 @@ def main(args):
         template_prefix = 'DMsimp_SVJ_t'
 
     default_model_dir = os.path.join(os.environ['SVJ_MODELS_DIR'], template_prefix+'_editTemplate')
-    model_name = model_prefix + '_m' + med_type + '-' + str(m_med) + '_mDQ-' + str(m_d) + '_rinv-' + str(r_inv).replace('.', 'p') + '_aD-' + str(alpha_d).replace('.', 'p')
+    model_name = '{prefix}_{year}_m{med}-{m_med}_mDQ-{m_d}_rinv-{rinv}_aD-{alphad}'.format(
+        rinv=str(r_inv).replace('.', 'p'), alphad=str(alpha_d).replace('.', 'p'),  # MadGraph doesn't like '.' in the model name
+        prefix=model_prefix, med=med_type, **input_params)
     total_events = n_events * n_jobs
 
     # Remove failed gridpack for model if resubmitted
-    if args.resub:
+    if resub:
         print Fore.CYAN + "Removing failed gridpack and resubmitting..."
         for file in glob.glob(os.path.join(os.environ['MG_GENPROD_DIR'], model_name+'*')):
             try:
@@ -63,7 +67,7 @@ def main(args):
                 print "Error: {0} - {1}.".format(e.filename, e.strerror)
 
     # If required, append config file with new parameters for simplicity in future steps
-    with open(args.config, 'r+') as f:
+    with open(config, 'r+') as f:
         print Fore.CYAN + "Updating config file with new parameters..."
         original_str = f.readlines()
         # Delete contents of file and update
@@ -120,7 +124,7 @@ def main(args):
         with open(modelFile, 'r+') as mg_card:
             old_params = mg_card.read()
             # Make sure there are no curly braces in the input cards except those containing the replacement fields
-            new_params = old_params.format(modelName=model_name, totalEvents=str(total_events))
+            new_params = old_params.format(modelName=model_name, totalEvents=total_events, lhaid=lhaID_dict[year])
             mg_card.seek(0)
             mg_card.truncate()
             mg_card.write(new_params)
@@ -134,7 +138,7 @@ def main(args):
     rel_cards_dir = os.path.relpath(input_cards_dir, os.environ['MG_GENPROD_DIR'])
 
     # Run the gridpack generation
-    call("{}/runGridpackGeneration.sh {} {} {}".format(os.path.dirname(os.path.realpath(__file__)), model_name, rel_cards_dir, args.mode), shell=True)
+    call("{}/runGridpackGeneration.sh {} {} {}".format(os.path.dirname(os.path.realpath(__file__)), model_name, rel_cards_dir, mode), shell=True)
 
 
 if __name__ == '__main__':
@@ -144,5 +148,5 @@ if __name__ == '__main__':
     parser.add_argument('-m', '--mode', type=str, choices=['local', 'batch'], default="batch", help="Mode to submit jobs for gridpack generation")
     args = parser.parse_args()
 
-    main(args)
+    main(args.config, resub=args.resub, mode=args.mode)
     sys.exit("Done")
