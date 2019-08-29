@@ -2,7 +2,7 @@
 # Script to run FullSim CMSSW chain
 
 if [ -z $7 ]; then
-    usr_msg="Usage ./runFullSim_condor.sh WORKING_DIRECTORY GEN_FRAGMENT_BASENAME LHE_FILE MODEL_NAME N_EVENTS SEED PU_FILE"
+    usr_msg="Usage ./runFullSim_condor_2016.sh WORKING_DIRECTORY GEN_FRAGMENT_BASENAME LHE_FILE MODEL_NAME N_EVENTS SEED PU_FILE"
     $SVJ_TOP_DIR/utils/print_bash_script_usage.sh "$usr_msg"
     exit
 fi
@@ -52,19 +52,19 @@ mv ${model_name}_GEN_SIM_${seed}.root ../../$cmssw_aod/src/
 cd ../../$cmssw_aod/src
 cmsenv
 
-cmsDriver.py step1 --filein file:${model_name}_GEN_SIM_${seed}.root --fileout file:${model_name}_AOD_step1_${seed}.root --pileup_input filelist:$pu_file --mc --eventcontent PREMIXRAW --datatier GEN-SIM-RAW --conditions 80X_mcRun2_asymptotic_2016_TrancheIV_v6 --step DIGIPREMIX_S2,DATAMIX,L1,DIGI2RAW,HLT:@frozen2016 --datamix PreMix --era Run2_2016 --python_filename ${model_name}_AOD_step1_${seed}.py --no_exec --customise Configuration/DataProcessing/Utils.addMonitoring -n $n_events
+cmsDriver.py step1 --filein file:${model_name}_GEN_SIM_${seed}.root --fileout file:${model_name}_AOD_step1_${seed}.root --pileup_input filelist:$pu_file --mc --eventcontent PREMIXRAW --datatier GEN-SIM-RAW --conditions 80X_mcRun2_asymptotic_2016_TrancheIV_v6 --step DIGIPREMIX_S2,DATAMIX,L1,DIGI2RAW,HLT:@frozen2016 --datamix PreMix --era Run2_2016 --customise Configuration/DataProcessing/Utils.addMonitoring --python_filename ${model_name}_AOD_step1_${seed}.py --no_exec -n $n_events
 
 cmsRun ${model_name}_AOD_step1_${seed}.py
 echo -e "\e[1;35m**** CREATED AOD (STEP 1) FILE ****\e[0m"
 rm ${model_name}_GEN_SIM_${seed}.root
 
-cmsDriver.py step2 --filein file:${model_name}_AOD_step1_${seed}.root --fileout file:${model_name}_AOD_step2_${seed}.root --mc --eventcontent AODSIM --runUnscheduled --datatier AODSIM --conditions 80X_mcRun2_asymptotic_2016_TrancheIV_v6 --step RAW2DIGI,RECO,EI --era Run2_2016 --python_filename ${model_name}_AOD_step2_${seed}.py --no_exec --customise Configuration/DataProcessing/Utils.addMonitoring -n $n_events
+cmsDriver.py step2 --filein file:${model_name}_AOD_step1_${seed}.root --fileout file:${model_name}_AOD_step2_${seed}.root --mc --eventcontent AODSIM --runUnscheduled --datatier AODSIM --conditions 80X_mcRun2_asymptotic_2016_TrancheIV_v6 --step RAW2DIGI,RECO,EI --era Run2_2016 --customise Configuration/DataProcessing/Utils.addMonitoring --python_filename ${model_name}_AOD_step2_${seed}.py --no_exec -n $n_events
 
 cmsRun ${model_name}_AOD_step2_${seed}.py
 echo -e "\e[1;35m**** CREATED AOD (STEP 2) FILE ****\e[0m"
 rm ${model_name}_AOD_step1_${seed}.root
 
-cmsDriver.py --filein file:${model_name}_AOD_step2_${seed}.root --fileout file:${model_name}_MINIAOD_${seed}.root --mc --eventcontent MINIAODSIM --runUnscheduled --datatier MINIAODSIM --conditions 80X_mcRun2_asymptotic_2016_TrancheIV_v6 --step PAT --era Run2_2016 --python_filename ${model_name}_MINIAOD_${seed}.py --no_exec --customise Configuration/DataProcessing/Utils.addMonitoring -n $n_events
+cmsDriver.py --filein file:${model_name}_AOD_step2_${seed}.root --fileout file:${model_name}_MINIAOD_${seed}.root --mc --eventcontent MINIAODSIM --runUnscheduled --datatier MINIAODSIM --conditions 80X_mcRun2_asymptotic_2016_TrancheIV_v6 --step PAT --era Run2_2016 --customise Configuration/DataProcessing/Utils.addMonitoring --python_filename ${model_name}_MINIAOD_${seed}.py --no_exec -n $n_events
 
 cmsRun ${model_name}_MINIAOD_${seed}.py
 echo -e "\e[1;35m**** CREATED MINIAOD FILE ****\e[0m"
@@ -74,7 +74,7 @@ mv ${model_name}_MINIAOD_${seed}.root ../../$cmssw_nano/src/
 cd ../../$cmssw_nano/src
 cmsenv
 
-cmsDriver.py --filein file:${model_name}_MINIAOD_${seed}.root --fileout file:${model_name}_NANOAOD_${seed}.root --mc --eventcontent NANOAODSIM --datatier NANOAODSIM --conditions auto:run2_mc -s NANO --era Run2_2016,run2_miniAOD_80XLegacy --python_filename ${model_name}_NANOAOD_${seed}.py --no_exec -n $n_events
+cmsDriver.py --filein file:${model_name}_MINIAOD_${seed}.root --fileout file:${model_name}_NANOAOD_${seed}.root --mc --eventcontent NANOAODSIM --datatier NANOAODSIM --conditions auto:run2_mc -s NANO --era Run2_2016,run2_miniAOD_80XLegacy --customise Configuration/DataProcessing/Utils.addMonitoring --python_filename ${model_name}_NANOAOD_${seed}.py --no_exec -n $n_events
 
 cmsRun ${model_name}_NANOAOD_${seed}.py
 echo -e "\e[1;35m**** CREATED NANOAOD FILE ****\e[0m"
