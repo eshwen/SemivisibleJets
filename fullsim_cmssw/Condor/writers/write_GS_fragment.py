@@ -25,6 +25,7 @@ class WriteGenSimFragment(object):
         self.x_sec_mg = _config['x_sec_mg']
         self.alpha_d = _config['alpha_d']
         self.process_type = _config['process_type']
+        self.year = _config['year']
 
         self.GS_dir = GS_dir
 
@@ -32,6 +33,7 @@ class WriteGenSimFragment(object):
         self.set_dark_params()
         self.get_lambda_d()
         self.get_xsec()
+        self.get_pythia_info()
         self.out_file = self.write_fragment()
 
     def set_dark_params(self):
@@ -95,6 +97,16 @@ class WriteGenSimFragment(object):
             remain_br = 0
         return remain_br
 
+    def get_pythia_info(self):
+        if self.year == 2016:
+            self.tune_module = 'Pythia8CUEP8M1Settings_cfi'
+            self.tune_block = 'pythia8CUEP8M1SettingsBlock'
+            self.pythia_settings = 'pythia8CUEP8M1Settings'
+        else:
+            self.tune_module = 'MCTunes2017.PythiaCP5Settings_cfi'
+            self.tune_block = 'pythia8CP5SettingsBlock'
+            self.pythia_settings = 'pythia8CP5Settings'
+
     def write_fragment(self):
         """ Actually write the gen fragment """
         out_file = os.path.join(self.GS_dir, "{}_GS_fragment.py".format(self.model_name))
@@ -102,7 +114,7 @@ class WriteGenSimFragment(object):
 
         f.write("""import FWCore.ParameterSet.Config as cms
 from Configuration.Generator.Pythia8CommonSettings_cfi import *
-from Configuration.Generator.Pythia8CUEP8M1Settings_cfi import *
+from Configuration.Generator.{tune_module} import *
 from Configuration.Generator.Pythia8aMCatNLOSettings_cfi import *
 generator = cms.EDFilter("Pythia8HadronizerFilter",
     maxEventsToPrint = cms.untracked.int32(1),
@@ -113,7 +125,7 @@ generator = cms.EDFilter("Pythia8HadronizerFilter",
     comEnergy = cms.double(13000.),
     PythiaParameters = cms.PSet(
         pythia8CommonSettingsBlock,
-        pythia8CUEP8M1SettingsBlock,
+        {tune_block},
         pythia8aMCatNLOSettingsBlock,
         JetMatchingParameters = cms.vstring(
             'JetMatching:setMad = off', # if 'on', merging parameters are set according to LHE file
@@ -127,7 +139,7 @@ generator = cms.EDFilter("Pythia8HadronizerFilter",
             'JetMatching:nJetMax = 2', # number of partons in born matrix element for highest multiplicity
             'JetMatching:doShowerKt = off', # off for MLM matching, turn on for shower-kT matching
             ),
-""".format(cross_section=self.x_sec))
+""".format(cross_section=self.x_sec, tune_block=self.tune_block, tune_module=self.tune_module))
 
         f.write("""
         processParameters = cms.vstring(""")
@@ -178,14 +190,14 @@ generator = cms.EDFilter("Pythia8HadronizerFilter",
             #'TimeShower:nPartonsInBorn = 2', # Number of coloured particles (before resonance decays) in born matrix element
             ),
         parameterSets = cms.vstring('pythia8CommonSettings',
-                                    'pythia8CUEP8M1Settings',
+                                    '{pythia_settings}',
                                     'pythia8aMCatNLOSettings',
                                     'processParameters',
                                     'JetMatchingParameters',
                                     )
     )
 )
-""".format(prob_vector=0.0 if self.n_f == 1 else 0.75, Lambda_dark=self.Lambda_d, nFlav=self.n_f, pTminFSR=1.1*self.Lambda_d))
+""".format(prob_vector=0.0 if self.n_f == 1 else 0.75, Lambda_dark=self.Lambda_d, nFlav=self.n_f, pTminFSR=1.1*self.Lambda_d, pythia_settings=self.pythia_settings))
 
         f.write(self.insert_filters())
         f.close()
@@ -226,7 +238,7 @@ generator = cms.EDFilter("Pythia8HadronizerFilter",
         and dark quark filter (reject events where Z' decays directly to SM particles) """
         ret = """
 darkhadronZ2filter = cms.EDFilter("MCParticleModuloFilter",
-    moduleLabel = cms.InputTag("generator"),
+    moduleLabel = cms.InputTag("generator", "unsmeared"),
     absID = cms.bool(True),
     multipleOf = cms.uint32({two_n_dmatter:.0f}),  # 2x number of stable dark particles
     particleIDs = cms.vint32(51{extra_dmatter}),  # PDGIDs of stable dark particles
@@ -235,7 +247,7 @@ darkhadronZ2filter = cms.EDFilter("MCParticleModuloFilter",
 darkquarkFilter = cms.EDFilter("MCParticleModuloFilter",
     status = cms.int32(23),
     min = cms.uint32(2),
-    moduleLabel = cms.InputTag("generator"),
+    moduleLabel = cms.InputTag("generator", "unsmeared"),
     absID = cms.bool(True),
     multipleOf = cms.uint32(2),
     particleIDs = cms.vint32(4900101),  # PDGID of dark quark
