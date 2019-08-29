@@ -12,7 +12,7 @@ class WriteGenSimFragment(object):
     """
     def __init__(self, config, GS_dir):
         """ Load YAML config into a dictionary and assign values to variables for cleanliness """
-        _config = load_yaml_config(config)
+        _config = load_yaml_config(config, quiet=True)
 
         # Reset text colours after colourful print statements
         init(autoreset=True)
@@ -30,11 +30,12 @@ class WriteGenSimFragment(object):
         self.GS_dir = GS_dir
 
         # Run everything
+        print Fore.CYAN + "Writing gen fragment..."
         self.set_dark_params()
         self.get_lambda_d()
         self.get_xsec()
         self.get_pythia_info()
-        self.out_file = self.write_fragment()
+        self.write_fragment()
 
     def set_dark_params(self):
         self.n_c = 2
@@ -109,8 +110,8 @@ class WriteGenSimFragment(object):
 
     def write_fragment(self):
         """ Actually write the gen fragment """
-        out_file = os.path.join(self.GS_dir, "{}_GS_fragment.py".format(self.model_name))
-        f = open(out_file, "w")
+        self.out_file = os.path.join(self.GS_dir, "{}_GS_fragment.py".format(self.model_name))
+        f = open(self.out_file, "w")
 
         f.write("""import FWCore.ParameterSet.Config as cms
 from Configuration.Generator.Pythia8CommonSettings_cfi import *
@@ -202,8 +203,6 @@ generator = cms.EDFilter("Pythia8HadronizerFilter",
         f.write(self.insert_filters())
         f.close()
 
-        return out_file
-
     def get_extra_decays(self):
         """ Compile string to include extra dark mesons and their decays, depending on value of n_f """
         if self.n_f == 2:
@@ -231,6 +230,8 @@ generator = cms.EDFilter("Pythia8HadronizerFilter",
             ret = "\n"
         else:
             raise ValueError("The value of n_f = {} specified is not allowed. Please choose either n_f = 1 or n_f = 2".format(self.n_f))
+
+        print Fore.MAGENTA + "Extra decays added to gen fragment"
         return ret
 
     def insert_filters(self):
@@ -253,4 +254,6 @@ darkquarkFilter = cms.EDFilter("MCParticleModuloFilter",
     particleIDs = cms.vint32(4900101),  # PDGID of dark quark
 )
 """.format(two_n_dmatter=2*self.n_f, extra_dmatter=', 53' if self.n_f == 2 else '')
+
+        print Fore.MAGENTA + "Extra filters added to gen fragment"
         return ret
