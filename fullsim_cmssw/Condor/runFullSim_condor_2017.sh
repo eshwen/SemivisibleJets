@@ -72,7 +72,7 @@ mv ${model_name}_MINIAOD_${seed}.root ../../$cmssw_nano/src/
 cd ../../$cmssw_nano/src
 cmsenv
 
-cmsDriver.py --filein file:${model_name}_MINIAOD_${seed}.root --fileout file:${model_name}_NANOAOD_${seed}.root --mc --eventcontent NANOEDMAODSIM --datatier NANOAODSIM --conditions 102X_mc2017_realistic_v7 --step NANO --era Run2_2017,run2_nanoAOD_94XMiniAODv2 --customise Configuration/DataProcessing/Utils.addMonitoring --python_filename ${model_name}_NANOAOD_${seed}.py --no_exec -n $n_events
+cmsDriver.py --filein file:${model_name}_MINIAOD_${seed}.root --fileout file:${model_name}_NANOAOD_${seed}.root --mc --eventcontent NANOAODSIM --datatier NANOAODSIM --conditions 102X_mc2017_realistic_v7 --step NANO --era Run2_2017,run2_nanoAOD_94XMiniAODv2 --customise Configuration/DataProcessing/Utils.addMonitoring --python_filename ${model_name}_NANOAOD_${seed}.py --no_exec -n $n_events
 
 cmsRun ${model_name}_NANOAOD_${seed}.py
 echo -e "\e[1;35m**** CREATED NANOAOD FILE ****\e[0m"
