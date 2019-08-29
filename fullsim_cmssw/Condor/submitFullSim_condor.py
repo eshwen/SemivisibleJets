@@ -7,6 +7,7 @@ try:
 except ImportError:
     sys.exit('Please source the setup script first.')
 from colorama import Fore, init
+from cmssw_info import CmsswInfo
 from load_yaml_config import load_yaml_config
 import os
 from subprocess import call
@@ -22,7 +23,7 @@ this_dir = os.path.dirname(os.path.realpath(__file__))
 this_sys = os.environ['SCRAM_ARCH']
 
 
-def write_submission_script(work_space, gen_frag, lhe_base, model, n_events, queue=1, seed=None):
+def write_submission_script(work_space, gen_frag, lhe_base, model, n_events, queue=1, seed=None, year=2016):
     """
     Write the HTCondor submission script for sample generation.
     """
@@ -33,9 +34,14 @@ def write_submission_script(work_space, gen_frag, lhe_base, model, n_events, que
     else:
         grid_proxy = ""
 
+    if year == 2016:
+        job_os = 'SLCern6'
+    else:
+        job_os = 'CentOS7'
+
     body = """# HTCondor submission script
 Universe   = vanilla
-cmd        = {this_dir}/runFullSim_condor.sh
+cmd        = {this_dir}/runFullSim_condor_{year}.sh
 args       = {work_space} {gen_frag} {lhe_base}_$(Process).lhe {model} {n_events:.0f} $(Process) {pu_file}
 Log        = {work_space}/logs/{model}/condor_job_$(Process).log
 Output     = {work_space}/logs/{model}/condor_job_$(Process).out
@@ -50,14 +56,14 @@ request_disk = {disk}
 request_memory = 5000
 # Max runtime (seconds) determined by n_events
 +MaxRuntime = {runtime}
-# Require SLC6 machines as CMSSW_7_1_X can't run on SLC7/CentOS7
-Requirements = (OpSysAndVer == "SLCern6")
+# Require SLC6 machines if needed as CMSSW_7_1_X can't run on SLC7/CentOS7
+Requirements = (OpSysAndVer == "{os}")
 batch_name = {model} 
 # Number of instances of job to run
 queue {queue}
 """.format(this_dir=this_dir, work_space=work_space, gen_frag=gen_frag, lhe_base=lhe_base, model=model,
-           n_events=n_events, pu_file=os.path.join(os.environ['SVJ_TOP_DIR'], 'pileup_filelist_2016.txt'),
-           disk=disk, runtime=runtime, grid_proxy=grid_proxy, queue=queue)
+           n_events=n_events, pu_file=os.path.join(os.environ['SVJ_TOP_DIR'], 'pileup_filelist_{}.txt'.format(year)),
+           disk=disk, runtime=runtime, grid_proxy=grid_proxy, queue=queue, os=job_os, year=year)
 
     job_file = os.path.join(work_space, 'submission_scripts', model, 'condor_submission_all.job')
     # Edit submission script file name and body if writing individual files
@@ -73,20 +79,21 @@ queue {queue}
 
 def run_in_slc6_env(command, target_arch="slc6_amd64_gcc481", current_sys=this_sys, singularity_dir=this_dir):
     if all(x.startswith('slc6') for x in [current_sys, target_arch]):
-        call(command, shell=True)
-    else:
         call('{}/run_singularity.sh "{}"'.format(singularity_dir, command), shell=True)
+    else:
+        call(command, shell=True)
 
 
-def main(args):
+def main(config):
     # Load YAML config into a dictionary and assign values to variables for cleanliness
-    input_params = load_yaml_config(args.config)
+    input_params = load_yaml_config(config)
 
     work_space = input_params['work_space']
     lhe_file_path = input_params['lhe_file_path']
     n_events = input_params['n_events']
     n_jobs = input_params['n_jobs']
     model_name = input_params['model_name']
+    year = input_params['year']
 
     # Check arguments in config file
     thorough_checks(input_params)
@@ -111,25 +118,23 @@ def main(args):
         os.environ['X509_USER_PROXY'] = grid_cert_path
 
     # Dict for architectures corresponding to different CMSSW versions
-    init_cmssw = 'CMSSW_7_1_38_patch1'  # this version has CMSSW plug-in required by gen fragment filters
-    init_arch = 'slc6_amd64_gcc481'
-    cmssw_archs = {
-        init_cmssw: init_arch,
-        'CMSSW_8_0_21': 'slc6_amd64_gcc530',
-        'CMSSW_9_4_4': 'slc6_amd64_gcc630',
-    }
+    cmssw_info = CmsswInfo(year)
+
+    init_cmssw = cmssw_info.init['version']
+    init_arch = cmssw_info.init['arch']
 
     # Set up CMSSW environments
-    for version, arch in cmssw_archs.iteritems():
-        if os.path.exists(os.path.join(work_space, version, 'src')):
-            print "{} release already exists!".format(version)
+    for stage in [cmssw_info.init, cmssw_info.aod, cmssw_info.nano]:
+        if os.path.exists(os.path.join(work_space, stage['version'], 'src')):
+            print "{} release already exists!".format(stage['version'])
         else:
-            _run = '{}/sourceCMSSW.sh {} {} {}'.format(this_dir, version, arch, work_space)
-            run_in_slc6_env(_run, arch)
+            _run = '{}/sourceCMSSW.sh {} {} {}'.format(this_dir, stage['version'], stage['arch'], work_space)
+            run_in_slc6_env(_run, target_arch=stage['arch'])
 
-    #Install new Pythia version if not already done so
-    _source = '{}/sourceNewPythiaVer.sh {} {} {}'.format(this_dir, work_space, init_cmssw, init_arch)
-    run_in_slc6_env(_source)
+    # Install new Pythia version if not already done so
+    if year == 2016:
+        _source = '{}/sourceNewPythiaVer.sh {} {} {}'.format(this_dir, work_space, init_cmssw, init_arch)
+        run_in_slc6_env(_source, target_arch=init_arch)
 
     if os.getcwd() != this_dir:
         os.chdir(this_dir)
@@ -147,26 +152,26 @@ def main(args):
             os.makedirs(dir)
 
     # Create the gen fragment
-    gen_frag = os.path.basename(WriteGenSimFragment(args.config, gen_frag_dir).out_file)
+    gen_frag = os.path.basename(WriteGenSimFragment(config, gen_frag_dir).out_file)
 
     # Compile after everything is written to ensure gen fragment can be linked to
     _compile = '{}/utils/compile_cmssw.sh {} {} {}'.format(os.environ['SVJ_TOP_DIR'], work_space, init_cmssw, init_arch)
     run_in_slc6_env(_compile)
 
     # Create scripts to hadd output files and resubmit failed jobs
-    write_combine_script(work_space, model_name)
+    write_combine_script(work_space, model_name, cmssw_info.nano['version'])
     write_resubmitter_script(work_space, model_name, n_jobs)
 
     lhe_base = os.path.join(lhe_file_path, '{}_split'.format(model_name))
     sub_args = (work_space, gen_frag, lhe_base, model_name, n_events)
     # Write a single job file to submit everything at once
-    job_main = write_submission_script(*sub_args, queue=n_jobs)
+    job_main = write_submission_script(*sub_args, queue=n_jobs, year=year)
     call('condor_submit {}'.format(job_main), shell=True)
     print Fore.MAGENTA + "Jobs submitted. Monitor them with 'condor_q $USER'"
 
     print Fore.CYAN + "Writing individual job files to make resubmitting failed jobs easier..."
     for seed in xrange(n_jobs):
-        job_path = write_submission_script(*sub_args, seed=seed)
+        job_path = write_submission_script(*sub_args, seed=seed, year=year)
 
 
 if __name__ == '__main__':
@@ -174,5 +179,5 @@ if __name__ == '__main__':
     parser.add_argument("config", type=str, help="Path to YAML config to parse")
     args = parser.parse_args()
 
-    main(args)
+    main(args.config)
     sys.exit("Done")
