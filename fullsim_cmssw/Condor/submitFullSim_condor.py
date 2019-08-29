@@ -42,7 +42,7 @@ def write_submission_script(work_space, gen_frag, lhe_base, model, n_events, que
     body = """# HTCondor submission script
 Universe   = vanilla
 cmd        = {this_dir}/runFullSim_condor_{year}.sh
-args       = {work_space} {gen_frag} {lhe_base}_$(Process).lhe {model} {n_events:.0f} $(Process) {pu_file}
+args       = {work_space} {gen_frag} {lhe_base}_$(Process).lhe {model} {n_events:.0f} $(Process)
 Log        = {work_space}/logs/{model}/condor_job_$(Process).log
 Output     = {work_space}/logs/{model}/condor_job_$(Process).out
 Error      = {work_space}/logs/{model}/condor_job_$(Process).error
@@ -62,8 +62,7 @@ batch_name = {model}
 # Number of instances of job to run
 queue {queue}
 """.format(this_dir=this_dir, work_space=work_space, gen_frag=gen_frag, lhe_base=lhe_base, model=model,
-           n_events=n_events, pu_file=os.path.join(os.environ['SVJ_TOP_DIR'], 'pileup_filelist_{}.txt'.format(year)),
-           disk=disk, runtime=runtime, grid_proxy=grid_proxy, queue=queue, os=job_os, year=year)
+           n_events=n_events, disk=disk, runtime=runtime, grid_proxy=grid_proxy, queue=queue, os=job_os, year=year)
 
     job_file = os.path.join(work_space, 'submission_scripts', model, 'condor_submission_all.job')
     # Edit submission script file name and body if writing individual files
@@ -120,11 +119,11 @@ def main(config):
     # Dict for architectures corresponding to different CMSSW versions
     cmssw_info = CmsswInfo(year)
 
-    init_cmssw = cmssw_info.init['version']
-    init_arch = cmssw_info.init['arch']
+    init_cmssw = cmssw_info.gensim['version']
+    init_arch = cmssw_info.gensim['arch']
 
     # Set up CMSSW environments
-    for stage in [cmssw_info.init, cmssw_info.aod, cmssw_info.nano]:
+    for stage in [cmssw_info.gensim, cmssw_info.aod, cmssw_info.nano]:
         if os.path.exists(os.path.join(work_space, stage['version'], 'src')):
             print "{} release already exists!".format(stage['version'])
         else:
