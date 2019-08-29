@@ -8,6 +8,7 @@ except ImportError:
     sys.exit('Please source the setup script first.')
 from colorama import Fore, init
 from cmssw_info import CmsswInfo
+from htcondor_job import HTCondorJob
 from load_yaml_config import load_yaml_config
 import os
 from subprocess import call
@@ -21,59 +22,6 @@ init(autoreset=True)
 # Define some global variables
 this_dir = os.path.dirname(os.path.realpath(__file__))
 this_sys = os.environ['SCRAM_ARCH']
-
-
-def write_submission_script(work_space, gen_frag, lhe_base, model, n_events, queue=1, seed=None, year=2016):
-    """
-    Write the HTCondor submission script for sample generation.
-    """
-    disk = 50000 * n_events  # kB
-    runtime = 288 * n_events  # seconds. 8 hours/100 events
-    if 'soolin' in os.environ['HOSTNAME'] or lhe_base.startswith('root://'):
-        grid_proxy = "use_x509userproxy = true"
-    else:
-        grid_proxy = ""
-
-    if year == 2016:
-        job_os = 'SLCern6'
-    else:
-        job_os = 'CentOS7'
-
-    body = """# HTCondor submission script
-Universe   = vanilla
-cmd        = {this_dir}/runFullSim_condor_{year}.sh
-args       = {work_space} {gen_frag} {lhe_base}_$(Process).lhe {model} {n_events:.0f} $(Process)
-Log        = {work_space}/logs/{model}/condor_job_$(Process).log
-Output     = {work_space}/logs/{model}/condor_job_$(Process).out
-Error      = {work_space}/logs/{model}/condor_job_$(Process).error
-should_transfer_files   = YES
-when_to_transfer_output = ON_EXIT_OR_EVICT
-{grid_proxy}
-# Resource requests (disk storage in kB, memory in MB)
-request_cpus = 1
-# Disk request size determined by n_events
-request_disk = {disk}
-request_memory = 5000
-# Max runtime (seconds) determined by n_events
-+MaxRuntime = {runtime}
-# Require SLC6 machines if needed as CMSSW_7_1_X can't run on SLC7/CentOS7
-Requirements = (OpSysAndVer == "{os}")
-batch_name = {model} 
-# Number of instances of job to run
-queue {queue}
-""".format(this_dir=this_dir, work_space=work_space, gen_frag=gen_frag, lhe_base=lhe_base, model=model,
-           n_events=n_events, disk=disk, runtime=runtime, grid_proxy=grid_proxy, queue=queue, os=job_os, year=year)
-
-    job_file = os.path.join(work_space, 'submission_scripts', model, 'condor_submission_all.job')
-    # Edit submission script file name and body if writing individual files
-    if seed is not None:
-        job_file = job_file.replace('all.job', '{}.job'.format(seed))
-        body = body.replace('$(Process)', str(seed))
-
-    with open(job_file, 'w') as f:
-        f.write(body)
-
-    return job_file
 
 
 def run_in_slc6_env(command, target_arch="slc6_amd64_gcc481", current_sys=this_sys, singularity_dir=this_dir):
@@ -162,15 +110,15 @@ def main(config):
     write_resubmitter_script(work_space, model_name, n_jobs)
 
     lhe_base = os.path.join(lhe_file_path, '{}_split'.format(model_name))
-    sub_args = (work_space, gen_frag, lhe_base, model_name, n_events)
+    sub_args = (work_space, gen_frag, lhe_base, model_name, n_events, year)
     # Write a single job file to submit everything at once
-    job_main = write_submission_script(*sub_args, queue=n_jobs, year=year)
-    call('condor_submit {}'.format(job_main), shell=True)
+    main_job = HTCondorJob(*sub_args, queue=n_jobs)
+    call('condor_submit {}'.format(main_job.job_file), shell=True)
     print Fore.MAGENTA + "Jobs submitted. Monitor them with 'condor_q $USER'"
 
     print Fore.CYAN + "Writing individual job files to make resubmitting failed jobs easier..."
     for seed in xrange(n_jobs):
-        job_path = write_submission_script(*sub_args, seed=seed, year=year)
+        HTCondorJob(*sub_args, seed=seed)
 
 
 if __name__ == '__main__':
