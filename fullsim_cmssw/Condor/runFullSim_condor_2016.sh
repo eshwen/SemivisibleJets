@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-# Script to run FullSim CMSSW chain
+# Script to run FullSim CMSSW chain on one LHE file
 
 if [ -z $6 ]; then
-    usr_msg="Usage ./runFullSim_condor_2016.sh WORKING_DIRECTORY GEN_FRAGMENT_BASENAME LHE_FILE MODEL_NAME N_EVENTS SEED"
+    usr_msg="Usage ./runFullSim_condor_2016.sh WORKING_DIRECTORY GEN_FRAGMENT_BASENAME LHE_FILE MODEL_NAME N_EVENTS SEED CMSSW_GS CMSSW_AOD CMSSW_NANO"
     $SVJ_TOP_DIR/utils/print_bash_script_usage.sh "$usr_msg"
     exit
 fi
@@ -13,23 +13,22 @@ lhe_file=$(readlink -m $3)
 model_name=$4
 n_events=$5
 seed=$6 # index for job
+cmssw_gs="$7"
+cmssw_aod="$8"
+cmssw_nano="$9"
 
 # Allow use of aliases (specifically cvmfs ones)
 shopt -s expand_aliases
 
 cd $work_space
 source /cvmfs/cms.cern.ch/cmsset_default.sh
-export SCRAM_ARCH=slc6_amd64_gcc481
+export SCRAM_ARCH=slc6_amd64_gcc481  # see if I can avoid hardcoding
 
 # If script above cannot be sourced, manually set cmsenv alias
 if ! type cmsenv > /dev/null; then
     alias cmsenv='eval `scramv1 runtime -sh`'
 fi
 
-# Write so CMSSW versions aren't hardcoded, but can take from dict in submitFullSim_condor.py or something
-cmssw_gs="CMSSW_7_1_38_patch1"
-cmssw_aod="CMSSW_8_0_21"
-cmssw_nano="CMSSW_9_4_4"
 cd $cmssw_gs/src
 cmsenv
 #scram b
