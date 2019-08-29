@@ -22,15 +22,25 @@ SVJ_build_sys_path(){
 
 SVJ_build_python_path(){
     local Dirs=( "${SVJ_TOP_DIR}"/{,utils} )
-    Dirs+=( {"$SVJ_cvmfs_PythonDir","$SVJ_cvmfs_PipDir"}/lib/python2.7/site-packages/ )
+    Dirs+=( "$SVJ_cvmfs_PipDir"/lib/python2.7/site-packages/ )
     SVJ_build_some_path "$PYTHONPATH" "${Dirs[@]}"
 }
 
 # Source Python, pip, gcc and ROOT from cvmfs
-SVJ_cvmfs_PythonDir=/cvmfs/sft.cern.ch/lcg/releases/Python/2.7.15-c333c/x86_64-slc6-gcc62-opt
-SVJ_cvmfs_PipDir=/cvmfs/sft.cern.ch/lcg/releases/pip/9.0.1-e2f3e/x86_64-slc6-gcc62-opt
-SVJ_cvmfs_GCCSetup=/cvmfs/sft.cern.ch/lcg/contrib/gcc/6.2/x86_64-slc6/setup.sh
-SVJ_cvmfs_RootSetup=/cvmfs/sft.cern.ch/lcg/releases/LCG_88/ROOT/6.08.06/x86_64-slc6-gcc62-opt/bin/thisroot.sh
+if [[ "$SCRAM_ARCH" == "slc6"* ]]; then
+    SVJ_cvmfs_PythonDir=/cvmfs/sft.cern.ch/lcg/releases/Python/2.7.15-c333c/x86_64-slc6-gcc62-opt
+    SVJ_cvmfs_PipDir=/cvmfs/sft.cern.ch/lcg/releases/pip/9.0.1-e2f3e/x86_64-slc6-gcc62-opt
+    SVJ_cvmfs_GCCSetup=/cvmfs/sft.cern.ch/lcg/contrib/gcc/6.2/x86_64-slc6/setup.sh
+    SVJ_cvmfs_RootSetup=/cvmfs/sft.cern.ch/lcg/releases/LCG_88/ROOT/6.08.06/x86_64-slc6-gcc62-opt/bin/thisroot.sh
+elif [[ "$SCRAM_ARCH" == "slc7"* ]]; then
+    SVJ_cvmfs_PythonDir=/cvmfs/sft.cern.ch/lcg/releases/Python/2.7.15-c333c/x86_64-centos7-gcc7-opt
+    SVJ_cvmfs_PipDir=/cvmfs/sft.cern.ch/lcg/releases/pip/9.0.1-e2f3e/x86_64-centos7-gcc7-opt
+    SVJ_cvmfs_GCCSetup=/cvmfs/sft.cern.ch/lcg/contrib/gcc/7/x86_64-centos7/setup.sh
+    SVJ_cvmfs_RootSetup=/cvmfs/sft.cern.ch/lcg/releases/LCG_95/ROOT/6.16.00/x86_64-centos7-gcc7-opt/bin/thisroot.sh
+else
+    echo "Uknown architecture. Either use a supported architecture (slc6*, slc7*) or review the environment setup in $0"
+fi
+
 source "${SVJ_cvmfs_GCCSetup}"
 source "${SVJ_cvmfs_RootSetup}"
 
