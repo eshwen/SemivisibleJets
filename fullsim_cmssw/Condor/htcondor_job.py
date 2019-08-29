@@ -3,6 +3,7 @@ import os
 
 
 class HTCondorJob(object):
+    """ Store all the info required to write a HTCondor job file """
     def __init__(self, work_space, gen_frag, lhe_base, model, n_events, year, queue=1, seed=None):
         self.work_space = work_space
         self.gen_frag = gen_frag
@@ -33,9 +34,7 @@ class HTCondorJob(object):
         self.write_submission_script()
 
     def write_submission_script(self):
-        """
-        Write the HTCondor submission script for sample generation.
-        """
+        """ Write the HTCondor submission script for sample generation """
 
         body = """# HTCondor submission script
 Universe = vanilla
