@@ -11,13 +11,13 @@ class CmsswInfo(object):
             self.nano = {'version': 'CMSSW_9_4_4', 'arch': 'slc6_amd64_gcc630'}
 
         elif self.year == 2017:
-            self.gensim = {'version': 'CMSSW_9_3_15', 'arch': 'slc7_amd64_gcc630'}  # earlier versions don't have CMSSW plug-ins for dark quark/Z2 filters
-            self.aod = {'version': 'CMSSW_9_4_7', 'arch': 'slc7_amd64_gcc630'}
+            self.gensim = {'version': 'CMSSW_9_3_15', 'arch': 'slc7_amd64_gcc630'}  # earlier versions (at least <=9_3_12) don't have CMSSW plug-ins for dark quark/Z2 filters
+            self.aod = {'version': 'CMSSW_9_4_10', 'arch': 'slc7_amd64_gcc630'}
             self.nano = {'version': 'CMSSW_10_2_15', 'arch': 'slc7_amd64_gcc700'}
 
         elif self.year == 2018:
-            self.gensim = {'version': 'CMSSW_10_2_3', 'arch': 'slc7_amd64_gcc700'}
-            self.aod = {'version': 'CMSSW_10_2_3', 'arch': 'slc7_amd64_gcc700'}
+            self.gensim = {'version': 'CMSSW_10_2_15', 'arch': 'slc7_amd64_gcc700'}  # earlier versions (at least <=10_2_3) don't have CMSSW plug-ins for dark quark/Z2 filters
+            self.aod = {'version': 'CMSSW_10_2_15', 'arch': 'slc7_amd64_gcc700'}
             self.nano = {'version': 'CMSSW_10_2_15', 'arch': 'slc7_amd64_gcc700'}
         else:
             sys.exit("Only years 2016, 2017, and 2018 are supported")
