@@ -6,7 +6,7 @@ import os
 from subprocess import call
 
 
-def write_combine_script(work_space, model_name):
+def write_combine_script(work_space, model_name, cmssw_ver):
     svj_top_dir = os.environ['SVJ_TOP_DIR']
 
     file_path = os.path.join(work_space, "combine_components_{}.sh".format(model_name))
@@ -17,7 +17,7 @@ echo -e "\e[1;33mWarning: May take a while to hadd if many files are present.\e[
 shopt -s expand_aliases
 source /cvmfs/cms.cern.ch/cmsset_default.sh
 work_space="{work_space}"
-cd $work_space/CMSSW_9_4_4/src # Try to make this not hardcoded in case that version doesn't exist
+cd $work_space/{cmssw_ver}/src
 cmsenv
 cd $work_space
 
@@ -38,7 +38,7 @@ else
 fi
 
 exit
-""".format(work_space=work_space, SVJ_top_dir=svj_top_dir, model=model_name)
+""".format(work_space=work_space, SVJ_top_dir=svj_top_dir, model=model_name, cmssw_ver=cmssw_ver)
         )
 
     call("chmod +x {}".format(file_path), shell=True)
@@ -49,6 +49,7 @@ if __name__ == '__main__':
     parser = ArgumentParser(description=__doc__, formatter_class=ArgumentDefaultsHelpFormatter)
     parser.add_argument("work_space", type=str, help="Work space containing CMSSW releases, input and output files")
     parser.add_argument("model_name", type=str, help="Identifying name of model")
+    parser.add_argument("-c", "--cmssw_ver", type=str, default="CMSSW_9_4_4", help="CMSSW version under which output files are stored")
     args = parser.parse_args()
 
-    write_combine_script(args.work_space, args.model_name)
+    write_combine_script(args.work_space, args.model_name, args.cmssw_ver)
