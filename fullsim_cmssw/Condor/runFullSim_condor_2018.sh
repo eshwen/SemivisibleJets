@@ -2,7 +2,7 @@
 # Script to run FullSim CMSSW chain
 
 if [ -z $7 ]; then
-    usr_msg="Usage ./runFullSim_condor_2018.sh WORKING_DIRECTORY GEN_FRAGMENT_BASENAME LHE_FILE MODEL_NAME N_EVENTS SEED PU_FILE"
+    usr_msg="Usage ./runFullSim_condor_2018.sh WORKING_DIRECTORY GEN_FRAGMENT_BASENAME LHE_FILE MODEL_NAME N_EVENTS SEED"
     $SVJ_TOP_DIR/utils/print_bash_script_usage.sh "$usr_msg"
     exit
 fi
@@ -13,7 +13,6 @@ lhe_file=$(readlink -m $3)
 model_name=$4
 n_events=$5
 seed=$6 # index for job
-pu_file=$(readlink -m $7)
 
 # Allow use of aliases (specifically cvmfs ones)
 shopt -s expand_aliases
@@ -52,7 +51,7 @@ mv ${model_name}_GEN_SIM_${seed}.root ../../$cmssw_aod/src/
 cd ../../$cmssw_aod/src
 cmsenv
 
-cmsDriver.py step1 --filein file:${model_name}_GEN_SIM_${seed}.root --fileout file:${model_name}_AOD_step1_${seed}.root --pileup_input filelist:$pu_file --mc --eventcontent PREMIXRAW --datatier GEN-SIM-RAW --conditions 102X_upgrade2018_realistic_v11 --step DIGI,DATAMIX,L1,DIGI2RAW,HLT:@relval2018 --procModifiers premix_stage2 --geometry DB:Extended --datamix PreMix --era Run2_2018 --customise Configuration/DataProcessing/Utils.addMonitoring --python_filename ${model_name}_AOD_step1_${seed}.py --no_exec -n $n_events
+cmsDriver.py step1 --filein file:${model_name}_GEN_SIM_${seed}.root --fileout file:${model_name}_AOD_step1_${seed}.root --pileup_input filelist:"${SVJ_TOP_DIR}/pileup_filelist_2018.txt" --mc --eventcontent PREMIXRAW --datatier GEN-SIM-RAW --conditions 102X_upgrade2018_realistic_v11 --step DIGI,DATAMIX,L1,DIGI2RAW,HLT:@relval2018 --procModifiers premix_stage2 --geometry DB:Extended --datamix PreMix --era Run2_2018 --customise Configuration/DataProcessing/Utils.addMonitoring --python_filename ${model_name}_AOD_step1_${seed}.py --no_exec -n $n_events
 
 cmsRun ${model_name}_AOD_step1_${seed}.py
 echo -e "\e[1;35m**** CREATED AOD (STEP 1) FILE ****\e[0m"
