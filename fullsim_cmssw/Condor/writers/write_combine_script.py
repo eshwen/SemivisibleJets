@@ -9,6 +9,12 @@ from subprocess import call
 def write_combine_script(work_space, model_name, cmssw_ver):
     svj_top_dir = os.environ['SVJ_TOP_DIR']
 
+    # Noticed weird problem where trying to use PyROOT in a CMSSW_10_X_Y environment fails (possible GCC 7.X problem). So use GCC8 instead
+    if cmssw_ver.startswith('CMSSW_10_'):
+        gcc_setup = "source /cvmfs/sft.cern.ch/lcg/views/LCG_94/x86_64-centos7-gcc8-opt/setup.sh"
+    else:
+        gcc_setup = ""
+
     file_path = os.path.join(work_space, "combine_components_{}.sh".format(model_name))
     with open(file_path, "w") as f:
         # Write bash combine script
@@ -20,7 +26,7 @@ work_space="{work_space}"
 cd $work_space/{cmssw_ver}/src
 cmsenv
 cd $work_space
-
+{gcc_setup}
 # Capture output of hadding command in file to check for errors
 temp_file=$(mktemp)
 
@@ -38,7 +44,7 @@ else
 fi
 
 exit
-""".format(work_space=work_space, SVJ_top_dir=svj_top_dir, model=model_name, cmssw_ver=cmssw_ver)
+""".format(work_space=work_space, SVJ_top_dir=svj_top_dir, model=model_name, cmssw_ver=cmssw_ver, gcc_setup=gcc_setup)
         )
 
     call("chmod +x {}".format(file_path), shell=True)
