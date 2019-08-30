@@ -11,6 +11,7 @@ from cmssw_info import CmsswInfo
 from htcondor_job import HTCondorJob
 from load_yaml_config import load_yaml_config
 import os
+import shutil
 from subprocess import call
 from writers.write_GS_fragment import WriteGenSimFragment
 from writers.write_combine_script import write_combine_script
@@ -25,7 +26,8 @@ this_sys = os.environ['SCRAM_ARCH']
 
 
 def run_in_slc6_env(command, target_arch="slc6_amd64_gcc481", current_sys=this_sys, singularity_dir=this_dir):
-    if all(x.startswith('slc6') for x in [current_sys, target_arch]):
+    """ Call Singularity to set up SLC6 env if required """
+    if target_arch.startswith('slc6') and not current_sys.startswith('slc6'):
         call('{}/run_singularity.sh "{}"'.format(singularity_dir, command), shell=True)
     else:
         call(command, shell=True)
@@ -103,7 +105,9 @@ def main(config):
 
     # Compile after everything is written to ensure gen fragment can be linked to
     _compile = '{}/utils/compile_cmssw.sh {} {} {}'.format(os.environ['SVJ_TOP_DIR'], work_space, init_cmssw, init_arch)
-    run_in_slc6_env(_compile)
+    run_in_slc6_env(_compile, target_arch=init_arch)
+
+    shutil.copy(os.path.join(os.environ['SVJ_TOP_DIR'], 'pileup_filelist_{}.txt'.format(year)), work_space)
 
     # Create scripts to hadd output files and resubmit failed jobs
     write_combine_script(work_space, model_name, cmssw_info.nano['version'])
