@@ -50,7 +50,7 @@ mv ${model_name}_GEN_SIM_${seed}.root ../../$cmssw_aod/src/
 cd ../../$cmssw_aod/src
 cmsenv
 
-cmsDriver.py step1 --filein file:${model_name}_GEN_SIM_${seed}.root --fileout file:${model_name}_AOD_step1_${seed}.root --pileup_input filelist:"${SVJ_TOP_DIR}/pileup_filelist_2017.txt" --mc --eventcontent PREMIXRAW --datatier GEN-SIM-RAW --conditions 94X_mc2017_realistic_v11 --step DIGIPREMIX_S2,DATAMIX,L1,DIGI2RAW,HLT:2e34v40 --datamix PreMix --era Run2_2017 --customise Configuration/DataProcessing/Utils.addMonitoring --python_filename ${model_name}_AOD_step1_${seed}.py --no_exec -n $n_events
+cmsDriver.py step1 --filein file:${model_name}_GEN_SIM_${seed}.root --fileout file:${model_name}_AOD_step1_${seed}.root --pileup_input filelist:"${work_space}/pileup_filelist_2017.txt" --mc --eventcontent PREMIXRAW --datatier GEN-SIM-RAW --conditions 94X_mc2017_realistic_v11 --step DIGIPREMIX_S2,DATAMIX,L1,DIGI2RAW,HLT:2e34v40 --datamix PreMix --era Run2_2017 --customise Configuration/DataProcessing/Utils.addMonitoring --python_filename ${model_name}_AOD_step1_${seed}.py --no_exec -n $n_events
 
 cmsRun ${model_name}_AOD_step1_${seed}.py
 echo -e "\e[1;35m**** CREATED AOD (STEP 1) FILE ****\e[0m"
