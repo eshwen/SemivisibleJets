@@ -239,7 +239,7 @@ generator = cms.EDFilter("Pythia8HadronizerFilter",
         and dark quark filter (reject events where Z' decays directly to SM particles) """
         ret = """
 darkhadronZ2filter = cms.EDFilter("MCParticleModuloFilter",
-    moduleLabel = cms.InputTag("generator", "unsmeared"),
+    moduleLabel = cms.InputTag("generator"{smear}),
     absID = cms.bool(True),
     multipleOf = cms.uint32({two_n_dmatter:.0f}),  # 2x number of stable dark particles
     particleIDs = cms.vint32(51{extra_dmatter}),  # PDGIDs of stable dark particles
@@ -248,12 +248,12 @@ darkhadronZ2filter = cms.EDFilter("MCParticleModuloFilter",
 darkquarkFilter = cms.EDFilter("MCParticleModuloFilter",
     status = cms.int32(23),
     min = cms.uint32(2),
-    moduleLabel = cms.InputTag("generator", "unsmeared"),
+    moduleLabel = cms.InputTag("generator"{smear}),
     absID = cms.bool(True),
     multipleOf = cms.uint32(2),
     particleIDs = cms.vint32(4900101),  # PDGID of dark quark
 )
-""".format(two_n_dmatter=2*self.n_f, extra_dmatter=', 53' if self.n_f == 2 else '')
+""".format(two_n_dmatter=2*self.n_f, extra_dmatter=', 53' if self.n_f == 2 else '', smear='' if self.year == 2016 else ', "unsmeared"')
 
         print Fore.MAGENTA + "Extra filters added to gen fragment"
         return ret
