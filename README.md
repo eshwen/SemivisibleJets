@@ -21,7 +21,7 @@
 
 [![arXiv](https://img.shields.io/badge/arXiv-1707.05326%20-green.svg)](https://arxiv.org/abs/1707.05326)
 
-This repository contains model files necessary for generation of semi-visible jet Monte Carlo signal events in `MadGraph`. It also includes instructions of how to generate gridpacks for production with these models, and how to run them through the FullSim CMSSW chain to create nanoAOD files for analysis. Please see [1707.05326](https://arxiv.org/abs/1707.05326) and [1503.00009](https://arxiv.org/abs/1503.00009) for further details about the models. Please note that a recent version of `PYTHIA` (> 8.230) including the Hidden Valley module and running of the dark coupling is required when implementing the subsequent dark hadronization.
+This repository contains model files necessary for generation of semi-visible jet Monte Carlo signal events in `MadGraph`. It also includes instructions of how to generate gridpacks for production with these models, and how to run them through the FullSim CMSSW chain to create nanoAOD files for analysis. Emulation of 2016, 2017 and 2018 data taking with CMS is supported. Please see [1707.05326](https://arxiv.org/abs/1707.05326) and [1503.00009](https://arxiv.org/abs/1503.00009) for further details about the models. Please note that a recent version of `PYTHIA` (>= 8.230) including the Hidden Valley module and running of the dark coupling is required when implementing the subsequent dark hadronization.
 
 UFO files associated with two UV completions are provided (under [madgraph/models/](madgraph/models/)):
 
@@ -80,14 +80,14 @@ python runLHERetrieval.py <path to YAML config>
 
 The location of the split LHE files will be printed in the terminal, which will be the path specified by the config parameter `lhe_file_path`. **Note that the systematic weights computation is turned off in my fork of the `genproductions` repo**, as this step otherwise takes ages. To turn it back on, uncomment this block in [runcmsgrid_LO.sh](https://github.com/eshwen/genproductions/blob/1d1df93a7078d4aa24c022ba7ea4aa0c977c5de6/bin/MadGraph5_aMCatNLO/runcmsgrid_LO.sh#L165-L177).
 
-Now, the final step is to run the full CMSSW chain on these split LHE files and get nanoAODs out. The cmsDriver commands are written to emulate 2016 MC with 2017 re-processing. If you would like to change that, edit [fullsim_cmssw/Condor/runFullSim_condor.sh](runFullSim_condor.sh). And if you would like to change some more specific aspects of the model or hadronisation, either edit your config (as some parameters are detailed there) or [fullsim_cmssw/Condor/writers/write_GS_fragment.py](write_GS_fragment.py). The batch system used for running the jobs is HTCondor, configured to run at lxplus (it _may_ run out of the box on other T2/T3 systems, but may need to be modified if specific requirements need to be met). Now, just run
+Now, the final step is to run the full CMSSW chain on these split LHE files and get nanoAODs out. The cmsDriver commands are in the relevant `.sh` files ([2016](runFullSim_condor_2016.sh)/[2017](runFullSim_condor_2017.sh)/[2018](runFullSim_condor_2018.sh)). And if you would like to change some more specific aspects of the model or hadronisation, either edit your config (as some parameters are detailed there) or [fullsim_cmssw/Condor/writers/write_GS_fragment.py](write_GS_fragment.py). The batch system used for running the jobs is HTCondor, configured to run at lxplus (it _may_ run out of the box on other T2/T3 systems, but may need to be modified if specific requirements need to be met). Now, just run
 
 ```bash
 cd $SVJ_TOP_DIR/fullsim_cmssw/Condor
 python submitFullSim_condor.py <YAML config>
 ```
 
-which should take care of everything. Hadronisation is performed in `PYTHIA 8.230` -- integrated in an unconventional manner as the default architecture that ships with CMSSW_7_1_30 doesn't include that version -- because some LHE files tended to hang with 8.226 (presumably the new module contains patches and bug fixes). The output nanoAOD files will be located in `$work_space/output/`. If some jobs fail, they can be resubmitted by running
+which should take care of everything. Hadronisation is performed in `PYTHIA 8.230` -- integrated in an unconventional manner if the default version that ships with CMSSW is too old -- because some LHE files tended to hang with 8.226 (presumably the new module contains patches and bug fixes). The output nanoAOD files will be located in `$work_space/output/`. If some jobs fail, they can be resubmitted by running
 
 ```bash
 $work_space/resubmit_${model_name}.sh
@@ -392,7 +392,7 @@ For questions or issues please contact:
 - Figure out correct xsec values for t-channel as has been done for s-channel. Update scripts accordingly
 - Rewrite plotting script to do in 2 stages. Run fast-carpenter with a config file of important variables, etc., to make a summary dataframe for each model. Then run fast-plotter with a plotting config to make matplotlib plots. Move everything to a new directory: `$SVJ_TOP_DIR/plotting/`
 - Replace my `m_d` with `m_dq` so as not to confuse with FNAL's m_d = m_dark_hadron
-- Add support for running 2017 and 2018 production. Would need to make sure the right MadGraph version(s), PDF, CMSSW versions, Pythia version(s), and `cmsRun` options are used. For user, could just add a new option in config file (like `year: 2017`). For myself, would need to structure code and directories so everything is laid out well. Might also need to append year to `model_name`.
 - Add support for running at other T2/T3 sites
+- Consider switching to conda/virtualenv so managing environments and packages/installs are simpler
 
 - Whenever I change/update things, remember to update the README as well
