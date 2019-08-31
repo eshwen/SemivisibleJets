@@ -57,7 +57,7 @@ def main(config):
         sys.exit('Number of jobs exceeds number of LHE files in directory. Check and try again.')
 
     if not os.path.exists(work_space):
-        print "Work space doesn't exist. Creating it now..."
+        print Fore.CYAN + "Work space doesn't exist. Creating it now..."
         os.makedirs(work_space)
 
     # Initialise proxy of grid certificate if required
