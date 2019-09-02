@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Script to run FullSim CMSSW chain on one LHE file
 
-if [ -z $6 ]; then
+if [ -z $9 ]; then
     usr_msg="Usage ./runFullSim_condor_2018.sh WORKING_DIRECTORY GEN_FRAGMENT_BASENAME LHE_FILE MODEL_NAME N_EVENTS SEED CMSSW_GS CMSSW_AOD CMSSW_NANO"
     $SVJ_TOP_DIR/utils/print_bash_script_usage.sh "$usr_msg"
     exit
