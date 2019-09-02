@@ -371,6 +371,9 @@ _FINISH_
 pip install --user --upgrade -r requirements.txt
 ```
 - Some rudimentary plotting, for a quick look at distributions, can be done by running [plotSVJHistos.py](utils/plotSVJHistos.py). You just need to specify the root files in the list `files`.
+- For the s-channel mode, the couplings between the Z' and SM quarks is 0.1. This can be verified in the variables `g{V,A}{u,d}##` in [parameters.py](madgraph/models/DMsimp_SVJ_s_spin1_editTemplate/parameters.py)
+- The PDF sets used for 2016, 2017, and 2018 generation are detailed in [lhaIDs.py](utils/lhaIDs.py). Note that the ultra legacy-recommended PDFs are used for 2017 and 2018 generation (so _do not_ mimic the 94X/102X MC samples that were centrally produced). This is because there were issues in those PDFs that could cause large negative weights. For completeness, they are listed in the comments
+- For now, the output nanoAOD files are use the NanoAODv1 configuration for 2016, and NanoAODv5 for the other years. I am looking into updating the 2016 workflow to use NanoAODv5 for consistency
 - This repository utlises many software packages. To cite any of them, I have listed their BibTeX entries in [software_references.bib](utils/software_references.bib)
 
 
