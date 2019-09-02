@@ -5,7 +5,6 @@ from colorama import Fore, Style
 from load_yaml_config import load_yaml_config
 import os
 import sys
-import yaml
 
 
 def basic_checks(config_dict):
@@ -18,6 +17,7 @@ def basic_checks(config_dict):
     n_jobs = config_dict['n_jobs']
     m_d = config_dict['m_d']
     r_inv = config_dict['r_inv']
+    year = config_dict['year']
 
     if not all (type(i) is int for i in [n_events, n_jobs, m_med, m_d]):
         raise TypeError(Fore.GREEN + 'n_events, n_jobs, m_med and m_d are all required to be integers.')
@@ -25,10 +25,12 @@ def basic_checks(config_dict):
         raise ValueError(Fore.GREEN + 'm_d and m_med must be positive.')
     if m_med < 2*m_d:
         raise ValueError(Fore.GREEN + 'm_med must be greater than 2*m_d for on-shell pair production of the dark quarks.')
-    if not 's-channel' in process_type and not 't-channel' in process_type:
+    if not any(c in process_type for c in ['s-channel', 't-channel']):
         raise ValueError(Fore.GREEN + 'Unknown process_type specified. Please either specify \'s-channel\' or \'t-channel\'.')
     if r_inv < 0 or r_inv > 1.0:
         raise ValueError(Fore.GREEN + 'r_inv is required to be in the range 0 < r_inv < 1.0.')
+    if not any(year == y for y in [2016, 2017, 2018]):
+        raise ValueError(Fore.GREEN + 'year must be 2016, 2017, or 2018.')
     else:
         print Fore.MAGENTA + "Basic config file check finished. All looks good!", Style.RESET_ALL
 
@@ -37,7 +39,6 @@ def thorough_checks(config_dict):
     """
     Performs thorough checks of config file that are required for running FullSim Condor chain.
     """
-
     basic_checks(config_dict)
 
     lhe_file_path = config_dict['lhe_file_path']
@@ -56,10 +57,10 @@ def thorough_checks(config_dict):
     else:
         print Fore.MAGENTA + "Thorough config file check finished. All looks good!", Style.RESET_ALL
 
-        
+
 if __name__ == '__main__':
     parser = ArgumentParser(description=__doc__, formatter_class=ArgumentDefaultsHelpFormatter)
-    parser.add_argument("config", type=file, help="Path to YAML config to parse")
+    parser.add_argument("config", type=str, help="Path to YAML config to parse")
 
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument('-b', '--basic', action="store_true", help="Perform basic config checks")

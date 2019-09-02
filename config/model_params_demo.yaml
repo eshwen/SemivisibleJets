@@ -3,16 +3,19 @@
 # Paths can be given as local or absolute and strings are not required to be enclosed in quotes
 
 # Directory to deposit CMSSW releases and output root files from FullSim. Specify somewhere with a lot of space as output may be large
-work_space: /afs/cern.ch/work/e/ebhal/Semi_visible_jets_Condor_NewWorkflow
+work_space: /afs/cern.ch/work/e/ebhal/SVJ_Condor
 
 # Directory to store LHE files created by MadGraph, and access them for FullSim running
-lhe_file_path: /afs/cern.ch/work/e/ebhal/public/DMsimp_SVJ_s_spin1_splitLHE
+lhe_file_path: /afs/cern.ch/work/e/ebhal/public/SVJ_s_splitLHE
 
 # Number of events per job (FullSim)
 n_events: 100
 
 # Number of jobs to run (FullSim)
 n_jobs: 500
+
+# Year of data-taking to emulate (2016, 2017, or 2018)
+year: 2016
 
 # Running dark coupling at 1 TeV. A numerical value can be specified, as well the strings 'low', 'peak' and 'high'
 alpha_d: 0.23

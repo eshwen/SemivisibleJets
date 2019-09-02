@@ -12,7 +12,7 @@ class WriteGenSimFragment(object):
     """
     def __init__(self, config, GS_dir):
         """ Load YAML config into a dictionary and assign values to variables for cleanliness """
-        _config = load_yaml_config(config)
+        _config = load_yaml_config(config, quiet=True)
 
         # Reset text colours after colourful print statements
         init(autoreset=True)
@@ -25,14 +25,17 @@ class WriteGenSimFragment(object):
         self.x_sec_mg = _config['x_sec_mg']
         self.alpha_d = _config['alpha_d']
         self.process_type = _config['process_type']
+        self.year = _config['year']
 
         self.GS_dir = GS_dir
 
         # Run everything
+        print Fore.CYAN + "Writing gen fragment..."
         self.set_dark_params()
         self.get_lambda_d()
         self.get_xsec()
-        self.out_file = self.write_fragment()
+        self.get_pythia_info()
+        self.write_fragment()
 
     def set_dark_params(self):
         self.n_c = 2
@@ -95,14 +98,24 @@ class WriteGenSimFragment(object):
             remain_br = 0
         return remain_br
 
+    def get_pythia_info(self):
+        if self.year == 2016:
+            self.tune_module = 'Pythia8CUEP8M1Settings_cfi'
+            self.tune_block = 'pythia8CUEP8M1SettingsBlock'
+            self.pythia_settings = 'pythia8CUEP8M1Settings'
+        else:
+            self.tune_module = 'MCTunes2017.PythiaCP5Settings_cfi'
+            self.tune_block = 'pythia8CP5SettingsBlock'
+            self.pythia_settings = 'pythia8CP5Settings'
+
     def write_fragment(self):
         """ Actually write the gen fragment """
-        out_file = os.path.join(self.GS_dir, "{}_GS_fragment.py".format(self.model_name))
-        f = open(out_file, "w")
+        self.out_file = os.path.join(self.GS_dir, "{}_GS_fragment.py".format(self.model_name))
+        f = open(self.out_file, "w")
 
         f.write("""import FWCore.ParameterSet.Config as cms
 from Configuration.Generator.Pythia8CommonSettings_cfi import *
-from Configuration.Generator.Pythia8CUEP8M1Settings_cfi import *
+from Configuration.Generator.{tune_module} import *
 from Configuration.Generator.Pythia8aMCatNLOSettings_cfi import *
 generator = cms.EDFilter("Pythia8HadronizerFilter",
     maxEventsToPrint = cms.untracked.int32(1),
@@ -113,7 +126,7 @@ generator = cms.EDFilter("Pythia8HadronizerFilter",
     comEnergy = cms.double(13000.),
     PythiaParameters = cms.PSet(
         pythia8CommonSettingsBlock,
-        pythia8CUEP8M1SettingsBlock,
+        {tune_block},
         pythia8aMCatNLOSettingsBlock,
         JetMatchingParameters = cms.vstring(
             'JetMatching:setMad = off', # if 'on', merging parameters are set according to LHE file
@@ -127,7 +140,7 @@ generator = cms.EDFilter("Pythia8HadronizerFilter",
             'JetMatching:nJetMax = 2', # number of partons in born matrix element for highest multiplicity
             'JetMatching:doShowerKt = off', # off for MLM matching, turn on for shower-kT matching
             ),
-""".format(cross_section=self.x_sec))
+""".format(cross_section=self.x_sec, tune_block=self.tune_block, tune_module=self.tune_module))
 
         f.write("""
         processParameters = cms.vstring(""")
@@ -178,19 +191,17 @@ generator = cms.EDFilter("Pythia8HadronizerFilter",
             #'TimeShower:nPartonsInBorn = 2', # Number of coloured particles (before resonance decays) in born matrix element
             ),
         parameterSets = cms.vstring('pythia8CommonSettings',
-                                    'pythia8CUEP8M1Settings',
+                                    '{pythia_settings}',
                                     'pythia8aMCatNLOSettings',
                                     'processParameters',
                                     'JetMatchingParameters',
                                     )
     )
 )
-""".format(prob_vector=0.0 if self.n_f == 1 else 0.75, Lambda_dark=self.Lambda_d, nFlav=self.n_f, pTminFSR=1.1*self.Lambda_d))
+""".format(prob_vector=0.0 if self.n_f == 1 else 0.75, Lambda_dark=self.Lambda_d, nFlav=self.n_f, pTminFSR=1.1*self.Lambda_d, pythia_settings=self.pythia_settings))
 
         f.write(self.insert_filters())
         f.close()
-
-        return out_file
 
     def get_extra_decays(self):
         """ Compile string to include extra dark mesons and their decays, depending on value of n_f """
@@ -219,6 +230,8 @@ generator = cms.EDFilter("Pythia8HadronizerFilter",
             ret = "\n"
         else:
             raise ValueError("The value of n_f = {} specified is not allowed. Please choose either n_f = 1 or n_f = 2".format(self.n_f))
+
+        print Fore.MAGENTA + "Extra decays added to gen fragment"
         return ret
 
     def insert_filters(self):
@@ -226,7 +239,7 @@ generator = cms.EDFilter("Pythia8HadronizerFilter",
         and dark quark filter (reject events where Z' decays directly to SM particles) """
         ret = """
 darkhadronZ2filter = cms.EDFilter("MCParticleModuloFilter",
-    moduleLabel = cms.InputTag("generator"),
+    moduleLabel = cms.InputTag("generator"{smear}),
     absID = cms.bool(True),
     multipleOf = cms.uint32({two_n_dmatter:.0f}),  # 2x number of stable dark particles
     particleIDs = cms.vint32(51{extra_dmatter}),  # PDGIDs of stable dark particles
@@ -235,10 +248,12 @@ darkhadronZ2filter = cms.EDFilter("MCParticleModuloFilter",
 darkquarkFilter = cms.EDFilter("MCParticleModuloFilter",
     status = cms.int32(23),
     min = cms.uint32(2),
-    moduleLabel = cms.InputTag("generator"),
+    moduleLabel = cms.InputTag("generator"{smear}),
     absID = cms.bool(True),
     multipleOf = cms.uint32(2),
     particleIDs = cms.vint32(4900101),  # PDGID of dark quark
 )
-""".format(two_n_dmatter=2*self.n_f, extra_dmatter=', 53' if self.n_f == 2 else '')
+""".format(two_n_dmatter=2*self.n_f, extra_dmatter=', 53' if self.n_f == 2 else '', smear='' if self.year == 2016 else ', "unsmeared"')
+
+        print Fore.MAGENTA + "Extra filters added to gen fragment"
         return ret

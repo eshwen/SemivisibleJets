@@ -7,10 +7,10 @@
 ._*
 *.tar.xz
 CMSSW*
-ebhal.cc
+fullsim_cmssw/Condor/*.cc
 *.root
 Plots/
-madgraph/models/*SVJ_s_*mZp*
-madgraph/models/*SVJ_t_mPhi*
-madgraph/input_files/*SVJ_s_*mZp*
-madgraph/input_files/*SVJ_t_mPhi*
+madgraph/models/*mZp*
+madgraph/models/*mPhi*
+madgraph/input_files/*mZp*
+madgraph/input_files/*mPhi*
