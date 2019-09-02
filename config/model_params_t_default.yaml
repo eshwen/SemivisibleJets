@@ -11,3 +11,7 @@ m_med: 1000
 m_d: 10
 n_f: 1
 r_inv: 0.3
+
+model_name: SVJ_t_2016_mPhi-1000_mDQ-10_rinv-0p3_aD-0p23
+total_events: 50000
+x_sec_mg: 96.99
