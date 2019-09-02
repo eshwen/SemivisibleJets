@@ -4,8 +4,8 @@
     - [s-channel model](#schannelmodel)
     - [t-channel model](#tchannelmodel)
 2. [Running the complete sample production with HTCondor (recommended)](#completesampleproduction)
-3. [Running the CMSSW FullSim chain with gridpacks](#fullsimchaingridpacks)
-4. [Interactive running](#interactiverunning)
+3. [Interactive running](#interactiverunning)
+4. [Running the CMSSW FullSim chain with gridpacks](#fullsimchaingridpacks)
 5. [Miscellaneous](#misc)
 6. [Contact](#contact)
 7. [To do](#todo)
@@ -96,13 +96,13 @@ $work_space/resubmit_${model_name}.sh
 
 ## Interactive running <a name="interactiverunning"></a>
 
-This isn't maintained any more. An old version of this README ([here](https://github.com/eshwen/SemivisibleJets/blob/1a0f04aa0ac74c0d7152f07f0f42a09f380cebab/README.md)) has instructions (that may be outdated) on how to create gridpacks locally, and FullSim production with either CRAB or CMSSW locally.
+This isn't maintained any more. An old version of this README ([here](https://github.com/eshwen/SemivisibleJets/blob/d8fc373dd4081a14752859f18a6c0b2eefc10b1e/README.md)) has instructions (that may be outdated) on how to create gridpacks locally, and FullSim production with either CRAB or CMSSW locally.
 
 
 
 ## Running the CMSSW FullSim chain with gridpacks <a name="fullsimchaingridpacks"></a>
 
-This isn't maintained any more. An old version of this README ([here](https://github.com/eshwen/SemivisibleJets/blob/1a0f04aa0ac74c0d7152f07f0f42a09f380cebab/README.md)) has instructions (that may be outdated) on how to create gridpacks locally, and use Pythia + Delphes for hadronisation and detector simulation (i.e., outside of CMSSW).
+This isn't maintained any more. An old version of this README ([here](https://github.com/eshwen/SemivisibleJets/blob/d8fc373dd4081a14752859f18a6c0b2eefc10b1e/README.md)) has instructions (that may be outdated) on how to create gridpacks locally, and use Pythia + Delphes for hadronisation and detector simulation (i.e., outside of CMSSW).
 
 
 
