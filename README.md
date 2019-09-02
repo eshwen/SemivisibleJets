@@ -28,18 +28,18 @@ UFO files associated with two UV completions are provided (under [madgraph/model
 
 ### s-channel model <a name="schannelmodel"></a>
 
-An s-channel production ([DMsimp_SVJ_s_spin1](madgraph/models/DMsimp_SVJ_s_spin1)) mediated through a new heavy Z'. The model provided is a modified version of the spin-1 `DMsimp` model (http://feynrules.irmp.ucl.ac.be/wiki/DMsimp) implemented through `FeynRules`.
+An s-channel production (e.g., [DMsimp_SVJ_s_spin1_mZp-1000_mDQ-10_rinv-0p3](madgraph/models/DMsimp_SVJ_s_spin1_mZp-1000_mDQ-10_rinv-0p3)) mediated through a new heavy Z'. The model provided is a modified version of the spin-1 `DMsimp` model (http://feynrules.irmp.ucl.ac.be/wiki/DMsimp) implemented through `FeynRules`.
 
 
 ### t-channel model <a name="tchannelmodel"></a>
 
-A t-channel production ([DMsimp_SVJ_t](madgraph/models/DMsimp_SVJ_t)) where the dark and visible sectors interact through a new scalar bi-fundamental.
+A t-channel production (e.g., [DMsimp_SVJ_t_mPhi-1000_mDQ-10_rinv-0p3](madgraph/models/DMsimp_SVJ_t_mPhi-1000_mDQ-10_rinv-0p3)) where the dark and visible sectors interact through a new scalar bi-fundamental.
 
 The bi-fundamentals are denoted with `su11, su12, su21, su22...`, where `u` etc explicitly specifies the QCD flavour index and the numbers are the explicit dark non-Abelian group indices. Similarly, the dark quarks are labeled as `qv11, qv12, qv21, qv22`.
 
 Please note that a modified version of `MadGraph` using the patch included [here](https://bugs.launchpad.net/mg5amcnlo/+bug/1702712) is required to ensure a stable cross section for event generation using this model.
 
-A `FeynRules` model file ([DMsimp_tchannel.fr](madgraph/models/DMsimp_SVJ_t/DMsimp_tchannel.fr)) as well as the `Mathematica` notebook ([DMsimp_tchannel.nb](madgraph/models/DMsimp_SVJ_t/DMsimp_tchannel.nb)) used to generated the UFO output are also provided.
+A `FeynRules` model file ([DMsimp_tchannel.fr](madgraph/models/DMsimp_SVJ_t_mPhi-1000_mDQ-10_rinv-0p3/DMsimp_tchannel.fr)) as well as the `Mathematica` notebook ([DMsimp_tchannel.nb](madgraph/models/DMsimp_SVJ_t_mPhi-1000_mDQ-10_rinv-0p3/DMsimp_tchannel.nb)) used to generated the UFO output are also provided.
 
 
 
@@ -69,7 +69,7 @@ cd gridpack_generation_mg
 python submitGridpackGeneration.py <path to YAML config>
 ```
 
-If the parameters are okay (and there are no bugs in the code), the MadGraph model files and input cards from the template directories I have should be copied into model-specific directories, and the specified parameters will be added. Then, the gridpack will be created in [external/genproductions/bin/MadGraph5_aMCatNLO/](external/genproductions/bin/MadGraph5_aMCatNLO/).
+If the parameters are okay (and there are no bugs in the code), the MadGraph model files and input cards should be copied from the template directories into model-specific directories, and the specified parameters will be added. Then, the gridpack will be created in [external/genproductions/bin/MadGraph5_aMCatNLO/](external/genproductions/bin/MadGraph5_aMCatNLO/).
 
 If you plan to run the rest of the sample production via CRAB or by some means that requires a gridpack, you're done! However, if you want to continue here and follow the rest of my steps, great! Now that you have the gridpack, the next stage is to get the LHE file out, apply the PDGID renumbering for the dark particles, and split the LHE file for running the FullSim jobs easily. This is taken care of with
 
@@ -78,9 +78,11 @@ cd $SVJ_TOP_DIR/gridpack_to_lhe
 python runLHERetrieval.py <path to YAML config>
 ```
 
-The location of the split LHE files will be printed in the terminal, which will be the path specified by the config parameter `lhe_file_path`. **Note that the systematic weights computation is turned off in my fork of the `genproductions` repo**, as this step otherwise takes ages. To turn it back on, uncomment this block in [runcmsgrid_LO.sh](https://github.com/eshwen/genproductions/blob/1d1df93a7078d4aa24c022ba7ea4aa0c977c5de6/bin/MadGraph5_aMCatNLO/runcmsgrid_LO.sh#L165-L177).
+The location of the split LHE files will be printed in the terminal (it is specified by the config parameter `lhe_file_path`). **Note that the systematic weights computation is turned off in my fork of the `genproductions` repo**, as this step otherwise takes ages. To turn it back on, uncomment this block in [runcmsgrid_LO.sh](https://github.com/eshwen/genproductions/blob/1d1df93a7078d4aa24c022ba7ea4aa0c977c5de6/bin/MadGraph5_aMCatNLO/runcmsgrid_LO.sh#L165-L177).
 
-Now, the final step is to run the full CMSSW chain on these split LHE files and get nanoAODs out. The cmsDriver commands are in the relevant `.sh` files ([2016](runFullSim_condor_2016.sh)/[2017](runFullSim_condor_2017.sh)/[2018](runFullSim_condor_2018.sh)). And if you would like to change some more specific aspects of the model or hadronisation, either edit your config (as some parameters are detailed there) or [fullsim_cmssw/Condor/writers/write_GS_fragment.py](write_GS_fragment.py). The batch system used for running the jobs is HTCondor, configured to run at lxplus (it _may_ run out of the box on other T2/T3 systems, but may need to be modified if specific requirements need to be met). Now, just run
+Now, the final step is to run the full CMSSW chain on these split LHE files and get nanoAODs out. The relevant `cmsDriver` commands are in the `runFullSim_condor_YYYY.sh` files ([2016](runFullSim_condor_2016.sh)/[2017](runFullSim_condor_2017.sh)/[2018](runFullSim_condor_2018.sh)). If required, you change certain parameters of the model (in your config), hadronisation treatment (in [write_GS_fragment.py](fullsim_cmssw/Condor/writers/write_GS_fragment.py)), or the CMSSW versions (in [cmssw_info.py](fullsim_cmssw/Condor/cmssw_info.py)).
+
+The batch system used for running the jobs is HTCondor, configured to run at lxplus (it _may_ run out of the box on other T2/T3 systems, but may need to be modified if specific requirements need to be met). Now, just run
 
 ```bash
 cd $SVJ_TOP_DIR/fullsim_cmssw/Condor
@@ -93,7 +95,7 @@ which should take care of everything. Hadronisation is performed in `PYTHIA 8.23
 $work_space/resubmit_${model_name}.sh
 ```
 
-(note that all jobs must _finish running_ first). When happy, the component output files can be combined using [haddnano.py](utils/haddnano.py). A script which does that step will be in `$work_space/combine_components_${model_name}.sh`, which can be run without any arguments.
+(note that all jobs must _finish running_ first). When happy, the output files from each job can be combined using [haddnano.py](utils/haddnano.py). A script which performs that step will be in `$work_space/combine_components_${model_name}.sh`.
 
 
 
