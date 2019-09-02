@@ -1,5 +1,6 @@
 import sys
 
+
 class CmsswInfo(object):
     """ Store CMSSW information (i.e., version and architecture) for different years """
     def __init__(self, year):

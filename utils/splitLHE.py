@@ -25,15 +25,15 @@ def splitLHE(inputFile, outFileNameBase, numFiles):
     footLines = []
 
     for line in fin:
-        if re.match(r"[^#]*</LesHouchesEvents>",line):
+        if re.match(r"[^#]*</LesHouchesEvents>", line):
             inFooter = True
             footLines.append(line)
         elif inFooter:
             footLines.append(line)
-        elif init:  
-            if re.match(r"[^#]*</event>",line):
+        elif init:
+            if re.match(r"[^#]*</event>", line):
                 eventNum += 1
-        elif re.match(r"[^#]*</init>",line):
+        elif re.match(r"[^#]*</init>", line):
             init = True
 
     eventsTotal = eventNum
@@ -63,7 +63,7 @@ def splitLHE(inputFile, outFileNameBase, numFiles):
     fin.seek(0)
 
     for line in fin:
-        if init:  
+        if init:
             files[iFile].write(line)
             if re.match(r"[^#]*</event>", line):
                 eventNum += 1
@@ -75,7 +75,7 @@ def splitLHE(inputFile, outFileNameBase, numFiles):
                     if iFile == numFiles:
                         break
                     files[iFile].writelines(headLines)
-        elif re.match(r"[^#]*</init>",line):
+        elif re.match(r"[^#]*</init>", line):
             init = True
             headLines.append(line)
             files[iFile].writelines(headLines)
@@ -91,7 +91,7 @@ if __name__ == '__main__':
     parser = ArgumentParser(description=__doc__, formatter_class=ArgumentDefaultsHelpFormatter)
     parser.add_argument("inputFile", type=str, help="Input LHE file")
     parser.add_argument("-o", "--outFileNameBase", default="outputFile", type=str, help="Base name for output files")
-    parser.add_argument("-n", "--numFiles", default=100, type=int, help="Number of files to split input file in to") 
+    parser.add_argument("-n", "--numFiles", default=100, type=int, help="Number of files to split input file in to")
     args = parser.parse_args()
 
     splitLHE(inputFile=args.inputFile, outFileNameBase=args.outFileNameBase, numFiles=args.numFiles)

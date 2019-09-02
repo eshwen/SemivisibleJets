@@ -55,13 +55,13 @@ request_memory = {memory}
 +MaxRuntime = {runtime}
 # Require SLC6 machines if needed as CMSSW_7_1_X can't run on SLC7/CentOS7
 Requirements = (OpSysAndVer == "{os}")
-batch_name = {model} 
+batch_name = {model}
 # Number of instances of job to run
 queue {queue}
 """.format(this_dir=self.this_dir,
            work_space=self.work_space,
            gen_frag=self.gen_frag,
-           lhe_base=self.lhe_base, 
+           lhe_base=self.lhe_base,
            model=self.model,
            n_events=self.n_events,
            disk=self.disk,
