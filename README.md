@@ -140,5 +140,12 @@ For questions or issues please contact:
 - Replace my `m_d` with `m_dq` so as not to confuse with FNAL's m_d = m_dark_hadron
 - Add support for running at other T2/T3 sites
 - Consider switching to conda/virtualenv so managing environments and packages/installs are simpler
+- Consider swapping CMSSW_9_4_4 in 2016 production to 10_2_15_patch2 (and update cmsDriver command) for nanoAODv5. Currently getting issue at nanoAOD step (running over miniAODv2 from CMSSW_8_0_21) of the form
+
+```bash
+Calling method for module PATTauRefSelector/'finalTaus'
+Exception Message:
+pat::Tau: the ID byVVLooseIsolationMVArun2v1DBoldDMwLT can't be found in this pat::Tau.
+```
 
 - Whenever I change/update things, remember to update the README as well
