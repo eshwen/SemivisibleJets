@@ -13,3 +13,5 @@
        added = yellow
        changed = green
        untracked = red
+
+# or use the CLI command "git config --global color.ui true"
