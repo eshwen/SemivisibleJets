@@ -38,7 +38,7 @@ class CmsswInfo(object):
         """ Initialise CMSSW environments """
         for stage in self.stages:
             if os.path.exists(os.path.join(location, stage['version'], 'src')):
-                print "{} release already exists!".format(stage['version'])
+                print("{} release already exists!".format(stage['version']))
             else:
                 _command = '{}/sourceCMSSW.sh {} {} {}'.format(this_dir, stage['version'], stage['arch'], location)
                 run_in_slc6_env(_command, target_arch=stage['arch'])

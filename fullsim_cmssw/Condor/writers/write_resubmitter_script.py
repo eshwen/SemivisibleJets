@@ -27,7 +27,7 @@ done
         )
 
     call("chmod +x {}".format(file_path), shell=True)
-    print Fore.MAGENTA + "Resubmission script written!", Style.RESET_ALL
+    print(Fore.MAGENTA + "Resubmission script written!", Style.RESET_ALL)
 
 
 if __name__ == '__main__':

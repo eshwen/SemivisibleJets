@@ -32,7 +32,7 @@ def basic_checks(config_dict):
     if not any(year == y for y in [2016, 2017, 2018]):
         raise ValueError(Fore.GREEN + 'year must be 2016, 2017, or 2018.')
     else:
-        print Fore.MAGENTA + "Basic config file check finished. All looks good!", Style.RESET_ALL
+        print(Fore.MAGENTA + "Basic config file check finished. All looks good!", Style.RESET_ALL)
 
 
 def thorough_checks(config_dict):
@@ -55,7 +55,7 @@ def thorough_checks(config_dict):
     if isinstance(alpha_d, str) and not any(alpha_d == x for x in ['peak', 'low', 'high']):
         raise ValueError("If specifying alpha_d as a string, it must equal 'peak', 'low', or 'high'.")
     else:
-        print Fore.MAGENTA + "Thorough config file check finished. All looks good!", Style.RESET_ALL
+        print(Fore.MAGENTA + "Thorough config file check finished. All looks good!", Style.RESET_ALL)
 
 
 if __name__ == '__main__':
@@ -68,7 +68,7 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    print Fore.MAGENTA + "Checking config file...", Style.RESET_ALL
+    print(Fore.MAGENTA + "Checking config file...", Style.RESET_ALL)
     config_dict = load_yaml_config(args.config)
 
     if args.basic:

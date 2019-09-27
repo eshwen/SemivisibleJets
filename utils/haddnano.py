@@ -5,14 +5,14 @@ from array import array
 import sys
 
 if len(sys.argv) < 3:
-    print "Syntax: haddnano.py out.root input1.root input2.root ..."
+    print("Syntax: haddnano.py out.root input1.root input2.root ...")
 ofname = sys.argv[1]
 files = sys.argv[2:]
 
 
 def zeroFill(tree, brName, brObj):
     if brObj.GetLeaf(brName).GetTypeName() != "Bool_t":
-        print "Did not expect to back fill non-boolean branches", tree, brName, brObj.GetLeaf(br).GetTypeName()
+        print("Did not expect to back fill non-boolean branches", tree, brName, brObj.GetLeaf(br).GetTypeName())
     else:
         buff = array('B', [0])
         b = tree.Branch(brName, buff, brName+"/O")
@@ -26,11 +26,11 @@ fileHandles = []
 goFast = True
 
 for fn in files:
-    print "Adding file", fn
+    print("Adding file", fn)
     fileHandles.append(ROOT.TFile.Open(fn))
     if fileHandles[-1].GetCompressionSettings() != fileHandles[0].GetCompressionSettings():
         goFast = False
-        print "Disabling fast merging as inputs have different compressions"
+        print("Disabling fast merging as inputs have different compressions")
 
 of = ROOT.TFile(ofname, "recreate")
 if goFast:
@@ -39,7 +39,7 @@ of.cd()
 
 for e in fileHandles[0].GetListOfKeys():
     name = e.GetName()
-    print "Merging", name
+    print("Merging", name)
     obj = e.ReadObj()
     cl = ROOT.TClass.GetClass(e.GetClassName())
     inputs = ROOT.TList()
@@ -52,7 +52,7 @@ for e in fileHandles[0].GetListOfKeys():
         try:
             otherObj = fh.GetListOfKeys().FindObject(name).ReadObj()
         except AttributeError:
-            print "Offending file:", fh
+            print("Offending file:", fh)
             sys.exit("Exiting")
         inputs.Add(otherObj)
         if isTree and obj.GetName() == 'Events':
@@ -60,7 +60,7 @@ for e in fileHandles[0].GetListOfKeys():
             otherBranches = set([x.GetName() for x in otherObj.GetListOfBranches()])
             missingBranches = list(branchNames-otherBranches)
             additionalBranches = list(otherBranches-branchNames)
-            print "missing:", missingBranches, "\n Additional:", additionalBranches
+            print("missing:", missingBranches, "\n Additional:", additionalBranches)
             for br in missingBranches:
                 # fill "Other"
                 zeroFill(otherObj, br, obj.GetListOfBranches().FindObject(br))
@@ -81,7 +81,7 @@ for e in fileHandles[0].GetListOfKeys():
     elif obj.IsA().InheritsFrom(ROOT.TObjString.Class()):
         for st in inputs:
             if st.GetString() != obj.GetString():
-                print "Strings are not matching"
+                print("Strings are not matching")
         obj.Write()
     else:
-        print "Cannot handle ", obj.IsA().GetName()
+        print("Cannot handle ", obj.IsA().GetName())

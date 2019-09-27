@@ -30,7 +30,7 @@ class WriteGenSimFragment(object):
         self.GS_dir = GS_dir
 
         # Run everything
-        print Fore.CYAN + "Writing gen fragment..."
+        print(Fore.CYAN + "Writing gen fragment...")
         self.set_dark_params()
         self.get_lambda_d()
         self.get_xsec()
@@ -50,19 +50,19 @@ class WriteGenSimFragment(object):
         else:
             _Lambda_d = cdp.calc_lambda_d(self.n_c, self.n_f, self.alpha_d)
         self.Lambda_d = round(_Lambda_d, 4)
-        print Fore.MAGENTA + "Confinement scale Lambda_d =", self.Lambda_d
+        print(Fore.MAGENTA + "Confinement scale Lambda_d =", self.Lambda_d)
 
         # Rescale Lambda_d if too low (should be >= m_d), then recalc alpha_d
         #if Lambda_d < m_d:
         #    Lambda_d = 1.1 * m_d
         #    alpha_d = cdp.calc_alpha_d(n_c, n_f, Lambda_d)
-        #    print Fore.MAGENTA + "Recalculated alpha_d =", alpha_d
+        #    print(Fore.MAGENTA + "Recalculated alpha_d =", alpha_d)
 
     def get_xsec(self):
         """ Get cross section from dictionary if possible, to replace value calculated by MadGraph """
         if self.process_type == 's-channel':
             self.x_sec = xsec_from_dict(os.path.join(os.environ['SVJ_TOP_DIR'], 'utils/xsecs_{}.yaml'.format(self.process_type)), self.m_med)
-            print Fore.CYAN + "Taking cross section from dictionary instead of MadGraph's calculation..."
+            print(Fore.CYAN + "Taking cross section from dictionary instead of MadGraph's calculation...")
         else:
             self.x_sec = self.x_sec_mg
 
@@ -231,7 +231,7 @@ generator = cms.EDFilter("Pythia8HadronizerFilter",
         else:
             raise ValueError("The value of n_f = {} specified is not allowed. Please choose either n_f = 1 or n_f = 2".format(self.n_f))
 
-        print Fore.MAGENTA + "Extra decays added to gen fragment"
+        print(Fore.MAGENTA + "Extra decays added to gen fragment")
         return ret
 
     def insert_filters(self):
@@ -255,5 +255,5 @@ darkquarkFilter = cms.EDFilter("MCParticleModuloFilter",
 )
 """.format(two_n_dmatter=2*self.n_f, extra_dmatter=', 53' if self.n_f == 2 else '', smear='' if self.year == 2016 else ', "unsmeared"')
 
-        print Fore.MAGENTA + "Extra filters added to gen fragment"
+        print(Fore.MAGENTA + "Extra filters added to gen fragment")
         return ret

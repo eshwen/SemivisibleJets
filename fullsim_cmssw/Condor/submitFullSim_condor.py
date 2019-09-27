@@ -48,7 +48,7 @@ def main(config):
         sys.exit('Number of jobs exceeds number of LHE files in directory. Check and try again.')
 
     if not os.path.exists(work_space):
-        print Fore.CYAN + "Work space doesn't exist. Creating it now..."
+        print(Fore.CYAN + "Work space doesn't exist. Creating it now...")
         os.makedirs(work_space)
 
     shutil.copy(os.path.join(os.environ['SVJ_TOP_DIR'], 'pileup_filelist_{}.txt'.format(year)), work_space)
@@ -93,9 +93,9 @@ def main(config):
     # Write a single job file to submit everything at once
     main_job = HTCondorJob(*sub_args, queue=n_jobs)
     call('condor_submit {}'.format(main_job.job_file), shell=True)
-    print Fore.MAGENTA + "Jobs submitted. Monitor them with 'condor_q $USER'"
+    print(Fore.MAGENTA + "Jobs submitted. Monitor them with 'condor_q $USER'")
 
-    print Fore.CYAN + "Writing individual job files to make resubmitting failed jobs easier..."
+    print(Fore.CYAN + "Writing individual job files to make resubmitting failed jobs easier...")
     for seed in xrange(n_jobs):
         HTCondorJob(*sub_args, seed=seed)
 
