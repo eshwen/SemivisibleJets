@@ -164,7 +164,7 @@ class ParamCardWriter(object):
         """ Write qnumber """
         from particles import all_particles
         import particles
-        print particles.__file__
+        print(particles.__file__)
         text = """#===========================================================
 # QUANTUM NUMBERS OF NEW STATE(S) (NON SM PDG CODE)
 #===========================================================
@@ -188,4 +188,4 @@ class ParamCardWriter(object):
 if '__main__' == __name__:
     out_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'param_card.dat')
     ParamCardWriter(out_file, generic=True)
-    print 'Written', out_file
+    print('Written', out_file)
