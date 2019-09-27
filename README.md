@@ -138,6 +138,7 @@ For questions or issues please contact:
 - Figure out correct xsec values for t-channel as has been done for s-channel. Update scripts accordingly
 - Rewrite plotting script to do in 2 stages. Run fast-carpenter with a config file of important variables, etc., to make a summary dataframe for each model. Then run fast-plotter with a plotting config to make matplotlib plots. Move everything to a new directory: `$SVJ_TOP_DIR/plotting/`
 - Replace my `m_d` with `m_dq` so as not to confuse with FNAL's m_d = m_dark_hadron
+- Consider updating code to Python 3 (need to be careful of `print`, relative imports). Will need to update Python version sourced in setup script (or accommodate in conda/virtualenv if I implement)
 - Add support for running at other T2/T3 sites
 - Consider switching to conda/virtualenv so managing environments and packages/installs are simpler
 - Consider swapping CMSSW_9_4_4 in 2016 production to 10_2_15_patch2 (and update cmsDriver command) for nanoAODv5. Currently getting issue at nanoAOD step (running over miniAODv2 from CMSSW_8_0_21) of the form
