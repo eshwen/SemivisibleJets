@@ -1,5 +1,6 @@
 #!/usr/bin/env python2
 """ Submit jobs for running FullSim sample production chain in CMSSW """
+from __future__ import print_function
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 import sys
 try:

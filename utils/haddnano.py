@@ -1,5 +1,6 @@
 #!/bin/env python
 # Taken from https://github.com/cms-nanoAOD/nanoAOD-tools
+from __future__ import print_function
 import ROOT
 from array import array
 import sys

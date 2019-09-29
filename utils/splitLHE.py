@@ -1,5 +1,6 @@
 #!/usr/bin/env python2
 """ This script can be run either standalone with `python splitLHE.py [args]` or within another script by importing the file and calling the function `splitLHE(args) """
+from __future__ import print_function
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 import re
 import sys

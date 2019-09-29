@@ -1,6 +1,7 @@
 #!/usr/bin/env python2
 """ Handle the input and parsing from a YAML config file for submitGridpackGeneration.sh.
 Copy the MadGraph model files to a new directory and change parameters according to the config. """
+from __future__ import print_function
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 import sys
 try:

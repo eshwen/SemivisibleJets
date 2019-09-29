@@ -1,3 +1,4 @@
+from __future__ import print_function
 from colorama import deinit, Fore, init, Style
 import pprint
 import yaml

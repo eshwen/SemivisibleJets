@@ -1,6 +1,7 @@
 #!/usr/bin/env python2
 """ Handle the input and parsing from a YAML config file.
 Run gridpack to retrieve LHE file, then split it and move output to directory specified by user. """
+from __future__ import print_function
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 import sys
 try:

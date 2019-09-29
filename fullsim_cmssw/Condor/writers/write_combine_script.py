@@ -1,5 +1,6 @@
 #!/usr/bin/env python2
 """ Write bash script to hadd output nanoAOD files """
+from __future__ import print_function
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 from colorama import Fore, Style
 import os

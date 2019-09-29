@@ -1,5 +1,6 @@
 #!/usr/bin/env python2
 """ Perform some checks for the YAML config files """
+from __future__ import print_function
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 from colorama import Fore, Style
 from load_yaml_config import load_yaml_config
