@@ -6,11 +6,13 @@
 *\#
 ._*
 *.tar.xz
-CMSSW*
-fullsim_cmssw/Condor/*.cc
 *.root
-Plots/
+CMSSW*
+
+external/miniconda*
+fullsim_cmssw/Condor/*.cc
 madgraph/models/*mZp*
 madgraph/models/*mPhi*
 madgraph/input_files/*mZp*
 madgraph/input_files/*mPhi*
+Plots/
