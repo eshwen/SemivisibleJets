@@ -18,7 +18,7 @@ def zeroFill(tree, brName, brObj):
         buff = array('B', [0])
         b = tree.Branch(brName, buff, brName+"/O")
         b.SetBasketSize(tree.GetEntries()*2)  # be sure we do not trigger flushing
-        for x in xrange(0, tree.GetEntries()):
+        for x in range(0, tree.GetEntries()):
             b.Fill()
         b.ResetAddress()
 

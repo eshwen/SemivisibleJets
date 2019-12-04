@@ -214,11 +214,11 @@ def main():
         pbar = ProgressBar(widgets = widgets, maxval = nEvents).start()
 
         # Fill all histograms
-        for entry in xrange(nEvents):
+        for entry in range(nEvents):
             treeEntry = tree.GetEntry(entry)
             model.nJetHist.Fill(tree.nJet)
         
-            for jet in xrange( len(tree.Jet_pt) ):
+            for jet in range(len(tree.Jet_pt)):
                 model.allJetPtHist.Fill(tree.Jet_pt[jet])
 
             if len(tree.Jet_pt) > 0:
@@ -244,7 +244,7 @@ def main():
 
     # Draw histograms for each model overlaid and save
     n_hist_types = len(models[0].hist_list)
-    for hist in xrange(n_hist_types):
+    for hist in range(n_hist_types):
         drawMultipleHistos([model.hist_list[hist] for model in models], canv, legend_frame)
     
 

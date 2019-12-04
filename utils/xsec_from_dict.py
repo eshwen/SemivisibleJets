@@ -1,6 +1,7 @@
 from load_yaml_config import load_yaml_config
 import sys
 
+
 def xsec_from_dict(in_file, m_med):
     """
     Get cross section from yaml dictionary
