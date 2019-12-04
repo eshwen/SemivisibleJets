@@ -97,7 +97,7 @@ def main(config):
     print(Fore.MAGENTA + "Jobs submitted. Monitor them with 'condor_q $USER'")
 
     print(Fore.CYAN + "Writing individual job files to make resubmitting failed jobs easier...")
-    for seed in xrange(n_jobs):
+    for seed in range(n_jobs):
         HTCondorJob(*sub_args, seed=seed)
 
 
