@@ -42,7 +42,7 @@ A `FeynRules` model file ([DMsimp_tchannel.fr](madgraph/models/DMsimp_SVJ_t_mPhi
 
 There are scripts included to run the entire sample production using a single config file. You specify the input arguments in a YAML file (see [model_params_demo.yaml](config/model_params_demo.yaml) for descriptions or the other files in that directory for complete examples).
 
-Fork this repository, then clone it somewhere with the genproductions repo as a submodule, and finally set up conda to create a self-contained environment for execution of the code:
+Fork this repository so you can make edits to your own copy. Then the following commands will clone it somewhere with the genproductions repo as a submodule, then set up conda to create a self-contained environment for execution of the code (note that we use Python 2.7 since Python 3 is not supported by MadGraph):
 
 ```bash
 git clone --recursive git@github.com:<user>/SemivisibleJets.git
