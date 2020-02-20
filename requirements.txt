@@ -1,6 +1,7 @@
 setuptools
 colorama
 flake8
+htcondor
 matplotlib
 numpy
 pandas

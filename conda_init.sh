@@ -1,11 +1,11 @@
 #!/bin/bash
 
-# Create SVJ_TOP_DIR if setup.sh not sourced
+# Create SVJ_TOP_DIR environment variable if setup.sh hasn't been sourced
 if [ -z $SVJ_TOP_DIR ]; then
     SVJ_TOP_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 fi
 
-CondaVer=3  # do CondaVer=2 for Python 2
+CondaVer=2  # Using Python 2. Python 3 is not supported by MadGraph and possibly older versions of CMSSW used in FullSim production
 MINICONDA_DIR=$SVJ_TOP_DIR/external/miniconda${CondaVer}
 
 if [ -d $MINICONDA_DIR ]; then
@@ -35,6 +35,7 @@ echo -e "\e[1mInstalling ROOT\e[0m"
 conda install -y -c conda-forge ROOT
 
 cd $SVJ_TOP_DIR
+echo -e "\e[1mInstalling requirements for repository\e[0m"
 pip install -r requirements.txt
 
 echo -e "\e[1mSuccessfully set up conda environment in $MINICONDA_DIR\e[0m"
