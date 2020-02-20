@@ -42,13 +42,13 @@ A `FeynRules` model file ([DMsimp_tchannel.fr](madgraph/models/DMsimp_SVJ_t_mPhi
 
 There are scripts included to run the entire sample production using a single config file. You specify the input arguments in a YAML file (see [model_params_demo.yaml](config/model_params_demo.yaml) for descriptions or the other files in that directory for complete examples).
 
-Fork this repository, then clone it somewhere with the genproductions repo as a submodule:
+Fork this repository, then clone it somewhere with the genproductions repo as a submodule, and finally set up conda to create a self-contained environment for execution of the code:
 
 ```bash
 git clone --recursive git@github.com:<user>/SemivisibleJets.git
 cd SemivisibleJets
+source conda_init.sh
 source setup.sh
-pip install --user -r requirements.txt
 ```
 
 In each new session, you must set up the environment with
@@ -138,9 +138,7 @@ For questions or issues please contact:
 - Figure out correct xsec values for t-channel as has been done for s-channel. Update scripts accordingly
 - Rewrite plotting script to do in 2 stages. Run fast-carpenter with a config file of important variables, etc., to make a summary dataframe for each model. Then run fast-plotter with a plotting config to make matplotlib plots. Move everything to a new directory: `$SVJ_TOP_DIR/plotting/`
 - Replace my `m_d` with `m_dq` so as not to confuse with FNAL's m_d = m_dark_hadron
-- Consider updating code to Python 3 (need to be careful of `print`, relative imports). Will need to update Python version sourced in setup script (or accommodate in conda/virtualenv if I implement)
 - Add support for running at other T2/T3 sites
-- Consider switching to conda/virtualenv so managing environments and packages/installs are simpler
 - Consider swapping CMSSW_9_4_4 in 2016 production to 10_2_15_patch2 (and update cmsDriver command) for nanoAODv5. Currently getting issue at nanoAOD step (running over miniAODv2 from CMSSW_8_0_21) of the form
 
 ```bash
