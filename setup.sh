@@ -5,6 +5,7 @@ SVJ_top_dir(){
   dirname "$($Canonicalize "${BASH_SOURCE[0]}")"
 }
 
+
 SVJ_build_some_path(){
     local NewPath="$1" ;shift
     for dir in "$@";do
@@ -15,10 +16,13 @@ SVJ_build_some_path(){
     echo "$NewPath"
 }
 
+
 SVJ_build_python_path(){
-    local Dirs=( "${SVJ_TOP_DIR}"/{,utils} )
+    # Adding conda package dir to PYTHONPATH so MadGraph can find packages properly
+    local Dirs=( "${SVJ_TOP_DIR}"/{,utils,external/miniconda2/envs/svj_env/lib/python2.7/site-packages} )
     SVJ_build_some_path "$PYTHONPATH" "${Dirs[@]}"
 }
+
 
 # Set environment variables
 export SVJ_TOP_DIR="$(SVJ_top_dir)"
@@ -29,17 +33,13 @@ export SVJ_MG_INPUT_DIR="${SVJ_MG_FILES_DIR}/input_files"
 export MG_GENPROD_DIR="${SVJ_TOP_DIR}/external/genproductions/bin/MadGraph5_aMCatNLO"
 export PYTHONPATH="$(SVJ_build_python_path)"
 
-CondaVer=3  # make sure this matches the version in conda_init.sh
-MINICONDA_DIR=$SVJ_TOP_DIR/external/miniconda${CondaVer}
-
+MINICONDA_DIR=$SVJ_TOP_DIR/external/miniconda2
 if [ ! -d $MINICONDA_DIR ]; then
     echo -e "Conda environment has not been set up. Please run \e[1m./conda_init.sh\e[0m, then try again"
-    exit
 else
     source $MINICONDA_DIR/etc/profile.d/conda.sh
     conda activate svj_env
     export PYTHONNOUSERSITE=true
-    export PYTHONPATH="$PWD:$PYTHONPATH"
 fi
 
 # Display splash page if terminal is wide enough (otherwise it looks shit)
