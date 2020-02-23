@@ -18,9 +18,7 @@ cd $MG_GENPROD_DIR
 unset LD_LIBRARY_PATH
 unset FC
 unset COMPILER_PATH
-unset PYTHONPATH
 unset CC
-unset COMPILER_PATH
 unset CXX
 
 printf "\e[1;33mSometimes gridpack generation can fail.
