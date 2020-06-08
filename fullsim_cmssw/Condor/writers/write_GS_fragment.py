@@ -196,19 +196,6 @@ generator = cms.EDFilter("Pythia8HadronizerFilter",
 #            '4900015:m0 = 50000',
 #            '4900016:m0 = 50000',
 #            '4900023:m0 = 50000',
-            # Pythia can only generate pair prod of bifundamental
-            'HiddenValley:gg2DvDvbar = on',
-            'HiddenValley:gg2UvUvbar = on',
-            'HiddenValley:gg2SvSvbar = on',
-            'HiddenValley:gg2CvCvbar = on',
-            'HiddenValley:gg2BvBvbar = on',
-            'HiddenValley:gg2TvTvbar = on',
-            'HiddenValley:qqbar2DvDvbar = on',
-            'HiddenValley:qqbar2UvUvbar = on',
-            'HiddenValley:qqbar2SvSvbar = on',
-            'HiddenValley:qqbar2CvCvbar = on',
-            'HiddenValley:qqbar2BvBvbar = on',
-            'HiddenValley:qqbar2TvTvbar = on',
 """)
 
         remain_br = self.remaining_br_democratic(5)
