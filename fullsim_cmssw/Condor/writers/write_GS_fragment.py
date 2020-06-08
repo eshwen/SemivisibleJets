@@ -229,10 +229,10 @@ generator = cms.EDFilter("Pythia8HadronizerFilter",
             f.write(self.get_extra_decays())
         f.write("""
             'HiddenValley:probVector = {prob_vector}', # Ratio of number of vector mesons over scalar meson
-            #'HiddenValley:ffbar2Zv = on', # Production of f fbar -> Zv (4900023). It works only in the case of narrow width approx
+            'HiddenValley:ffbar2Zv = on', # Production of f fbar -> Zv (4900023). It works only in the case of narrow width approx
             'HiddenValley:fragment = on', # Enable hidden valley fragmentation
-            'HiddenValley:Ngauge = 2', # As dark sector is SU(2)
-            #'HiddenValley:spinFv = 0', # Spin of the HV partners of the SM fermions
+            'HiddenValley:Ngauge = 2', # As dark sector is SU(2). Same value as number of dark colours N_C
+            'HiddenValley:spinFv = 0', # Spin of the HV partners of the SM fermions
             'HiddenValley:FSR = on', # Enable final-state shower of HV gammav
             #'HiddenValley:NBFlavRun = 0', # Number of bosonic flavor for running
             #'HiddenValley:NFFlavRun = 2', # Number of fermionic flavor for running
