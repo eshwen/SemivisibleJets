@@ -79,7 +79,7 @@ def main(config):
     print(Fore.MAGENTA + "Removed untarred version of gridpack!")
 
     # Change PDGIDs for dark particles in preparation for hadronisation
-    call('{}/utils/pid_change_{}.sh {}'.format(os.environ['SVJ_TOP_DIR'], process_type.replace('-', '_'), in_lhe), shell=True)
+    call('{}/utils/pid_change.sh {}'.format(os.environ['SVJ_TOP_DIR'], in_lhe), shell=True)
 
     # Split the LHE file, the output files being stored in the current directory
     print(Fore.CYAN + "Splitting LHE file...")
