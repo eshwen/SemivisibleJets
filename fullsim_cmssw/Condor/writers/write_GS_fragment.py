@@ -148,17 +148,68 @@ generator = cms.EDFilter("Pythia8HadronizerFilter",
 
         if self.process_type == 's-channel':
             f.write("""
-            '4900023:m0 = {}', # explicitly stating Z' mass in case it's not picked up properly by Pythia
+            '4900023:m0 = {m_med:g}', # explicitly stating Z' mass in case it's not picked up properly by Pythia
+            '4900023:mMin = {m_med_min:g}',
+            '4900023:mMax = {m_med_max:g}',
+            '4900023:mWidth = 0.01',
             '4900023:oneChannel = 1 0.982 102 4900101 -4900101', # explicitly stating Z' to dark quarks in case it's not picked up properly by Pythia
             '4900023:addChannel = 1 0.003 102 1 -1', # including small branching ratios to SM quarks for realism
             '4900023:addChannel = 1 0.003 102 2 -2',
             '4900023:addChannel = 1 0.003 102 3 -3',
             '4900023:addChannel = 1 0.003 102 4 -4',
             '4900023:addChannel = 1 0.003 102 5 -5',
-            '4900023:addChannel = 1 0.003 102 6 -6',""".format(self.m_med))
+            '4900023:addChannel = 1 0.003 102 6 -6',
+            # decouple t-channel mediators
+#            '4900001:m0 = 50000',
+#            '4900002:m0 = 50000',
+#            '4900003:m0 = 50000',
+#            '4900004:m0 = 50000',
+#            '4900005:m0 = 50000',
+#            '4900006:m0 = 50000',
+#            '4900011:m0 = 50000',
+#            '4900012:m0 = 50000',
+#            '4900013:m0 = 50000',
+#            '4900014:m0 = 50000',
+#            '4900015:m0 = 50000',
+#            '4900016:m0 = 50000',""".format(m_med=self.m_med, m_med_min=self.m_med-1, m_med_max=self.m_med+1)
+            )
+
         elif self.process_type == 't-channel':
+            bifunds = [4900001, 4900002, 4900003, 4900004, 4900005, 4900006]
             f.write("""
-            # ADD SHIT HERE""")
+            # parameters for bifundamental mediators
+            # (keep default flavor-diagonal couplings)
+            """)
+            for bifund in bifunds:
+                f.write("""
+            '{bifund:d}:m0 = {m_med:g}'.format(bifund,self.mMediator),
+            '{m_med_min:d}:mMin = {:g}'.format(bifund,self.mMin),
+            '{m_med_max:d}:mMax = {:g}'.format(bifund,self.mMax),
+            '{bifund:d}:mWidth = 0.01'.format(bifund),""".format(bifund=bifund, m_med=self.m_med, m_med_min=self.m_med-1, m_med_max=self.m_med+1)
+                )
+            f.write("""
+            # Decouple s-channel particles
+#            '4900011:m0 = 50000',
+#            '4900012:m0 = 50000',
+#            '4900013:m0 = 50000',
+#            '4900014:m0 = 50000',
+#            '4900015:m0 = 50000',
+#            '4900016:m0 = 50000',
+#            '4900023:m0 = 50000',
+            # Pythia can only generate pair prod of bifundamental
+            'HiddenValley:gg2DvDvbar = on',
+            'HiddenValley:gg2UvUvbar = on',
+            'HiddenValley:gg2SvSvbar = on',
+            'HiddenValley:gg2CvCvbar = on',
+            'HiddenValley:gg2BvBvbar = on',
+            'HiddenValley:gg2TvTvbar = on',
+            'HiddenValley:qqbar2DvDvbar = on',
+            'HiddenValley:qqbar2UvUvbar = on',
+            'HiddenValley:qqbar2SvSvbar = on',
+            'HiddenValley:qqbar2CvCvbar = on',
+            'HiddenValley:qqbar2BvBvbar = on',
+            'HiddenValley:qqbar2TvTvbar = on',
+""")
 
         remain_br = self.remaining_br_democratic(5)
         f.write("""
