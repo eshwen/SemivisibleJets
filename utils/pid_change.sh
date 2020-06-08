@@ -9,6 +9,7 @@ fi
 lheFile=$1
 echo "Changing PDGIDs from MadGraph to Pythia conventions in preparation for hadronisation..."
 # madgraph sign convention is reversed?
+# Change PDGIDs for dark quarks
 sed -i 's/-5000521/-4900101/g' $lheFile
 sed -i 's/-49001010/4900101/g' $lheFile
 sed -i 's/-49001011/4900101/g' $lheFile
@@ -22,6 +23,8 @@ sed -i 's/49001011/-4900101/g' $lheFile
 sed -i 's/49001012/-4900101/g' $lheFile
 sed -i 's/49001013/-4900101/g' $lheFile
 sed -i 's/49001014/-4900101/g' $lheFile
+
+# Change PDGIDs for t-channel bi-fundamentals
 sed -i 's/9000005/4900001/g' $lheFile
 sed -i 's/9000006/4900001/g' $lheFile
 sed -i 's/9000007/4900001/g' $lheFile
