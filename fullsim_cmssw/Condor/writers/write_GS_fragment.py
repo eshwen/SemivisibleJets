@@ -182,10 +182,10 @@ generator = cms.EDFilter("Pythia8HadronizerFilter",
             """)
             for bifund in bifunds:
                 f.write("""
-            '{bifund:d}:m0 = {m_med:g}'.format(bifund,self.mMediator),
-            '{m_med_min:d}:mMin = {:g}'.format(bifund,self.mMin),
-            '{m_med_max:d}:mMax = {:g}'.format(bifund,self.mMax),
-            '{bifund:d}:mWidth = 0.01'.format(bifund),""".format(bifund=bifund, m_med=self.m_med, m_med_min=self.m_med-1, m_med_max=self.m_med+1)
+            '{bifund:d}:m0 = {m_med:g}',
+            '{bifund:d}:mMin = {m_med_min:g}',
+            '{bifund:d}:mMax = {m_med_max:g}',
+            '{bifund:d}:mWidth = 0.01',""".format(bifund=bifund, m_med=self.m_med, m_med_min=self.m_med-1, m_med_max=self.m_med+1)
                 )
             f.write("""
             # Decouple s-channel particles
