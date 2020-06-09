@@ -33,7 +33,7 @@ export SVJ_MG_INPUT_DIR="${SVJ_MG_FILES_DIR}/input_files"
 export MG_GENPROD_DIR="${SVJ_TOP_DIR}/external/genproductions/bin/MadGraph5_aMCatNLO"
 export PYTHONPATH="$(SVJ_build_python_path)"
 
-MINICONDA_DIR=$SVJ_TOP_DIR/external/miniconda2
+MINICONDA_DIR=$SVJ_TOP_DIR/external/miniconda3
 if [ ! -d $MINICONDA_DIR ]; then
     echo -e "Conda environment has not been set up. Please run \e[1m./conda_init.sh\e[0m, then try again"
 else
