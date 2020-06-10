@@ -27,6 +27,7 @@ def main(config):
     this_dir = os.path.dirname(os.path.realpath(__file__))
 
     # Load YAML config into a dictionary and assign values to variables for cleanliness
+    config = os.path.abspath(config)
     input_params = load_yaml_config(config)
 
     work_space = input_params['work_space']
