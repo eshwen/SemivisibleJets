@@ -4,10 +4,11 @@
   * [Introduction](#introduction)
     + [s-channel model](#s-channel-model)
     + [t-channel model](#t-channel-model)
-  * [Running the complete sample production with HTCondor (recommended)](#running-the-complete-sample-production-with-htcondor--recommended-)
+  * [Running the complete sample production with HTCondor (recommended)](#running-the-complete-sample-production-with-htcondor-)
   * [Interactive running](#interactive-running)
   * [Running the CMSSW FullSim chain with gridpacks](#running-the-cmssw-fullsim-chain-with-gridpacks)
   * [Miscellaneous](#miscellaneous)
+  * [Troubleshooting](#troubleshooting)
   * [Contact](#contact)
   * [To do](#to-do)
 
@@ -33,7 +34,7 @@ Please note that a modified version of `MadGraph` using the patch included [here
 
 A `FeynRules` model file ([DMsimp_tchannel.fr](madgraph/models/DMsimp_SVJ_t_mPhi-1000_mDQ-10_rinv-0p3/DMsimp_tchannel.fr)) as well as the `Mathematica` notebook ([DMsimp_tchannel.nb](madgraph/models/DMsimp_SVJ_t_mPhi-1000_mDQ-10_rinv-0p3/DMsimp_tchannel.nb)) used to generated the UFO output are also provided.
 
-## Running the complete sample production with HTCondor (recommended)
+## Running the complete sample production with HTCondor
 
 There are scripts included to run the entire sample production using a single config file. You specify the input arguments in a YAML file (see [model_params_demo.yaml](config/model_params_demo.yaml) for descriptions or the other files in that directory for complete examples).
 
@@ -104,6 +105,15 @@ pip install --user --upgrade -r requirements.txt
 - For now, the output nanoAOD files are use the NanoAODv1 configuration for 2016, and NanoAODv5 for the other years. I am looking into updating the 2016 workflow to use NanoAODv5 for consistency
 - This repository utlises many software packages. To cite any of them, I have listed their BibTeX entries in [software_references.bib](utils/software_references.bib)
 
+## Troubleshooting
+
+Below are some of the common issues experienced when using this repo and some potential fixes:
+
+- Gridpack generation stage:
+  - _MadGraph fails to compile_. MadGraph is quite a large program with lots of plug-ins. Occasionally, it will fail to compile properly. Retry the command. If it persistently fails though, it could be a problem with your environment. Doing `eval \`scram unsetenv -sh\`` should more-or-less give you a clean shell, and should help with things. Otherwise, contact someone in [Contact](#contact), or the `genproductions` maintainers if you think it's a MadGraph problem.
+  - _The t-channel process takes ages/often fails_. The t-channel process is much more complex than the s-channel, and there's not a lot that can be done about optimising it, unfortunately. Many diagrams and subprocesses have to be simulated. Running the gridpack generation step with `-m batch` will use HTCondor to run the subprocesses, but if even one job gets held, it causes the entire thing to crash. That seems to be a fault with MadGraph/genproductions, so I don't know how to get around that. Running locally (with `-m local`) in a terminal multiplexing (e.g., `screen`) session might be an alternative. But at least on lxplus, I've found that disconnecting and reconnecting doesn't transfer permissions properly and the process dies anyway. Running this on a different remote server may avoid the problem, but I've only tested this code on lxplus.
+- FullSim stage:
+  - _Problems with the AOD step 1 (pre-mixing) step_. It's a pain in the butt to get the pileup input right for this step. Checking McM for reference, I see most setup commands for centrally-produced datasets just give the `cmsDriver.py` option `--pileup_input "dbs:<dataset>"`. The problem is these datasets are large (tens of TB), and the file query that's run on the dataset can hang, then fail. The best alternative I've found for private production is just to query the dataset myself (as I can continuously retry), selecting some of the files, and then putting the paths in a `pileup_filelist_201X.txt` file for `cmsDriver.py` to parse. But again, these are large datasets, and the storage sites supplying them can fail, etc., so it's not a foolproof method. If you see a repeated problem in the log files saying it was unable to access some of these files, it might be best to swap out the files you're using. The paths are given as `/store/mc/...`, followed by the rest of the subdirectories. You can find the files on EOS by prepending the directory with `/eos/cms/`, and explicitly check there to see if any files exist for the dataset. The xrootd redirector that attempts to find the files in your pileup file list checks there first. If files exist, consider replacing your pileup file list with the files that exist in the directory. Otherwise, try replacing them with files from another dataset corresponding to the same data-taking year.
 
 ## Contact
 
