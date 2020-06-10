@@ -4,9 +4,9 @@
   * [Introduction](#introduction)
     + [s-channel model](#s-channel-model)
     + [t-channel model](#t-channel-model)
-  * [Running the complete sample production with HTCondor (recommended)](#running-the-complete-sample-production-with-htcondor-)
-  * [Interactive running](#interactive-running)
-  * [Running the CMSSW FullSim chain with gridpacks](#running-the-cmssw-fullsim-chain-with-gridpacks)
+  * [Running the complete sample production with HTCondor (recommended)](#running-the-complete-sample-production-with-htcondor)
+  * [Interactive running (deprecated)](#interactive-running)
+  * [Running the CMSSW FullSim chain with gridpacks (deprecated)](#running-the-cmssw-fullsim-chain-with-gridpacks)
   * [Miscellaneous](#miscellaneous)
   * [Troubleshooting](#troubleshooting)
   * [Contact](#contact)
@@ -100,14 +100,14 @@ This isn't maintained any more. An old version of this README ([here](https://gi
 pip install --user --upgrade -r requirements.txt
 ```
 - Some rudimentary plotting, for a quick look at distributions, can be done by running [plotSVJHistos.py](utils/plotSVJHistos.py). You just need to specify the root files in the list `files`.
-- For the s-channel mode, the couplings between the Z' and SM quarks is 0.1. This can be verified in the variables `g{V,A}{u,d}##` in [parameters.py](madgraph/models/DMsimp_SVJ_s_spin1_editTemplate/parameters.py)
+- For the s-channel mode, the couplings between the Z' and SM quarks is 1.0. This can be verified in the variables `g{V,A}{u,d}##` in [parameters.py](madgraph/models/DMsimp_SVJ_s_spin1_editTemplate/parameters.py)
 - The PDF sets used for 2016, 2017, and 2018 generation are detailed in [lhaIDs.py](utils/lhaIDs.py)
 - For now, the output nanoAOD files are use the NanoAODv1 configuration for 2016, and NanoAODv5 for the other years. I am looking into updating the 2016 workflow to use NanoAODv5 for consistency
 - This repository utlises many software packages. To cite any of them, I have listed their BibTeX entries in [software_references.bib](utils/software_references.bib)
 
 ## Troubleshooting
 
-Below are some of the common issues experienced when using this repo and some potential fixes:
+Below are some of the common issues experienced when using this repo and some potential fixes.
 
 - Gridpack generation stage:
   - _MadGraph fails to compile_. MadGraph is quite a large program with lots of plug-ins. Occasionally, it will fail to compile properly. Retry the command. If it persistently fails though, it could be a problem with your environment. Doing `eval \`scram unsetenv -sh\`` should more-or-less give you a clean shell, and should help with things. Otherwise, contact someone in [Contact](#contact), or the `genproductions` maintainers if you think it's a MadGraph problem.
