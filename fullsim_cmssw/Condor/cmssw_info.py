@@ -14,7 +14,7 @@ class CmsswInfo(object):
 
         if self.year == 2016:
             self.gensim = {'version': 'CMSSW_7_1_38_patch1', 'arch': 'slc6_amd64_gcc481'}  # earlier versions don't have CMSSW plug-ins for dark quark/Z2 filters
-            self.aod = {'version': 'CMSSW_8_0_21', 'arch': 'slc6_amd64_gcc530'}
+            self.aod = {'version': 'CMSSW_8_0_31', 'arch': 'slc6_amd64_gcc530'}
             self.nano = {'version': 'CMSSW_9_4_4', 'arch': 'slc6_amd64_gcc630'}
             self.new_pythia = True  # CMSSW_7_1_38_patch1 ships with old Pythia version
 
