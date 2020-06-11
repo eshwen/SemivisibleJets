@@ -17,6 +17,7 @@ from subprocess import call
 from writers.write_GS_fragment import WriteGenSimFragment
 from writers.write_combine_script import write_combine_script
 from writers.write_resubmitter_script import write_resubmitter_script
+from writers.write_cleaup_script import write_cleanup_script
 
 # Reset text colours after colourful print statements
 init(autoreset=True)
@@ -89,6 +90,7 @@ def main(config):
     # Create scripts to hadd output files and resubmit failed jobs
     write_combine_script(work_space, model_name, cmssw_info.nano['version'])
     write_resubmitter_script(work_space, model_name, n_jobs)
+    write_cleanup_script(work_space, model_name)
 
     lhe_base = os.path.join(lhe_file_path, '{}_split'.format(model_name))
     sub_args = (work_space, gen_frag, lhe_base, model_name, n_events, year)

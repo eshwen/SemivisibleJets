@@ -83,7 +83,17 @@ which should take care of everything. Hadronisation is performed in `PYTHIA 8.23
 $work_space/resubmit_${model_name}.sh
 ```
 
-(note that all jobs must _finish running_ first). When happy, the output files from each job can be combined using [haddnano.py](utils/haddnano.py). A script which performs that step will be in `$work_space/combine_components_${model_name}.sh`.
+(note that all jobs must _finish running_ first). When happy, the output files from each job can be combined using [haddnano.py](utils/haddnano.py). A script which performs that step will is
+
+```bash
+$work_space/combine_components_${model_name}.sh
+```
+
+If you then want to clean up the work space (remove log files, submission scripts, and leftover output from the finished model), run
+
+```bash
+$work_space/cleanup_residue_${model_name}.sh
+```
 
 ## Interactive running
 
