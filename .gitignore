@@ -14,3 +14,4 @@ madgraph/models/*mZp*
 madgraph/models/*mPhi*
 madgraph/input_files/*mZp*
 madgraph/input_files/*mPhi*
+external/miniconda*
