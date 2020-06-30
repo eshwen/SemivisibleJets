@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Script to run FullSim CMSSW chain on one LHE file
 
-if [ -z $9 ]; then
-    usr_msg="Usage ./runFullSim_condor_2016.sh WORKING_DIRECTORY GEN_FRAGMENT_BASENAME LHE_FILE MODEL_NAME N_EVENTS SEED CMSSW_GS CMSSW_AOD CMSSW_NANO"
+if [ -z ${10} ]; then
+    usr_msg="Usage ./runFullSim_condor_2016.sh WORKING_DIRECTORY GEN_FRAGMENT_BASENAME LHE_FILE MODEL_NAME N_EVENTS SEED CMSSW_GS CMSSW_AOD CMSSW_MINI CMSSW_NANO"
     $SVJ_TOP_DIR/utils/print_bash_script_usage.sh "$usr_msg"
     exit
 fi
@@ -15,7 +15,11 @@ n_events=$5
 seed=$6 # index for job
 cmssw_gs="$7"
 cmssw_aod="$8"
-cmssw_nano="$9"
+cmssw_mini="$9"
+cmssw_nano="${10}"
+
+echo "CMSSW_MINI = $cmssw_mini"
+echo "CMSSW_NANO = $cmssw_nano"
 
 # Allow use of aliases (specifically cvmfs ones)
 shopt -s expand_aliases
@@ -61,7 +65,11 @@ cmsRun ${model_name}_AOD_step2_${seed}.py
 echo -e "\e[1;35m**** CREATED AOD (STEP 2) FILE ****\e[0m"
 rm ${model_name}_AOD_step1_${seed}.root
 
-cmsDriver.py --filein file:${model_name}_AOD_step2_${seed}.root --fileout file:${model_name}_MINIAOD_${seed}.root --mc --eventcontent MINIAODSIM --runUnscheduled --datatier MINIAODSIM --conditions 80X_mcRun2_asymptotic_2016_TrancheIV_v6 --step PAT --era Run2_2016 --customise Configuration/DataProcessing/Utils.addMonitoring --python_filename ${model_name}_MINIAOD_${seed}.py --no_exec -n $n_events
+mv ${model_name}_AOD_step2_${seed}.root ../../$cmssw_mini/src/
+cd ../../$cmssw_mini/src
+cmsenv
+
+cmsDriver.py --filein file:${model_name}_AOD_step2_${seed}.root --fileout file:${model_name}_MINIAOD_${seed}.root --mc --eventcontent MINIAODSIM --runUnscheduled --datatier MINIAODSIM --conditions 94X_mcRun2_asymptotic_v3 --step PAT --era Run2_2016,run2_miniAOD_80XLegacy --customise Configuration/DataProcessing/Utils.addMonitoring --python_filename ${model_name}_MINIAOD_${seed}.py --no_exec -n $n_events
 
 cmsRun ${model_name}_MINIAOD_${seed}.py
 echo -e "\e[1;35m**** CREATED MINIAOD FILE ****\e[0m"
@@ -71,7 +79,7 @@ mv ${model_name}_MINIAOD_${seed}.root ../../$cmssw_nano/src/
 cd ../../$cmssw_nano/src
 cmsenv
 
-cmsDriver.py --filein file:${model_name}_MINIAOD_${seed}.root --fileout file:${model_name}_NANOAOD_${seed}.root --mc --eventcontent NANOAODSIM --datatier NANOAODSIM --conditions auto:run2_mc -s NANO --era Run2_2016,run2_miniAOD_80XLegacy --customise Configuration/DataProcessing/Utils.addMonitoring --python_filename ${model_name}_NANOAOD_${seed}.py --no_exec -n $n_events
+cmsDriver.py --filein file:${model_name}_MINIAOD_${seed}.root --fileout file:${model_name}_NANOAOD_${seed}.root --mc --eventcontent NANOAODSIM --datatier NANOAODSIM --conditions 102X_mcRun2_asymptotic_v7 --step NANO --era Run2_2016,run2_nanoAOD_94X2016 --customise Configuration/DataProcessing/Utils.addMonitoring --python_filename ${model_name}_NANOAOD_${seed}.py --no_exec -n $n_events
 
 cmsRun ${model_name}_NANOAOD_${seed}.py
 echo -e "\e[1;35m**** CREATED NANOAOD FILE ****\e[0m"
@@ -81,7 +89,8 @@ mv ${model_name}_NANOAOD_${seed}.root $work_space/output/
 
 echo -e "\e[1;36m**** CLEANING UNNECESSARY FILES ****\e[0m"
 rm $work_space/$cmssw_gs/src/${model_name}_GEN_SIM_${seed}.py
-rm $work_space/$cmssw_aod/src/${model_name}_{AOD_step1,AOD_step2,MINIAOD}_${seed}.py
+rm $work_space/$cmssw_aod/src/${model_name}_{AOD_step1,AOD_step2}_${seed}.py
+rm $work_space/$cmssw_mini/src/${model_name}_MINIAOD_${seed}.py
 rm $work_space/$cmssw_nano/src/${model_name}_NANOAOD_${seed}.py
 
 exit
