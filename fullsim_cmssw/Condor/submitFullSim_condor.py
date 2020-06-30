@@ -17,7 +17,7 @@ from subprocess import call
 from writers.write_GS_fragment import WriteGenSimFragment
 from writers.write_combine_script import write_combine_script
 from writers.write_resubmitter_script import write_resubmitter_script
-from writers.write_cleaup_script import write_cleanup_script
+from writers.write_cleanup_script import write_cleanup_script
 
 # Reset text colours after colourful print statements
 init(autoreset=True)
