@@ -1,4 +1,5 @@
 #!/usr/bin/python 
+from __future__ import print_function
 import CMS_lumi
 import sys
 try:
@@ -203,7 +204,7 @@ def main():
 
     # Open root files, then fill and draw individual histograms
     for i, model in enumerate(models):
-        print Fore.MAGENTA + "Running over model {0}/{1}".format(i+1, len(models))
+        print(Fore.MAGENTA + "Running over model {0}/{1}".format(i+1, len(models)))
         openFile = TFile(model.file_path)
         tree = openFile.Get("Events")
         nEvents = tree.GetEntries()

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Script to run FullSim CMSSW chain on one LHE file
 
-if [ -z $9 ]; then
+if [ -z ${10} ]; then
     usr_msg="Usage ./runFullSim_condor_2018.sh WORKING_DIRECTORY GEN_FRAGMENT_BASENAME LHE_FILE MODEL_NAME N_EVENTS SEED CMSSW_GS CMSSW_AOD CMSSW_NANO"
     $SVJ_TOP_DIR/utils/print_bash_script_usage.sh "$usr_msg"
     exit
@@ -15,7 +15,8 @@ n_events=$5
 seed=$6 # index for job
 cmssw_gs="$7"
 cmssw_aod="$8"
-cmssw_nano="$9"
+cmssw_mini="$9"
+cmssw_nano="${10}"
 
 # Allow use of aliases (specifically cvmfs ones)
 shopt -s expand_aliases
@@ -61,6 +62,10 @@ cmsRun ${model_name}_AOD_step2_${seed}.py
 echo -e "\e[1;35m**** CREATED AOD (STEP 2) FILE ****\e[0m"
 rm ${model_name}_AOD_step1_${seed}.root
 
+mv ${model_name}_AOD_step2_${seed}.root ../../$cmssw_mini/src/
+cd ../../$cmssw_mini/src/
+cmsenv
+
 cmsDriver.py --filein file:${model_name}_AOD_step2_${seed}.root --fileout file:${model_name}_MINIAOD_${seed}.root --mc --eventcontent MINIAODSIM --runUnscheduled --datatier MINIAODSIM --conditions 102X_upgrade2018_realistic_v12 --step PAT --geometry DB:Extended --era Run2_2018 --python_filename ${model_name}_MINIAOD_${seed}.py --no_exec --customise Configuration/DataProcessing/Utils.addMonitoring -n $n_events
 
 cmsRun ${model_name}_MINIAOD_${seed}.py
@@ -81,7 +86,8 @@ mv ${model_name}_NANOAOD_${seed}.root $work_space/output/
 
 echo -e "\e[1;36m**** CLEANING UNNECESSARY FILES ****\e[0m"
 rm $work_space/$cmssw_gs/src/${model_name}_GEN_SIM_${seed}.py
-rm $work_space/$cmssw_aod/src/${model_name}_{AOD_step1,AOD_step2,MINIAOD}_${seed}.py
+rm $work_space/$cmssw_aod/src/${model_name}_{AOD_step1,AOD_step2}_${seed}.py
+rm $work_space/$cmssw_mini/src/${model_name}_MINIAOD_${seed}.py
 rm $work_space/$cmssw_nano/src/${model_name}_NANOAOD_${seed}.py
 
 exit

@@ -39,7 +39,7 @@ class HTCondorJob(object):
         body = """# HTCondor submission script
 Universe = vanilla
 cmd      = {this_dir}/runFullSim_condor_{year}.sh
-args     = {work_space} {gen_frag} {lhe_base}_$(Process).lhe {model} {n_events:.0f} $(Process) {cmssw_gensim} {cmssw_aod} {cmssw_nano}
+args     = {work_space} {gen_frag} {lhe_base}_$(Process).lhe {model} {n_events:.0f} $(Process) {cmssw_gensim} {cmssw_aod} {cmssw_mini} {cmssw_nano}
 Log      = {work_space}/logs/{model}/condor_job_$(Process).log
 Output   = {work_space}/logs/{model}/condor_job_$(Process).out
 Error    = {work_space}/logs/{model}/condor_job_$(Process).error
@@ -73,6 +73,7 @@ queue {queue}
            memory=self.memory,
            cmssw_gensim=self.cmssw_info.gensim['version'],
            cmssw_aod=self.cmssw_info.aod['version'],
+           cmssw_mini=self.cmssw_info.mini['version'],
            cmssw_nano=self.cmssw_info.nano['version'])
 
         self.job_file = os.path.join(self.work_space, 'submission_scripts', self.model, 'condor_submission_all.job')

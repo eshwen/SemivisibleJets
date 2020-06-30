@@ -1,6 +1,7 @@
 #!/usr/bin/env python2
 """ Handle the input and parsing from a YAML config file.
 Run gridpack to retrieve LHE file, then split it and move output to directory specified by user. """
+from __future__ import print_function
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 import sys
 try:
@@ -49,7 +50,7 @@ def main(config):
     with open(config, 'r+') as f:
         config_str = f.read()
         if str(x_sec_mg) not in config_str:
-            print Fore.CYAN + "Appending config file with cross section as calculated by MadGraph..."
+            print(Fore.CYAN + "Appending config file with cross section as calculated by MadGraph...")
             f.seek(0)
             config_lines = f.readlines()
             f.seek(0)
@@ -63,7 +64,7 @@ def main(config):
 
     # Copy gridpack tarball to new directory
     for tarball in glob.glob(os.path.join(genprod_dir, model_name+'*.xz')):
-        print Fore.CYAN + "Copying {} to {}/".format(os.path.basename(tarball), gridpack_outdir)
+        print(Fore.CYAN + "Copying {} to {}/".format(os.path.basename(tarball), gridpack_outdir))
         shutil.copyfile(tarball, os.path.join(gridpack_outdir, os.path.basename(tarball)))
         os.remove(tarball)
 
@@ -75,13 +76,13 @@ def main(config):
 
     # Delete untarred gridpack as it takes up unnecessary space
     shutil.rmtree(default_gridpack_dir)
-    print Fore.MAGENTA + "Removed untarred version of gridpack!"
+    print(Fore.MAGENTA + "Removed untarred version of gridpack!")
 
     # Change PDGIDs for dark particles in preparation for hadronisation
-    call('{}/utils/pid_change_{}.sh {}'.format(os.environ['SVJ_TOP_DIR'], process_type.replace('-', '_'), in_lhe), shell=True)
+    call('{}/utils/pid_change.sh {}'.format(os.environ['SVJ_TOP_DIR'], in_lhe), shell=True)
 
     # Split the LHE file, the output files being stored in the current directory
-    print Fore.CYAN + "Splitting LHE file..."
+    print(Fore.CYAN + "Splitting LHE file...")
     splitLHE(inputFile=in_lhe, outFileNameBase=model_name+'_split', numFiles=n_jobs)
     os.remove(in_lhe)
 
@@ -91,7 +92,7 @@ def main(config):
     for split_file in glob.glob(os.path.join(os.getcwd(), model_name+'_split*.lhe')):
         shutil.copy(split_file, out_split_lhe)
         os.remove(split_file)
-    print Fore.MAGENTA + "Split LHE files moved to {}".format(out_split_lhe)
+    print(Fore.MAGENTA + "Split LHE files moved to {}".format(out_split_lhe))
 
 
 if __name__ == '__main__':

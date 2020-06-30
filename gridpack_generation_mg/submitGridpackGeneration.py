@@ -1,6 +1,7 @@
 #!/usr/bin/env python2
 """ Handle the input and parsing from a YAML config file for submitGridpackGeneration.sh.
 Copy the MadGraph model files to a new directory and change parameters according to the config. """
+from __future__ import print_function
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 import sys
 try:
@@ -56,7 +57,7 @@ def main(config, resub=False, mode='batch'):
 
     # Remove failed gridpack for model if resubmitted
     if resub:
-        print Fore.CYAN + "Removing failed gridpack and resubmitting..."
+        print(Fore.CYAN + "Removing failed gridpack and resubmitting...")
         for file in glob.glob(os.path.join(os.environ['MG_GENPROD_DIR'], model_name+'*')):
             try:
                 if os.path.isfile(file):
@@ -64,11 +65,11 @@ def main(config, resub=False, mode='batch'):
                 elif os.path.isdir(file):
                     shutil.rmtree(file)
             except OSError as e:
-                print "Error: {0} - {1}.".format(e.filename, e.strerror)
+                print("Error: {0} - {1}.".format(e.filename, e.strerror))
 
     # If required, append config file with new parameters for simplicity in future steps
     with open(config, 'r+') as f:
-        print Fore.CYAN + "Updating config file with new parameters..."
+        print(Fore.CYAN + "Updating config file with new parameters...")
         original_str = f.readlines()
         # Delete contents of file and update
         f.seek(0)
@@ -84,10 +85,10 @@ def main(config, resub=False, mode='batch'):
 
     new_model_dir = os.path.join(os.environ['SVJ_MODELS_DIR'], model_name)
     if os.path.exists(new_model_dir):
-        print "Model of type {} with parameters m_med = {}, m_d = {} already exists!".format(process_type, m_med, m_d)
+        print("Model of type {} with parameters m_med = {}, m_d = {} already exists!".format(process_type, m_med, m_d))
     else:
         # Copy model files to new directory and change relevant parameters according to config
-        print Fore.CYAN + "Copying template model..."
+        print(Fore.CYAN + "Copying template model...")
         shutil.copytree(default_model_dir, new_model_dir)
         # Read the parameters file (containing the dark particle masses) in the new model directory
         with open(os.path.join(new_model_dir, 'parameters.py'), 'r+') as f:
@@ -97,7 +98,7 @@ def main(config, resub=False, mode='batch'):
             f.seek(0)
             f.truncate()
             f.write(new_params)
-        print Fore.MAGENTA + "New parameters written in model files!"
+        print(Fore.MAGENTA + "New parameters written in model files!")
 
     # Write param_card text file
     call('python {}'.format(os.path.join(new_model_dir, 'write_param_card.py')), shell=True)
@@ -107,7 +108,7 @@ def main(config, resub=False, mode='batch'):
     if not os.path.exists(input_cards_dir):
         os.mkdir(input_cards_dir)
     else:
-        print "Directory containing MadGraph input cards exists! No need to create it."
+        print("Directory containing MadGraph input cards exists! No need to create it.")
         # Remove previous input cards in case, e.g., n_events has changed
         for old_file in glob.glob(os.path.join(input_cards_dir, '*.dat')):
             os.remove(old_file)
@@ -128,11 +129,11 @@ def main(config, resub=False, mode='batch'):
             mg_card.seek(0)
             mg_card.truncate()
             mg_card.write(new_params)
-        print Fore.MAGENTA + "Parameters written for input card", os.path.basename(modelFile)
+        print(Fore.MAGENTA + "Parameters written for input card", os.path.basename(modelFile))
 
     # Zip up model directory, specifying basedir to zip enclosing folder, not just files
     shutil.make_archive(os.path.join(input_cards_dir, model_name), 'tar', os.environ['SVJ_MODELS_DIR'], model_name)
-    print Fore.MAGENTA + "Copied model files to input directory!"
+    print(Fore.MAGENTA + "Copied model files to input directory!")
 
     # Require relative path between MG input files and genproductions' gridpack generation script
     rel_cards_dir = os.path.relpath(input_cards_dir, os.environ['MG_GENPROD_DIR'])

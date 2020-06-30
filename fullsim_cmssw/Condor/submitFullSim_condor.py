@@ -1,5 +1,6 @@
 #!/usr/bin/env python2
 """ Submit jobs for running FullSim sample production chain in CMSSW """
+from __future__ import print_function
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 import sys
 try:
@@ -16,6 +17,7 @@ from subprocess import call
 from writers.write_GS_fragment import WriteGenSimFragment
 from writers.write_combine_script import write_combine_script
 from writers.write_resubmitter_script import write_resubmitter_script
+from writers.write_cleaup_script import write_cleanup_script
 
 # Reset text colours after colourful print statements
 init(autoreset=True)
@@ -26,6 +28,7 @@ def main(config):
     this_dir = os.path.dirname(os.path.realpath(__file__))
 
     # Load YAML config into a dictionary and assign values to variables for cleanliness
+    config = os.path.abspath(config)
     input_params = load_yaml_config(config)
 
     work_space = input_params['work_space']
@@ -48,7 +51,7 @@ def main(config):
         sys.exit('Number of jobs exceeds number of LHE files in directory. Check and try again.')
 
     if not os.path.exists(work_space):
-        print Fore.CYAN + "Work space doesn't exist. Creating it now..."
+        print(Fore.CYAN + "Work space doesn't exist. Creating it now...")
         os.makedirs(work_space)
 
     shutil.copy(os.path.join(os.environ['SVJ_TOP_DIR'], 'pileup_filelist_{}.txt'.format(year)), work_space)
@@ -87,15 +90,16 @@ def main(config):
     # Create scripts to hadd output files and resubmit failed jobs
     write_combine_script(work_space, model_name, cmssw_info.nano['version'])
     write_resubmitter_script(work_space, model_name, n_jobs)
+    write_cleanup_script(work_space, model_name)
 
     lhe_base = os.path.join(lhe_file_path, '{}_split'.format(model_name))
     sub_args = (work_space, gen_frag, lhe_base, model_name, n_events, year)
     # Write a single job file to submit everything at once
     main_job = HTCondorJob(*sub_args, queue=n_jobs)
     call('condor_submit {}'.format(main_job.job_file), shell=True)
-    print Fore.MAGENTA + "Jobs submitted. Monitor them with 'condor_q $USER'"
+    print(Fore.MAGENTA + "Jobs submitted. Monitor them with 'condor_q $USER'")
 
-    print Fore.CYAN + "Writing individual job files to make resubmitting failed jobs easier..."
+    print(Fore.CYAN + "Writing individual job files to make resubmitting failed jobs easier...")
     for seed in xrange(n_jobs):
         HTCondorJob(*sub_args, seed=seed)
 

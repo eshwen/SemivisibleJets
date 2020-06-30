@@ -14,15 +14,6 @@ mode=$3
 
 cd $MG_GENPROD_DIR
 
-# Unset some env variables as gcc setup in my setup script causes errors when compiling MadGraph source directory
-unset LD_LIBRARY_PATH
-unset FC
-unset COMPILER_PATH
-unset PYTHONPATH
-unset CC
-unset COMPILER_PATH
-unset CXX
-
 printf "\e[1;33mSometimes gridpack generation can fail.
 MadGraph is quite temperamental and so can fail when running subprocess for a model.
 If the creation fails at any point, rerun with the '-r' option.
@@ -41,6 +32,9 @@ if (( "$inception" < "$proxy_length_s" )); then
 else
     voms-proxy-init --voms cms --valid ${proxy_length_hr}:00
 fi
+
+# Unset environment variables so the relevant MadGraph env in genproductions is set up without issue
+eval `scram unsetenv -sh`
 
 if [[ "$mode" == "batch" ]]; then
     ./submit_condor_gridpack_generation.sh $model_name $input_cards_dir

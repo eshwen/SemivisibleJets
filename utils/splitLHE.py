@@ -1,5 +1,6 @@
 #!/usr/bin/env python2
 """ This script can be run either standalone with `python splitLHE.py [args]` or within another script by importing the file and calling the function `splitLHE(args) """
+from __future__ import print_function
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 import re
 import sys
@@ -14,10 +15,10 @@ def splitLHE(inputFile, outFileNameBase, numFiles):
     try:
         fin = open(inputFile)
     except:
-        print "Error: Input file: {} could not be opened, exiting.".format(inputFile)
+        print("Error: Input file: {} could not be opened, exiting.".format(inputFile))
         sys.exit(1)
 
-    print "Opened input file", inputFile
+    print("Opened input file", inputFile)
 
     eventNum = 0
     init = False
@@ -37,7 +38,7 @@ def splitLHE(inputFile, outFileNameBase, numFiles):
             init = True
 
     eventsTotal = eventNum
-    print "Total number of events: {0}".format(eventsTotal)
+    print("Total number of events: {0}".format(eventsTotal))
 
     files = []
     maxEventsFile = []

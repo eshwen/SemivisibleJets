@@ -1,5 +1,6 @@
 #!/usr/bin/env python2
 """ Write bash script to hadd output nanoAOD files """
+from __future__ import print_function
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 from colorama import Fore, Style
 import os
@@ -48,7 +49,7 @@ exit
         )
 
     call("chmod +x {}".format(file_path), shell=True)
-    print Fore.MAGENTA + "Hadding script written!", Style.RESET_ALL
+    print(Fore.MAGENTA + "Hadding script written!", Style.RESET_ALL)
 
 
 if __name__ == '__main__':

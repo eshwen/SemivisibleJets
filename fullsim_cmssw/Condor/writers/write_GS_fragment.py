@@ -1,3 +1,4 @@
+from __future__ import print_function
 import calc_dark_params as cdp
 from colorama import Fore, init
 import os
@@ -30,7 +31,7 @@ class WriteGenSimFragment(object):
         self.GS_dir = GS_dir
 
         # Run everything
-        print Fore.CYAN + "Writing gen fragment..."
+        print(Fore.CYAN + "Writing gen fragment...")
         self.set_dark_params()
         self.get_lambda_d()
         self.get_xsec()
@@ -50,19 +51,19 @@ class WriteGenSimFragment(object):
         else:
             _Lambda_d = cdp.calc_lambda_d(self.n_c, self.n_f, self.alpha_d)
         self.Lambda_d = round(_Lambda_d, 4)
-        print Fore.MAGENTA + "Confinement scale Lambda_d =", self.Lambda_d
+        print(Fore.MAGENTA + "Confinement scale Lambda_d =", self.Lambda_d)
 
         # Rescale Lambda_d if too low (should be >= m_d), then recalc alpha_d
         #if Lambda_d < m_d:
         #    Lambda_d = 1.1 * m_d
         #    alpha_d = cdp.calc_alpha_d(n_c, n_f, Lambda_d)
-        #    print Fore.MAGENTA + "Recalculated alpha_d =", alpha_d
+        #    print(Fore.MAGENTA + "Recalculated alpha_d =", alpha_d)
 
     def get_xsec(self):
         """ Get cross section from dictionary if possible, to replace value calculated by MadGraph """
         if self.process_type == 's-channel':
             self.x_sec = xsec_from_dict(os.path.join(os.environ['SVJ_TOP_DIR'], 'utils/xsecs_{}.yaml'.format(self.process_type)), self.m_med)
-            print Fore.CYAN + "Taking cross section from dictionary instead of MadGraph's calculation..."
+            print(Fore.CYAN + "Taking cross section from dictionary instead of MadGraph's calculation...")
         else:
             self.x_sec = self.x_sec_mg
 
@@ -147,17 +148,55 @@ generator = cms.EDFilter("Pythia8HadronizerFilter",
 
         if self.process_type == 's-channel':
             f.write("""
-            '4900023:m0 = {}', # explicitly stating Z' mass in case it's not picked up properly by Pythia
+            '4900023:m0 = {m_med:g}', # explicitly stating Z' mass in case it's not picked up properly by Pythia
+            '4900023:mMin = {m_med_min:g}',
+            '4900023:mMax = {m_med_max:g}',
+            '4900023:mWidth = 0.01',
             '4900023:oneChannel = 1 0.982 102 4900101 -4900101', # explicitly stating Z' to dark quarks in case it's not picked up properly by Pythia
             '4900023:addChannel = 1 0.003 102 1 -1', # including small branching ratios to SM quarks for realism
             '4900023:addChannel = 1 0.003 102 2 -2',
             '4900023:addChannel = 1 0.003 102 3 -3',
             '4900023:addChannel = 1 0.003 102 4 -4',
             '4900023:addChannel = 1 0.003 102 5 -5',
-            '4900023:addChannel = 1 0.003 102 6 -6',""".format(self.m_med))
+            '4900023:addChannel = 1 0.003 102 6 -6',
+            # decouple t-channel mediators
+#            '4900001:m0 = 50000',
+#            '4900002:m0 = 50000',
+#            '4900003:m0 = 50000',
+#            '4900004:m0 = 50000',
+#            '4900005:m0 = 50000',
+#            '4900006:m0 = 50000',
+#            '4900011:m0 = 50000',
+#            '4900012:m0 = 50000',
+#            '4900013:m0 = 50000',
+#            '4900014:m0 = 50000',
+#            '4900015:m0 = 50000',
+#            '4900016:m0 = 50000',""".format(m_med=self.m_med, m_med_min=self.m_med-1, m_med_max=self.m_med+1)
+            )
+
         elif self.process_type == 't-channel':
+            bifunds = [4900001, 4900002, 4900003, 4900004, 4900005, 4900006]
             f.write("""
-            # ADD SHIT HERE""")
+            # parameters for bifundamental mediators
+            # (keep default flavor-diagonal couplings)
+            """)
+            for bifund in bifunds:
+                f.write("""
+            '{bifund:d}:m0 = {m_med:g}',
+            '{bifund:d}:mMin = {m_med_min:g}',
+            '{bifund:d}:mMax = {m_med_max:g}',
+            '{bifund:d}:mWidth = 0.01',""".format(bifund=bifund, m_med=self.m_med, m_med_min=self.m_med-1, m_med_max=self.m_med+1)
+                )
+            f.write("""
+            # Decouple s-channel particles
+#            '4900011:m0 = 50000',
+#            '4900012:m0 = 50000',
+#            '4900013:m0 = 50000',
+#            '4900014:m0 = 50000',
+#            '4900015:m0 = 50000',
+#            '4900016:m0 = 50000',
+#            '4900023:m0 = 50000',
+""")
 
         remain_br = self.remaining_br_democratic(5)
         f.write("""
@@ -177,10 +216,10 @@ generator = cms.EDFilter("Pythia8HadronizerFilter",
             f.write(self.get_extra_decays())
         f.write("""
             'HiddenValley:probVector = {prob_vector}', # Ratio of number of vector mesons over scalar meson
-            #'HiddenValley:ffbar2Zv = on', # Production of f fbar -> Zv (4900023). It works only in the case of narrow width approx
+            'HiddenValley:ffbar2Zv = on', # Production of f fbar -> Zv (4900023). It works only in the case of narrow width approx
             'HiddenValley:fragment = on', # Enable hidden valley fragmentation
-            'HiddenValley:Ngauge = 2', # As dark sector is SU(2)
-            #'HiddenValley:spinFv = 0', # Spin of the HV partners of the SM fermions
+            'HiddenValley:Ngauge = 2', # As dark sector is SU(2). Same value as number of dark colours N_C
+            'HiddenValley:spinFv = 0', # Spin of the HV partners of the SM fermions
             'HiddenValley:FSR = on', # Enable final-state shower of HV gammav
             #'HiddenValley:NBFlavRun = 0', # Number of bosonic flavor for running
             #'HiddenValley:NFFlavRun = 2', # Number of fermionic flavor for running
@@ -231,7 +270,7 @@ generator = cms.EDFilter("Pythia8HadronizerFilter",
         else:
             raise ValueError("The value of n_f = {} specified is not allowed. Please choose either n_f = 1 or n_f = 2".format(self.n_f))
 
-        print Fore.MAGENTA + "Extra decays added to gen fragment"
+        print(Fore.MAGENTA + "Extra decays added to gen fragment")
         return ret
 
     def insert_filters(self):
@@ -255,5 +294,5 @@ darkquarkFilter = cms.EDFilter("MCParticleModuloFilter",
 )
 """.format(two_n_dmatter=2*self.n_f, extra_dmatter=', 53' if self.n_f == 2 else '', smear='' if self.year == 2016 else ', "unsmeared"')
 
-        print Fore.MAGENTA + "Extra filters added to gen fragment"
+        print(Fore.MAGENTA + "Extra filters added to gen fragment")
         return ret
