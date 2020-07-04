@@ -2,6 +2,7 @@ setuptools
 colorama
 flake8
 matplotlib<3
+numpy
 pandas
 progressbar
 pyyaml
