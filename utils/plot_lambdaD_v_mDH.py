@@ -10,7 +10,7 @@ from calc_dark_params import calc_lambda_d_from_str as cld
 plt.rcParams["figure.figsize"] = [8, 6]
 ax = plt.gca()
 
-alpha_dark = ["v_low", "low", "peak", "high", "v_high"]
+alpha_dark = ["low", "peak", "high", "v_high"]
 m_dark = np.array([1., 2., 3., 4., 5., 6., 8., 10., 15., 20., 30., 40., 50., 60., 70., 80., 90., 100])  # dark hadron mass (GeV)
 
 n_c = 2
@@ -21,7 +21,7 @@ max_lam_dark = []
 # Plot Lambda_dark vs m_dark for each value of alpha_dark given
 for a_dark in alpha_dark:
     lambda_dark = cld(n_c, n_f, a_dark, m_dark)
-    ax.plot(m_dark, lambda_dark, label=r"$\alpha_{\mathrm{dark}}$ = " + a_dark)
+    ax.plot(m_dark, lambda_dark, label=r"$\alpha_{\mathrm{dark}}$ = " + a_dark.replace("_", ". "))
     max_lam_dark.append(lambda_dark.max())
 
 # Get max Lambda_dark in plot for tuning y-axis range

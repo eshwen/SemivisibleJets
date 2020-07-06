@@ -53,8 +53,8 @@ def thorough_checks(config_dict):
         raise TypeError(Fore.GREEN + 'n_f is required to be an integer.')
     if x_sec_mg < 0.0 or (isinstance(alpha_d, float) and alpha_d < 0.0):
         raise ValueError(Fore.GREEN + 'x_sec and alpha_d must be positive.')
-    if isinstance(alpha_d, str) and not any(alpha_d == x for x in ['peak', 'low', 'high']):
-        raise ValueError("If specifying alpha_d as a string, it must equal 'peak', 'low', or 'high'.")
+    if isinstance(alpha_d, str) and not any(alpha_d == x for x in ['peak', 'low', 'high', 'v_high']):
+        raise ValueError("If specifying alpha_d as a string, it must equal 'low', 'peak', 'high', or 'v_high'.")
     else:
         print(Fore.MAGENTA + "Thorough config file check finished. All looks good!", Style.RESET_ALL)
 
