@@ -23,6 +23,8 @@ cd $work_space
 rm $work_space/output/components/{model}_*.root
 rm -rf $work_space/logs/{model}
 rm -rf $work_space/submission_scripts/{model}
+rm $work_space/combine_components_{model}.sh
+rm $work_space/resubmit_{model}.sh
 rm $work_space/CMSSW_*/src/{model}_*.py
 rm $work_space/CMSSW_*/src/{model}_*.root
 exit
