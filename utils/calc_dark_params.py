@@ -23,7 +23,6 @@ def calc_lambda_d_from_str(n_c, n_f, alpha_d, m_dh):
     if not isinstance(alpha_d, str):
         raise TypeError("alpha_d must be a string")
     sfs = {
-        "v_low": 0.25,
         "low": 0.5,
         "peak": 1.,
         "high": 1.5,
