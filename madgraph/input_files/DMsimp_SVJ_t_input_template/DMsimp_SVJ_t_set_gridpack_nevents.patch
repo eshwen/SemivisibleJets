@@ -5,7 +5,7 @@
              # Running gridpack warmup
              gridpack_opts=[('accuracy', 0.01),
 -                           ('points', 2000),
-+                           ('points', os.getenv("GRIDPACK_NEVENTS") if "GRIDPACK_NEVENTS" in os.environ else 50000),
++                           ('points', os.getenv("GRIDPACK_NEVENTS") if "GRIDPACK_NEVENTS" in os.environ else 10000),
                             ('iterations',8),
                             ('gridpack','.true.')]
              logger.info('Generating gridpack with run name %s' % self.run_name)
