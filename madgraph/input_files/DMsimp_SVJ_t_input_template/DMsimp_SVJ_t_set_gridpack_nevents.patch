@@ -1,0 +1,11 @@
+--- a/MG5_aMC_v2_6_0/madgraph/interface/madevent_interface.py	  2017-08-16 23:25:24.000000000 +0100
++++ b/MG5_aMC_v2_6_0/madgraph/interface/madevent_interface.py	  2020-10-22 13:00:54.000000000 +0100
+@@ -2100,7 +2100,7 @@
+         if self.run_card['gridpack'] in self.true:        
+             # Running gridpack warmup
+             gridpack_opts=[('accuracy', 0.01),
+-                           ('points', 2000),
++                           ('points', os.getenv("GRIDPACK_NEVENTS") if "GRIDPACK_NEVENTS" in os.environ else 50000),
+                            ('iterations',8),
+                            ('gridpack','.true.')]
+             logger.info('Generating gridpack with run name %s' % self.run_name)

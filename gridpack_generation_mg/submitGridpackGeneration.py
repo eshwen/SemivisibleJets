@@ -115,9 +115,12 @@ def main(config, resub=False, mode='batch'):
 
     # Copy MadGraph input files from template card directory
     # Even if input_cards_dir existed before, copy the template files over in case parameters have changed
-    for in_file in glob.glob(os.path.join(os.environ['SVJ_MG_INPUT_DIR'], template_prefix+'_input_template/*.dat')):
+    for in_file in glob.glob(os.path.join(os.environ['SVJ_MG_INPUT_DIR'], template_prefix+'_input_template/*')):
+        ext = os.path.splitext(in_file)[-1]
+        if ext != '.dat' and ext != '.patch':
+            continue
         # Get the suffix of the template card for specifying the basename in the dest. path
-        card_type = re.search("(?<={0})(\w+).dat".format(template_prefix), in_file).group(0)
+        card_type = re.search("(?<={0})(\w+){1}".format(template_prefix, ext), in_file).group(0)
         shutil.copy(in_file, os.path.join(input_cards_dir, model_name+card_type))
 
     # In input files, fill replacement fields with values chosen by user
@@ -139,7 +142,7 @@ def main(config, resub=False, mode='batch'):
     rel_cards_dir = os.path.relpath(input_cards_dir, os.environ['MG_GENPROD_DIR'])
 
     # Run the gridpack generation
-    call("{}/runGridpackGeneration.sh {} {} {}".format(os.path.dirname(os.path.realpath(__file__)), model_name, rel_cards_dir, mode), shell=True)
+    call("{}/runGridpackGeneration.sh {} {} {} {}".format(os.path.dirname(os.path.realpath(__file__)), model_name, rel_cards_dir, mode, n_events * n_jobs), shell=True)
 
 
 if __name__ == '__main__':

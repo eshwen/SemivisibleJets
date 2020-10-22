@@ -1,7 +1,7 @@
 #!/bin/bash
 
-if [ -z $2 ]; then
-    usr_msg="Usage ./runGridpackGeneration.sh model_name rel_path(input_cards_dir) mode"
+if [ -z $4 ]; then
+    usr_msg="Usage ./runGridpackGeneration.sh model_name rel_path(input_cards_dir) mode nevents"
     $SVJ_TOP_DIR/utils/print_bash_script_usage.sh "$usr_msg"
     exit
 fi
@@ -11,6 +11,7 @@ fi
 model_name=$1
 input_cards_dir=$2
 mode=$3
+export GRIDPACK_NEVENTS=$4
 
 cd $MG_GENPROD_DIR
 
