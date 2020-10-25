@@ -1,0 +1,15 @@
+work_space: /afs/cern.ch/work/e/ebhal/SVJ_Condor
+lhe_file_path: /afs/cern.ch/work/e/ebhal/public/SVJ_s_splitLHE
+n_events: 2000
+n_jobs: 50
+year: 2016
+alpha_d: peak
+process_type: "s-channel"
+m_med: 3000
+m_d: 2
+n_f: 2
+r_inv: 0.3
+
+model_name: SVJ_s_2016_mZp-3000_mDQ-2_rinv-0p3_aD-peak
+total_events: 100000
+x_sec_mg: 12.07
